@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<COMPATIBILITY_MATRIX>
+	<PLUGIN name="qtype_stateful">
+		<PHP_EXTENSIONS>
+			<PHP_EXTENSION name="mbstring" level="required">
+				<FEEDBACK>
+					<ON_ERROR message="mbstringrequired" plugin="qtype_stateful" />
+				</FEEDBACK>
+			</PHP_EXTENSION>
+			<PHP_EXTENSION name="yaml" level="optional">
+				<FEEDBACK>
+					<ON_CHECK message="yamlrecommended" plugin="qtype_stateful" />
+				</FEEDBACK>
+			</PHP_EXTENSION>
+		</PHP_EXTENSIONS>
+		<PHP version="7.1.0" level="required">
+			<FEEDBACK>
+				<ON_ERROR message="php71required" plugin="qtype_stateful" />
+			</FEEDBACK>
+		</PHP>
+	</PLUGIN>
+</COMPATIBILITY_MATRIX>

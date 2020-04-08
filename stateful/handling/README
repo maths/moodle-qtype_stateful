@@ -1,0 +1,3 @@
+The handling directory contains tools that are focused on doing certain key actions on questions existing in memory, not on questions present in the database although there are functions for bringing a question in from there and for pushing a question there.
+
+These functions are intentionally not Moodle connected but do have some connections to STACK. Obviously Moodle cannot be kept fully separated but we do try to not place it everywhere.

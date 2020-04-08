@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="question/type/stateful/db" VERSION="2020020100" COMMENT="XMLDB file for Moodle question/type/stateful"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="qtype_stateful_options" COMMENT="Stores the main options for each stateful question">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key link to question.id"/>
+        <FIELD NAME="questionvariables" TYPE="text" DEFAULT="" NOTNULL="true" SEQUENCE="false" COMMENT="Maxima code that is run when the question is started to initialise variables."/>
+        <FIELD NAME="questionnote" TYPE="text" DEFAULT="" NOTNULL="true" SEQUENCE="false" COMMENT="CAS text. This should be a short summary of which random variant of the question the student saw."/>
+        <FIELD NAME="questionsimplify" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Whether to simplify expressions in the question text, question variables, etc."/>
+        <FIELD NAME="assumepositive" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether to assume that variables are positive."/>
+        <FIELD NAME="assumereal" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether to assume that variables are real."/>
+        <FIELD NAME="multiplicationsign" TYPE="char" LENGTH="8" NOTNULL="true" DEFAULT="dot" SEQUENCE="false" COMMENT="The symbol to use for multiplication."/>
+        <FIELD NAME="sqrtsign" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Whether to display square roots as surds."/>
+        <FIELD NAME="complexno" TYPE="char" LENGTH="8" NOTNULL="true" DEFAULT="i" SEQUENCE="false" COMMENT="How complex numbers should be displayed and represented."/>
+        <FIELD NAME="inversetrig" TYPE="char" LENGTH="8" NOTNULL="true" DEFAULT="cos-1" SEQUENCE="false" COMMENT="How the inverse trigonometric function should be displayed. The valid values are cos-1, acos or arccos."/>
+        <FIELD NAME="matrixparens" TYPE="char" LENGTH="8" NOTNULL="true" DEFAULT="[" SEQUENCE="false" COMMENT="The parentheses used to surround matrices."/>
+        <FIELD NAME="entryscene" TYPE="char" LENGTH="32" DEFAULT="" NOTNULL="true" SEQUENCE="false" COMMENT="The name of the first scene."/>
+        <FIELD NAME="stackversion" TYPE="char" LENGTH="32" DEFAULT="" NOTNULL="true" SEQUENCE="false" COMMENT="The version of the STACK used to save this question."/>
+        <FIELD NAME="statefulversion" TYPE="char" LENGTH="32" DEFAULT="" NOTNULL="true" SEQUENCE="false" COMMENT="The version of Stateful used to save this question. Used for targetting automatic migrations due to version changes."/>
+        <FIELD NAME="compiledcache" TYPE="text" NOTNULL="false" DEFAULT="{}" SEQUENCE="false" COMMENT="The prevalidated CAS expressions used for processing various things. Stored as JSON. Thrown away every time the question is changed / saved or the question type is updated."/>
+        <FIELD NAME="genericmeta" TYPE="text" NOTNULL="false" DEFAULT="{}" SEQUENCE="false" COMMENT="Anything any system wanst to bind to the question that does not affect the questions execution. Initially, created to protect state-variable numbers from being reused. Use JSON to store your stuff here. Functionality, depends on tools used for working with the questions but some common things will be documented."/>
+        <FIELD NAME="parlength" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="-1" SEQUENCE="false" COMMENT="The expected length of the solution path in a normal completed attempt."/>
+        <FIELD NAME="variants" TYPE="text" NOTNULL="false" DEFAULT="{}" SEQUENCE="false" COMMENT="The random variants this question uses if any. JSON object oflists of integer seeds and a selector to select the list to use."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="questionid" TYPE="foreign-unique" FIELDS="questionid" REFTABLE="question" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+
+	<TABLE NAME="qtype_stateful_scenes" COMMENT="Stores the scenes for each stateful question">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key link to question.id"/>
+	    	<FIELD NAME="name" TYPE="char" LENGTH="255" DEFAULT="" NOTNULL="true" SEQUENCE="false" COMMENT="The name of this scene."/>
+        <FIELD NAME="description" TYPE="text" DEFAULT="" NOTNULL="false" SEQUENCE="false" COMMENT="Optional description of the purpose of this scene."/>
+        <FIELD NAME="scenevariables" TYPE="text" DEFAULT="" NOTNULL="true" SEQUENCE="false" COMMENT="Maxima code that is run when the scene is started to initialise variables."/>
+        <FIELD NAME="scenetext" TYPE="text" DEFAULT="" NOTNULL="true" SEQUENCE="false" COMMENT="The CASText rendering this scene."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="questionid" TYPE="foreign" FIELDS="questionid" REFTABLE="question" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="questionid-name" UNIQUE="true" FIELDS="questionid, name"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="qtype_stateful_variables" COMMENT="One row for each state variable in the question.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key link to question.id"/>
+        <FIELD NAME="type" TYPE="char" DEFAULT="" LENGTH="16" NOTNULL="false" SEQUENCE="false" COMMENT="The type of this variable, for validation."/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" DEFAULT="" NOTNULL="true" SEQUENCE="false" COMMENT="The name used to identify this variable."/>
+        <FIELD NAME="number" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Numeric identifier for this variable to be used in state storage, needs to stay the same between updates/exports/imports and therefore separate. This is not conrollable by the author nor visible in obvious places, it is used to identify the state variable when storing to attempt_step_data instead of using the name of the variable witch would eat up limited characters."/>
+        <FIELD NAME="description" TYPE="text" DEFAULT="" NOTNULL="false" SEQUENCE="false" COMMENT="Optional description of the purpose of this variable."/>
+        <FIELD NAME="initialvalue" TYPE="text" DEFAULT="false" NOTNULL="true" SEQUENCE="false" COMMENT="CASString to initialise this variable if no previous value is available."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="questionid" TYPE="foreign" FIELDS="questionid" REFTABLE="question" REFFIELDS="id"/>
+        <KEY NAME="questionid-number" TYPE="unique" FIELDS="questionid, number"/>
+        <KEY NAME="questionid-name" TYPE="unique" FIELDS="questionid, name"/>
+      </KEYS>
+    </TABLE>
+
+
+    <TABLE NAME="qtype_stateful_inputs" COMMENT="One row for each input in the scene.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="sceneid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key referencing scene.id."/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" DEFAULT="" NOTNULL="true" SEQUENCE="false" COMMENT="The name of the input element."/>
+        <FIELD NAME="type" TYPE="char" DEFAULT="algebraic" LENGTH="32" NOTNULL="true" SEQUENCE="false" COMMENT="The type of input element this is."/>
+        <FIELD NAME="tans" TYPE="text" DEFAULT="tans" NOTNULL="true" SEQUENCE="false" COMMENT="The model answer for this input, that could be part of a correct solution."/>
+        <FIELD NAME="options" TYPE="text" NOTNULL="true" DEFAULT="{}" SEQUENCE="false" COMMENT="Options that are interpreted in an input-specific way."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="sceneid" TYPE="foreign" FIELDS="sceneid" REFTABLE="qtype_stateful_scenes" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="sceneid-name" UNIQUE="true" FIELDS="sceneid, name"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="qtype_stateful_vboxes" COMMENT="One row for each custom validation box in the scene.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="sceneid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key referencing scene.id."/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" DEFAULT="" NOTNULL="true" SEQUENCE="false" COMMENT="The name of the validation box."/>
+        <FIELD NAME="type" TYPE="char" DEFAULT="custom" LENGTH="32" NOTNULL="true" SEQUENCE="false" COMMENT="The type of validation box this is."/>
+        <FIELD NAME="options" TYPE="text" NOTNULL="true" DEFAULT="{}" SEQUENCE="false" COMMENT="Options that are interpreted in a box-specific way."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="sceneid" TYPE="foreign" FIELDS="sceneid" REFTABLE="qtype_stateful_scenes" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="sceneid-name" UNIQUE="true" FIELDS="sceneid, name"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="qtype_stateful_prts" COMMENT="One row for each PRT in the scene.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="sceneid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key reference to scene.id."/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" DEFAULT="" NOTNULL="true" SEQUENCE="false" COMMENT="The name used to identify this PRT."/>
+        <FIELD NAME="value" TYPE="number" LENGTH="12" NOTNULL="true" DEFAULT="1" SEQUENCE="false" DECIMALS="7" COMMENT="The maximum score this PRT can contribute to the question."/>
+        <FIELD NAME="feedbackvariables" TYPE="text" DEFAULT="" NOTNULL="true" SEQUENCE="false" COMMENT="Additional expressions that should be computed before evaluating this tree."/>
+        <FIELD NAME="firstnodename" TYPE="text" DEFAULT="" NOTNULL="true" SEQUENCE="false" COMMENT="Refers to qtype_stack_prt_nodes.nodename of the first node in the tree."/>
+        <FIELD NAME="scoremode" TYPE="char" DEFAULT="no score" LENGTH="16" NOTNULL="true" SEQUENCE="false" COMMENT="The mode used for calculating the total score from this PRT over all the times it gets activated in various scenes."/>
+        <FIELD NAME="scoremodeparameters" TYPE="text" DEFAULT=""  NOTNULL="true" SEQUENCE="false" COMMENT="Generic parameters for the mode, typically an integer to tell how many are taken into account or some such."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="sceneid" TYPE="foreign" FIELDS="sceneid" REFTABLE="qtype_stateful_scenes" REFFIELDS="id"/>
+        <KEY NAME="sceneid-name" TYPE="unique" FIELDS="sceneid, name"/>
+      </KEYS>
+    </TABLE>
+
+    <TABLE NAME="qtype_stateful_prt_nodes" COMMENT="One row for each node in each PRT in the scene.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="prtid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key reference to prt.id."/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" DEFAULT=""  NOTNULL="true" SEQUENCE="false" COMMENT="Unique identifier for the node. Short string to make authors avoid exessive long descriptions and to drive them to use simple statements like 'is large enough' as node names."/>
+        <FIELD NAME="test" TYPE="char" DEFAULT="AlgEquiv" LENGTH="32" NOTNULL="true" SEQUENCE="false" COMMENT="What answer test to apply at this node."/>
+        <FIELD NAME="sans" TYPE="text" DEFAULT="ans1" NOTNULL="true" SEQUENCE="false" COMMENT="What expression to feed into the sans side of the answer test."/>
+        <FIELD NAME="tans" TYPE="text" DEFAULT="" NOTNULL="true" SEQUENCE="false" COMMENT="What expression to feed into the tans side of the answer test."/>
+        <FIELD NAME="options" TYPE="text" DEFAULT="" NOTNULL="true" SEQUENCE="false" COMMENT="Any options to pass to the answer test."/>
+        <FIELD NAME="quiet" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Whether to suppress any feedback generated by the answer test."/>
+        <FIELD NAME="truescoremode" TYPE="char" LENGTH="4" NOTNULL="true" DEFAULT="=" SEQUENCE="false" COMMENT="How to adjust the score when the test is true."/>
+        <FIELD NAME="truescore" TYPE="text"  OTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="The number used in the score adjustment when the answer test returns true."/>
+        <FIELD NAME="truepenaltymode" TYPE="char" LENGTH="4" NOTNULL="true" DEFAULT="=" SEQUENCE="false" COMMENT="How to penalty the score when the test is true."/>
+        <FIELD NAME="truepenalty" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The penalty to use when the test returns true."/>
+        <FIELD NAME="truenextnode" TYPE="char" LENGTH="265" NOTNULL="false" SEQUENCE="false" COMMENT="The node name or scene to go to next when the test returns true."/>
+        <FIELD NAME="truefeedback" TYPE="text" NOTNULL="true" DEFAULT="" SEQUENCE="false" COMMENT="Any extra feedback to add when the test returns true."/>
+ 	      <FIELD NAME="truevariables" TYPE="text" NOTNULL="true" DEFAULT="" SEQUENCE="false" COMMENT="Additional expressions that should be computed before evaluating the next node or changing scene."/>
+        <FIELD NAME="truetests" TYPE="text" NOTNULL="true" SEQUENCE="false" DEFAULT="[]" COMMENT="JSON presentation of test inputs triggering this branch."/>
+        <FIELD NAME="falsescoremode" TYPE="char" LENGTH="4" NOTNULL="true" DEFAULT="=" SEQUENCE="false" COMMENT="How to adjust the score when the test is false."/>
+        <FIELD NAME="falsescore" TYPE="text" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="The number used in the score adjustment when the answer test returns false."/>
+        <FIELD NAME="falsepenaltymode" TYPE="char" LENGTH="4" NOTNULL="true" DEFAULT="=" SEQUENCE="false" COMMENT="How to adjust the penalty when the test is false."/>
+        <FIELD NAME="falsepenalty" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The penalty to use when the test returns false."/>
+        <FIELD NAME="falsenextnode" TYPE="char" LENGTH="265" NOTNULL="false" SEQUENCE="false" COMMENT="The node name or scene to go to next when the test returns false."/>
+        <FIELD NAME="falsefeedback" TYPE="text" NOTNULL="true" DEFAULT="" SEQUENCE="false" COMMENT="Any extra feedback to add when the test returns false."/>
+    		<FIELD NAME="falsevariables" TYPE="text" NOTNULL="true" DEFAULT="" SEQUENCE="false" COMMENT="Additional expressions that should be computed before evaluating the next node or changing scene."/>
+        <FIELD NAME="falsetests" TYPE="text" NOTNULL="true" SEQUENCE="false" DEFAULT="[]" COMMENT="JSON presentation of test inputs triggering this branch."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="prtid" TYPE="foreign" FIELDS="prtid" REFTABLE="qtype_stateful_prts" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="prtid-name" UNIQUE="true" FIELDS="prtid, name"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

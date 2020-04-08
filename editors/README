@@ -1,0 +1,5 @@
+As Stateful questions may take many forms we allow people to provide many types of editors for them.
+
+As long as the editors define some basic details.
+
+The only thing you need to know is that there are generic and specific editors. Generic editors may edit any Stateful question and will provide plenty of options to tune but may not be very helpful if you intend to do something simple. Specific editors however hide parts of the logic they generate and provide simplified views to the question editing and will typically provide help for doing the thing they have been specifically built for, e.g. maintain a physical simulation behind the scenes or some such thing. You need to remember that while you may edit anything with a generic editor you may not be able to open all questions with a given specific editor and if you edit a question created with a specific editor with some other editor you may lose the ability to open that question with that specific editor.

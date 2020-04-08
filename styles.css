@@ -1,0 +1,368 @@
+.que.stateful .formulation .statefulvalidation {
+    background: white;
+    margin: 0.5em;
+    padding: 0.4em;
+    display: block;
+    width: 100%;
+    border: 1.5px solid black;
+    -webkit-border-radius: 0.2em;
+    -moz-border-radius: 0.2em;
+    border-radius: 0.2em;
+}
+
+.que.stateful .formulation .statefulprtfeedback {
+    background: #fcf8e3;
+    margin: 0.5em;
+    padding: 0.4em;
+    display: block;
+    width: 100%;
+    border: 1.5px solid black;
+    -webkit-border-radius: 0.2em;
+    -moz-border-radius: 0.2em;
+    border-radius: 0.2em;
+}
+
+#page-question-type-stateful textarea#id_yaml {
+    font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+}
+
+#page-question-type-stateful textarea#id_json {
+    font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+}
+
+.que.stateful div.stateful-mcq-select {
+    border: 1.5px solid gray;
+    -webkit-border-radius: 0.2em;
+    -moz-border-radius: 0.2em;
+    border-radius: 0.2em;
+    position: relative;
+    background-color: #dee2e6;
+    display: inline-block;
+    margin: -0.2em;
+    padding: 0.1em;
+}
+
+.que.stateful div.stateful-mcq-select p {
+    margin: 0px;
+}
+
+.que.stateful div.stateful-mcq-select-selected-label {
+    padding-left: 0.2em;
+    padding-right: 0.2em;
+    display: inline-block;
+}
+
+.que.stateful div.stateful-mcq-select-carret {
+    z-index: 2;
+    float: right;
+    border-left: 1px solid black;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+    display: inline-block;
+}
+
+.que.stateful table.stateful-mcq-select-table {
+    z-index: 2;
+    display: none;
+    background: white;
+    border: 1.5px solid black;
+    -webkit-border-radius: 0.2em;
+    -moz-border-radius: 0.2em;
+    border-radius: 0.2em;
+    position: absolute;
+    left: 0.1em;
+}
+
+.que.stateful table.stateful-mcq-select-table tr:hover {
+    background-color: #dee2e6;
+}
+
+.que.stateful table.stateful-mcq-select-table tr {
+    border-bottom: 0.5px solid gray;
+}
+
+.que.stateful table.stateful-mcq-select-table tr td.stateful-mcq-select-table-selected {
+    background-color: #dee2e6;
+}
+
+
+
+
+
+/* Note that this is largely the same as STACK as we aim to provide similar look  
+   and reuse STACK components */
+
+/* Styles used when questions are being attempted. */
+.que.stateful .stacksyntaxexample {
+    color: #1f536b;
+    font-family: monospace;
+    font-size: 100%;
+    font-weight: bold;
+}
+.que.stateful .stackinputfeedback {
+    border: 1px solid #fff;
+    background-color: #fff;
+    margin: 0.2em 3em 0.5em;
+    padding: 0.5em 0.5em 0;
+}
+.que.stateful .equivreasoning .stackinputfeedback {
+    display: inline-block;
+    margin-left: 0.5em;
+    margin-right: 0;
+}
+.que.stateful textarea {
+    max-width: 100%;
+}
+.que.stateful input[type=text] {
+    max-width: 100%;
+}
+.que.stateful .stackinputfeedback.empty {
+    display: none;
+}
+.que.stateful .stackinputfeedback.waiting,
+.que.stateful .stackinputfeedback.loading {
+    color: #888;
+    min-height: 1em;
+}
+.que.stateful .stackinputfeedback.loading {
+    background: #fff url([[pix:moodle|i/loading_small]]) no-repeat top right;
+}
+.que.stateful .stackinputfeedback.waiting .stacksyntaxexample,
+.que.stateful .stackinputfeedback.loading .stacksyntaxexample {
+    color: #84aec1;
+}
+
+.que.stateful .formulation .stackprtfeedback {
+    background: #fcf8e3;
+    margin: 0.2em -0.2em 0.5em;
+    padding: 0.2em 0.5em 0.2em 0.2em;
+    display: inline-block;
+}
+.que.stateful .formulation .stackprtfeedback .correct,
+.que.stateful .formulation .stackprtfeedback .partiallycorrect,
+.que.stateful .formulation .stackprtfeedback .incorrect {
+    background: transparent;
+}
+.que.stateful .formulation .questiontestslink {
+    float: right;
+    font-size: 0.7em;
+    margin: -1.3em -3em;
+}
+.que.stateful .formulation .answer .option {
+    margin: 0.7em;
+}
+
+
+
+.que.stateful table.stateful_matrix_input_container {
+    border-spacing: 0;
+    margin: 0.3em;
+    border-collapse: separate;
+}
+
+.que.stateful table.collines td + td,
+.que.stateful table.collines th + th{
+    border-left: 0.15em solid;
+}
+.que.stateful table.collines .modcol {
+    border-left: 0;
+}
+.que.stateful table.collines .modrow td {
+    border-left: 0;
+}
+.que.stateful table.collines td.col0 {
+    border-left: 0;
+}
+.que.stateful table.collines th.numcol
+.que.stateful table.collines td.numcol {
+    border-left: 0;
+}
+.que.stateful table.collines th.numcol + th {
+    border-left: 0;
+}
+
+.que.stateful table.smic_center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.que.stateful table.stateful_matrix_input_container th {
+    padding-left: 0.2em;
+    padding-right: 0.2em;
+}
+
+.que.stateful table.stateful_matrix_input_container button.addrow,
+.que.stateful table.stateful_matrix_input_container button.remrow,
+.que.stateful table.stateful_matrix_input_container button.addcol,
+.que.stateful table.stateful_matrix_input_container button.remcol {
+    margin: 0;
+    font-size: smaller;
+    padding: 0.2em;
+    line-height: 0.7;
+    width: 2em;
+}
+.que.stateful table.stateful_matrix_input_container button.addcol,
+.que.stateful table.stateful_matrix_input_container button.remcol {
+    display: block;
+}
+
+.que.stateful table.stateful_matrix_input_container td input{
+    margin: 0;
+}
+
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_left_bracket_part1 {
+    border-top: 0.15em solid;
+    border-left: 0.15em solid;
+}
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_left_bracket_part2,
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_left_bracket_part3 {
+    border-left: 0.15em solid;
+}
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_left_bracket_part4 {
+    border-left: 0.15em solid;
+    border-bottom: 0.15em solid;
+}
+
+
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_right_bracket_part1 {
+    border-top: 0.15em solid;
+    border-right: 0.15em solid;
+}
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_right_bracket_part2,
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_right_bracket_part3 {
+    border-right: 0.15em solid;
+}
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_right_bracket_part4 {
+    border-right: 0.15em solid;
+    border-bottom: 0.15em solid;
+}
+
+
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_left_pipe_part1,
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_left_pipe_part2,
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_left_pipe_part3,
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_left_pipe_part4 {
+    border-left: 0.15em solid;
+}
+
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_right_pipe_part1,
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_right_pipe_part2,
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_right_pipe_part3,
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_right_pipe_part4 {
+    border-right: 0.15em solid;
+}
+
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_left_paren_part1 {
+    border-top-left-radius: 100%;
+    border-left: 0.15em solid;
+}
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_left_paren_part2,
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_left_paren_part3 {
+    border-left: 0.15em solid;
+}
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_left_paren_part4 {
+    border-bottom-left-radius: 100%;
+    border-left: 0.15em solid;
+}
+
+
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_right_paren_part1 {
+    border-top-right-radius: 100%;
+    border-right: 0.15em solid;
+}
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_right_paren_part2,
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_right_paren_part3 {   
+    border-right: 0.15em solid;
+}
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_right_paren_part4 {
+    border-bottom-right-radius: 100%;
+    border-right: 0.15em solid;
+}
+
+
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_left_brace_part1 {
+    border-top-left-radius: 100%;
+    border-left: 0.15em solid;
+    width:0.4em;
+    min-width:0.4em;
+    padding:0;
+    margin:0;
+    height:1px;
+}
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_left_brace_part2 {
+    border-bottom-right-radius: 100%;
+    border-right: 0.15em solid;
+    position: relative;
+    left: -0.3em;
+    margin:0;
+    margin-left: 0.4em;
+    width:0.4em;
+    min-width:0.4em;
+    padding:0;
+    height:1px;
+}
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_left_brace_part3 {
+    border-top-right-radius: 100%;
+    border-right: 0.15em solid;
+    position: relative;
+    left: -0.3em;
+    margin:0;
+    margin-left: 0.4em;
+    width:0.4em;
+    min-width:0.4em;
+    padding:0;
+    height:1px;
+}
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_left_brace_part4 {
+    border-bottom-left-radius: 100%;
+    border-left: 0.15em solid;
+    width:0.4em;
+    min-width:0.4em;
+    padding:0;
+    margin:0;
+    height:1px;
+}
+
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_right_brace_part1 {
+    border-top-right-radius: 100%;
+    border-right: 0.15em solid;
+    width:0.4em;
+    min-width:0.4em;
+    padding:0;
+    margin:0;
+    height:1px;
+}
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_right_brace_part2 {
+    border-bottom-left-radius: 100%;
+    border-left: 0.15em solid;
+    position: relative;
+    right: -0.3em;
+    margin:0;
+    margin-right: 0.4em;
+    width:0.4em;
+    min-width:0.4em;
+    padding:0;
+    height:1px;
+}
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_right_brace_part3 {
+    border-top-left-radius: 100%;
+    border-left: 0.15em solid;
+    position: relative;
+    right: -0.3em;
+    margin:0;
+    margin-right: 0.4em;
+    width:0.4em;
+    min-width:0.4em;
+    padding:0;
+    height:1px;
+}
+.que.stateful table.stateful_matrix_input_container td.stateful_miw_right_brace_part4 {
+    border-bottom-right-radius: 100%;
+    border-right: 0.15em solid;
+    width:0.4em;
+    min-width:0.4em;
+    padding:0;
+    margin:0;
+    height:1px;
+}
+

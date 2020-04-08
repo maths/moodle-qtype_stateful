@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<libraries>
+    <library>
+        <location>vendor/swaggest/json-schema/</location>
+        <name>swaggest/php-json-schema</name>
+        <version>0.12.28</version>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
+    </library>
+</libraries>

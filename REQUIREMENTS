@@ -1,0 +1,37 @@
+Required things:
+
+ - PHP 7.1, we use nullable type return values in some functions, could be
+   stripped out from the code to make it work for older PHP but personnally
+   I feel that those are worth it. Although, more in the documentation sense.
+
+ - STACK v4.3 and especially the following things:
+   1. /stack/utils.class.php :
+     - maxima_string_to_php_string() and php_string_to_maxima_string()
+       passing string values is important for us.
+     - all_substring_strings() and eliminate_strings() parsing them from
+       complex responses is also important.
+     - list_to_array() we like lists.
+
+   2. /stack/cas/ast.container.class.php :
+     - We use these to validate and evaluate values.
+     - the factory constructors
+     - get_valid
+     - get_evaluationform
+
+   3. /stack/cas/ast.container.silent.class.php :
+     - We use these to validate and evaluate values.
+     - the factory constructors
+     - get_valid
+     - get_evaluationform
+
+   4. /stack/cas/secure_loader.class.php :
+     - We cache much of validation of static logic content and load them as is.
+     - get_evaluationform
+
+   5. /stack/cas/cassession2.class.php
+     - Evaluation is being done with the normal sessions.
+
+   6. stack_options is also used.
+
+ - There now exits a unit-test-set on the STACK side to check if STACK changes
+   the names of things Stateful relies on.

@@ -1,0 +1,788 @@
+{
+  "name": "EXAMPLE: Partial integration",
+  "description": "The original example question for Stateful.\n\nScoring here:\n max 1 from the initial selection\n max 2 from the repeated selections\n max 1 from the final integration",
+  "modelsolution": "",
+  "questionnote": "{@'int(_a*x^_b*exp(_c*x),x)@}",
+  "pointvalue": 4,
+  "penalty": 0.3333333,
+  "parlength": -1,
+  "questionvariables": "/* We adjust the presentation of integrals in the whole question\n   with this. Essenttially, it keeps the multiplier within \n   the integral sign, which makes the presentation a bit more \n   concise and we have plenty of multipliers.*/\nremove(integrate, outative);\n\n/* The expression to integrate is of the form a*x^b*e^(c*x) \n   we do limit the c to be a positive integer as the solution \n   process will not behave well otherwise. */\n/* This author uses _ as a markker for simple parameters to \n   avoid tying possible integration constants the student might \n   use.*/\n_c: rand([2,3,4]);\n/* In demonstrations one might want to keep this small. */\n_b: rand([3,4]);\n/* Selection of a should be done with some care as the numbers \n   coming out due to b and c can get annoying quite soon. */\ntmp: integrate(x^_b*exp(_c*x), x);\ntmp: coeff(expand(tmp), exp(_c*x));\ndenoms: [];\ndumvar: for b:0 thru _b do \n\tdenoms: append(denoms, [denom(coeff(tmp, x, b))]);\n_a: lcm(denoms)/rand(denoms);",
+  "statevariables": [
+    {
+      "name": "us",
+      "type": "List",
+      "initialvalue": "[]",
+      "description": "The selections for \\(u\\)."
+    },
+    {
+      "name": "vs",
+      "type": "List",
+      "initialvalue": "[]",
+      "description": "The selections for \\(v\\)."
+    },
+    {
+      "name": "dus",
+      "type": "List",
+      "initialvalue": "[]",
+      "description": "The selections for \\(du\\)."
+    },
+    {
+      "name": "dvs",
+      "type": "List",
+      "initialvalue": "[]",
+      "description": "The selections for \\(dv\\)."
+    },
+    {
+      "name": "selectionTypes",
+      "type": "List",
+      "initialvalue": "[]",
+      "description": "Classifications of the selected terms. Both in the sense of wrong or right direction but also in the sense of distribution."
+    }
+  ],
+  "scenes": [
+    {
+      "name": "intro",
+      "description": "The introduction to the subject.",
+      "scenevariables": "toIntegrate: _a*x^_b*exp(_c*x);\nta_u: _a*x^_b;\nta_du: _a*_b*x^(_b-1);\nta_dv: exp(_c*x);\nta_v: exp(_c*x)/_c;",
+      "scenetext": "<p>In this question we want you to apply integration by parts to</p>\n\\[\n{@'integrate(toIntegrate,x)@}.\n\\]\n<p>As a reminder by integration by parts we mean</p>\n\\[\n\\int{ u(x)v'(x)\\;\\mathrm{d}x} = u(x)v(x) - \\int{ v(x)u'(x)\\;\\mathrm{d}x}.\n\\]\n<p>To start the exercise select \\(u(x)\\) and \\(v'(x)\\) for the first \nintegral \\({@'integrate(toIntegrate,x)@}\\).</p>\n<table style=\"margin-left:auto;margin-right:auto;\">\n <tr>\n  <td style=\"text-align:right;\">\\(u(x)=\\)</td><td>[[input:ansu]]</td>\n  <td style=\"text-align:right;\">\\(v'(x)=\\)</td><td>[[input:ansdv]]</td>\n </tr>\n <tr>\n  <td style=\"text-align:right;\">\\(u'(x)=\\)</td><td>[[input:ansdu]]</td>\n  <td style=\"text-align:right;\">\\(v(x)=\\)</td><td>[[input:ansv]]</td>\n </tr>\n <tr>\n  <td colspan=\"4\">[[validation:combo]]</td>\n </tr>\n <tr>\n  <td colspan=\"4\">[[feedback:select]]</td>\n </tr>\n</table>",
+      "inputs": [
+        {
+          "name": "ansu",
+          "tans": "ta_u",
+          "type": "algebraic",
+          "input-width": 10,
+          "forbid-words": "[[basic-calculus]]",
+          "validation-box": "combo",
+          "require-same-type": true,
+          "require-lowest-terms": true,
+          "fix-spaces": true,
+          "fix-stars": true,
+          "syntax-hint-type": 0
+        },
+        {
+          "name": "ansv",
+          "tans": "ta_v",
+          "type": "algebraic",
+          "input-width": 10,
+          "forbid-words": "[[basic-calculus]]",
+          "validation-box": "combo",
+          "require-same-type": true,
+          "require-lowest-terms": true,
+          "fix-spaces": true,
+          "fix-stars": true,
+          "syntax-hint-type": 0
+        },
+        {
+          "name": "ansdv",
+          "tans": "ta_dv",
+          "type": "algebraic",
+          "input-width": 10,
+          "forbid-words": "[[basic-calculus]]",
+          "validation-box": "combo",
+          "require-same-type": true,
+          "require-lowest-terms": true,
+          "fix-spaces": true,
+          "fix-stars": true,
+          "syntax-hint-type": 0
+        },
+        {
+          "name": "ansdu",
+          "tans": "ta_du",
+          "type": "algebraic",
+          "input-width": 10,
+          "forbid-words": "[[basic-calculus]]",
+          "validation-box": "combo",
+          "require-same-type": true,
+          "require-lowest-terms": true,
+          "fix-spaces": true,
+          "fix-stars": true,
+          "syntax-hint-type": 0
+        }
+      ],
+      "vboxes": [
+        {
+          "name": "combo",
+          "type": "custom",
+          "text": "<p>Your answer was interpreted as:</p>\n<table style=\"margin-left:auto;margin-right:auto;\">\n\t<tr>\n    \t<td style=\"text-align:right;\">\\(u(x)=\\)</td><td style=\"padding-right:2em;\">{@ansu@}</td>\n        <td style=\"text-align:right;\">\\(v'(x)=\\)</td><td>{@ansdv@}</td>\n    </tr>\n    <tr>\n    \t<td style=\"text-align:right;\">\\(u'(x)=\\)</td><td style=\"padding-right:2em;\">{@ansdu@}</td>\n        <td style=\"text-align:right;\">\\(v(x)=\\)</td><td>{@ansv@}</td>\n    </tr>\n</table>\n[[ if test=\"not (%_valid_ansu and %_valid_ansdv and %_valid_ansdu and %_valid_ansv)\"]]\n<p>Please fill in all four correctly.</p>\n[[ else ]]\n<p>Now that all four have been given use the \"check\"-button to check them and if they fill the conditions we will move onwards.</p>\n[[/if]]\n[[list_errors:ansu,ansdu,ansv,ansdv]]\n[[list_variables:ansu,ansdu,ansv,ansdv]]"
+        }
+      ],
+      "prts": [
+        {
+          "name": "select",
+          "feedbackvariables": "/* We need to ensure more active simplification here. */\n_dir:coeff(ansu,exp(_c*x)),simp;",
+          "scoremode": "best",
+          "scoremodeparameters": "",
+          "value": 1,
+          "root": "do the parts match",
+          "nodes": [
+            {
+              "name": "do the parts match",
+              "test": "AlgEquiv",
+              "sans": "ansu*ansdv",
+              "tans": "toIntegrate",
+              "options": "",
+              "quiet": true,
+              "true": {
+                "feedback": "",
+                "variables": "",
+                "next": "du matches u",
+                "scoremode": "=",
+                "score": "0",
+                "penaltymode": "=",
+                "penalty": "",
+                "tests": []
+              },
+              "false": {
+                "feedback": "<p>Your \\(u(x)v'(x)\\) is not equal to the required \\({@toIntegrate@}\\).</p>",
+                "variables": "",
+                "scoremode": "=",
+                "score": "0",
+                "penaltymode": "=",
+                "penalty": "",
+                "tests": [
+                  {
+                    "name": "Not matching",
+                    "condition": "true",
+                    "inputs": {
+                      "ansu": "x",
+                      "ansv": "x",
+                      "ansdv": "x",
+                      "ansdu": "x"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "name": "du matches u",
+              "test": "AlgEquiv",
+              "sans": "ansdu",
+              "tans": "diff(ansu, x)",
+              "options": "",
+              "quiet": true,
+              "true": {
+                "feedback": "",
+                "variables": "",
+                "next": "v matches dv",
+                "scoremode": "+",
+                "score": "",
+                "penaltymode": "+",
+                "penalty": "",
+                "tests": []
+              },
+              "false": {
+                "feedback": "<p>\\(u'(x)\\) does not seem to be the derivate of \\(u(x)\\).</p>",
+                "variables": "",
+                "scoremode": "+",
+                "score": "",
+                "penaltymode": "=",
+                "penalty": "",
+                "tests": [
+                  {
+                    "name": "du is wrong",
+                    "condition": "true",
+                    "inputs": {
+                      "ansu": "ta_u",
+                      "ansv": "ta_v",
+                      "ansdv": "ta_dv",
+                      "ansdu": "integrate(ta_u, x)+x"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "name": "v matches dv",
+              "test": "AlgEquiv",
+              "sans": "ansdv",
+              "tans": "diff(ansv, x)",
+              "options": "",
+              "quiet": true,
+              "true": {
+                "feedback": "",
+                "variables": "",
+                "next": "which direction",
+                "scoremode": "+",
+                "score": "",
+                "penaltymode": "+",
+                "penalty": "",
+                "tests": []
+              },
+              "false": {
+                "feedback": "<p>\\(v'(x)\\) does not seem to be the derivate of \\(v(x)\\).</p>",
+                "variables": "",
+                "scoremode": "+",
+                "score": "",
+                "penaltymode": "=",
+                "penalty": "",
+                "tests": [
+                  {
+                    "name": "v not matching",
+                    "condition": "true",
+                    "inputs": {
+                      "ansu": "ta_u",
+                      "ansv": "ta_v+x+1",
+                      "ansdv": "ta_dv",
+                      "ansdu": "ta_du"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "name": "which direction",
+              "test": "AlgEquiv",
+              "sans": "_dir",
+              "tans": "0",
+              "options": "",
+              "quiet": true,
+              "true": {
+                "feedback": "",
+                "variables": "/* Remember the values */\nus:[ansu];\nvs:[ansv];\ndus:[ansdu];\ndvs:[ansdv];\n/* This is the correct direction\n   lets signal that with 1. */\nselectionTypes:[1];",
+                "next": "$SCENE:decide",
+                "scoremode": "=",
+                "score": "1",
+                "penaltymode": "=",
+                "penalty": "0",
+                "tests": [
+                  {
+                    "name": "Correct direction",
+                    "condition": "is(ta_u#0)",
+                    "inputs": {
+                      "ansu": "ta_u",
+                      "ansv": "ta_v",
+                      "ansdv": "ta_dv",
+                      "ansdu": "ta_du"
+                    }
+                  }
+                ]
+              },
+              "false": {
+                "feedback": "",
+                "variables": "/* Remember the values */\nus:[ansu];\nvs:[ansv];\ndus:[ansdu];\ndvs:[ansdv];\n/* This is the wrong direction\n   lets signal that with -1. */\nselectionTypes:[-1];",
+                "next": "$SCENE:decide",
+                "scoremode": "=",
+                "score": "1",
+                "penaltymode": "=",
+                "penalty": "0",
+                "tests": [
+                  {
+                    "name": "Wrong direction",
+                    "condition": "true",
+                    "inputs": {
+                      "ansu": "exp(_c*x)",
+                      "ansv": "_a*x^(_b+1)/(_b+1)",
+                      "ansdv": "_a*x^_b",
+                      "ansdu": "_c*exp(_c*x)"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "decide",
+      "description": "In this scene the decides what to do with the result of the partition.",
+      "scenevariables": "",
+      "scenetext": "<p>Your selection placed to the formula leads to:</p>\n<table style=\"margin-left: auto;margin-right: auto;\">\n<tr><td style=\"text-align:right;\">\\(u(x)=\\)</td><td>\\({@last(us)@}\\)</td><td>&nbsp;</td>\n<td style=\"text-align:right;\">\\(v'(x)=\\)</td><td>\\({@last(dvs)@}\\)</td><td rowspan=\"2\">\\[\\;\\rightarrow\\;\\]</td><td rowspan=\"2\">\n\\[\n\\int{ {@last(us)*last(dvs)@}\\;\\mathrm{d}x} =\n {@last(us)*last(vs)@} - \\int{ {@last(dus)*last(vs)@}\\;\\mathrm{d}x}\n\\]</td></tr>\n<tr><td style=\"text-align:right;\">\\(u'(x)=\\)</td><td>\\({@last(dus)@}\\)</td><td>&nbsp;</td>\n<td style=\"text-align:right;\">\\(v(x)=\\)</td><td>\\({@last(vs)@}\\)</td></tr>\n</table>\n<p>which means that you will still have to integrate</p>\n\\[\n\\int{ {@last(vs)*last(dus)@}\\;\\mathrm{d}x}.\n\\]\n<p>If you wish you may try to integrate it directly, but note that this question \ngives points for the actual partial integration steps, so do that once you have done them.</p>\n<p>\\(\\int{ {@last(vs)*last(dus)@}\\;\\mathrm{d}x}=\\)[[input:integration]]</p>\n<div>[[validation:integration]]</div>\n<div>[[feedback:quickExit]]</div>\n<p>Or you can just repeat the partition step or undo it if you feel like selectinǵ otherwise.</p>\n[[ if test=\"last(vs)*last(dus)=0\"]]\n<p><b>You should have been able to integrate the expressions just fine on the last step, and now it should be trivial. Do not repeat anymore...</b></p>\n[[/if]]\n[[ if test=\"is(length(selectionTypes) > 1) and \n            is(lastn(selectionTypes,2)[1] < 0) and\n            is(lastn(selectionTypes,2)[2] < 0)\"]]\n<p><b>Have you noticed that if you select the {@exp(_c*x)@} term as {@u@} the order of the expression rises? Surely it would be simpler to integrate if that order went down instead?</b></p>\n[[/ if]]\n<p>[[input:repeatButton]] [[input:undoButton]]</p>\n<div>[[feedback:decision]]</div>",
+      "inputs": [
+        {
+          "name": "integration",
+          "tans": "integrate(last(vs)*last(dus), x)",
+          "type": "algebraic",
+          "input-width": 20,
+          "require-same-type": true,
+          "require-lowest-terms": true,
+          "syntax-hint-type": 0
+        },
+        {
+          "name": "repeatButton",
+          "type": "button",
+          "input-value": "\"repeat\"",
+          "input-label": "Repeat"
+        },
+        {
+          "name": "undoButton",
+          "type": "button",
+          "alias-for": "repeatButton",
+          "input-value": "\"undo\"",
+          "input-label": "Undo"
+        }
+      ],
+      "vboxes": [],
+      "prts": [
+        {
+          "name": "decision",
+          "feedbackvariables": "/* Note how we have two button inputs but only read the other.\n   this is a special feature of the button input type allowing \n   any button set the values of other button inputs so that one\n   can read the selected value of connected buttons from just \n   one this should lessen the need to create multiple PRTs to do \n   similar things as PRTs only trigger when the specific inputs\n   they follow activate and in the case of buttons only one can \n   be active unless they have been bound like here.\n   \n   Buttons like these are basically MCQ inputs with integrated \n   submit which makes them inputs of their own their own type.\n */",
+          "scoremode": "no score",
+          "scoremodeparameters": "",
+          "value": 1,
+          "root": "Repeat",
+          "nodes": [
+            {
+              "name": "Repeat",
+              "test": "AlgEquiv",
+              "sans": "repeatButton",
+              "tans": "\"repeat\"",
+              "options": "",
+              "quiet": false,
+              "true": {
+                "feedback": "",
+                "variables": "/* No transition variables needed we can continue with the previous state. */",
+                "next": "$SCENE:repeat",
+                "scoremode": "=",
+                "score": "1",
+                "penaltymode": "=",
+                "penalty": "",
+                "tests": [
+                  {
+                    "name": "Repeat",
+                    "condition": "is(length(SCENE_PATH) < 20) ",
+                    "inputs": {
+                      "repeatButton": "\"repeat\""
+                    }
+                  }
+                ]
+              },
+              "false": {
+                "feedback": "",
+                "variables": "",
+                "next": "Undo",
+                "scoremode": "=",
+                "score": "0",
+                "penaltymode": "=",
+                "penalty": "",
+                "tests": []
+              }
+            },
+            {
+              "name": "Undo",
+              "test": "AlgEquiv",
+              "sans": "repeatButton",
+              "tans": "\"undo\"",
+              "options": "",
+              "quiet": false,
+              "true": {
+                "feedback": "",
+                "variables": "/* We should probably remember the undos. */\nvs: lastn(vs, length(vs) - 1);\nus: lastn(us, length(us) - 1);\ndus: lastn(dus, length(dus) - 1);\ndvs: lastn(dvs, length(dvs) - 1);",
+                "next": "Type of Undo",
+                "scoremode": "=",
+                "score": "1",
+                "penaltymode": "=",
+                "penalty": "",
+                "tests": []
+              },
+              "false": {
+                "feedback": "",
+                "variables": "",
+                "scoremode": "=",
+                "score": "0",
+                "penaltymode": "=",
+                "penalty": "",
+                "tests": []
+              }
+            },
+            {
+              "name": "Type of Undo",
+              "test": "AlgEquiv",
+              "sans": "length(vs)",
+              "tans": "1",
+              "options": "",
+              "quiet": false,
+              "true": {
+                "feedback": "",
+                "variables": "/* If we go back to the intro we need to empty the lists and if we do that we need to go to the intro... */\nvs:[];\nus:[];\ndus:[];\ndvs:[];",
+                "next": "$SCENE:intro",
+                "scoremode": "=",
+                "score": "1",
+                "penaltymode": "=",
+                "penalty": "",
+                "tests": [
+                  {
+                    "name": "Undo at start",
+                    "condition": "is(length(vs)=1)",
+                    "inputs": {
+                      "repeatButton": "\"undo\"",
+                      "undoButton": ""
+                    }
+                  }
+                ]
+              },
+              "false": {
+                "feedback": "",
+                "variables": "/* We should probably remember the undos. */\nvs: reverse(lastn(reverse(vs), length(vs) - 1));\nus: reverse(lastn(reverse(us), length(us) - 1));\ndus: reverse(lastn(reverse(dus), length(dus) - 1));\ndvs: reverse(lastn(reverse(dvs), length(dvs) - 1));",
+                "next": "$SCENE:repeat",
+                "scoremode": "=",
+                "score": "0",
+                "penaltymode": "=",
+                "penalty": "",
+                "tests": [
+                  {
+                    "name": "Undo later",
+                    "condition": "is(length(vs)#1)",
+                    "inputs": {
+                      "repeatButton": "\"undo\"",
+                      "undoButton": ""
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "quickExit",
+          "feedbackvariables": "",
+          "scoremode": "best",
+          "scoremodeparameters": "",
+          "value": 1,
+          "root": "Just do it",
+          "nodes": [
+            {
+              "name": "Just do it",
+              "test": "Int",
+              "sans": "integration",
+              "tans": "ev(integrate(last(vs)*last(dus),x),simp)",
+              "options": "x",
+              "quiet": false,
+              "true": {
+                "feedback": "",
+                "variables": "",
+                "next": "$SCENE:end",
+                "scoremode": "=",
+                "score": "1",
+                "penaltymode": "=",
+                "penalty": "",
+                "tests": [
+                  {
+                    "name": "Integrate it",
+                    "condition": "true",
+                    "inputs": {
+                      "integration": "ev(integrate(last(vs)*last(dus), x)+c,simp)"
+                    }
+                  }
+                ]
+              },
+              "false": {
+                "feedback": "Well, that was not quite it.",
+                "variables": "",
+                "scoremode": "=",
+                "score": "0",
+                "penaltymode": "=",
+                "penalty": "",
+                "tests": [
+                  {
+                    "name": "Failure to integrate",
+                    "condition": "true",
+                    "inputs": {
+                      "integration": "ev(diff(last(vs)*last(dus), x),simp)"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "repeat",
+      "description": "The scene where one continues the steps.",
+      "scenevariables": "toIntegrate: last(dus)*last(vs);\nta_u: coeff(toIntegrate,exp(_c*x));\nta_du: diff(ta_u,x);\nta_dv: exp(_c*x);\nta_v: integrate(ta_dv,x);\nif not is(coeff(toIntegrate,exp(_c*x))=0) then (\n\twta_u: exp(_c*x),\n\twta_du: diff(wta_u,x),\n\twta_dv: coeff(toIntegrate,exp(_c*x)),\n\twta_v: integrate(wta_dv,x)\n);",
+      "scenetext": "<p>So we now have to integrate the remainder:</p>\n\\[\n{@'integrate(toIntegrate,x)@}.\n\\]\n<p>For reference we still use \\( \\int{ u \\mathrm{d}v} = u v - \\int{ v \\mathrm{d}u} \\)</p>\n<p>Do select the parts for this step:</p>\n<table style=\"margin-left:auto;margin-right:auto;\">\n <tr>\n  <td style=\"text-align:right;\">\\(u(x)=\\)</td><td>[[input:ansu]]</td>\n  <td style=\"text-align:right;\">\\(v'(x)=\\)</td><td>[[input:ansdv]]</td>\n </tr>\n <tr>\n  <td style=\"text-align:right;\">\\(u'(x)=\\)</td><td>[[input:ansdu]]</td>\n  <td style=\"text-align:right;\">\\(v(x)=\\)</td><td>[[input:ansv]]</td>\n </tr>\n <tr>\n  <td colspan=\"4\">[[validation:combo]]</td>\n </tr>\n <tr>\n  <td colspan=\"4\">[[feedback:select]]</td>\n </tr>\n</table>\n[[ if test=\"is(length(selectionTypes) > 1) and \n            is(lastn(selectionTypes,2)[1] < 0) and\n            is(lastn(selectionTypes,2)[2] < 0)\"]]\n<p><b>Have you noticed that if you select the {@exp(_c*x)@} term as {@u@} the order of the expression rises? Surely it would be simpler to integrate if that order went down instead?</b></p>\n[[/ if]]",
+      "inputs": [
+        {
+          "name": "ansu",
+          "tans": "ta_u",
+          "type": "algebraic",
+          "input-width": 10,
+          "forbid-words": "[[basic-calculus]]",
+          "validation-box": "combo",
+          "require-same-type": true,
+          "require-lowest-terms": true,
+          "fix-spaces": true,
+          "fix-stars": true,
+          "syntax-hint-type": 0
+        },
+        {
+          "name": "ansv",
+          "tans": "ta_v",
+          "type": "algebraic",
+          "input-width": 10,
+          "forbid-words": "[[basic-calculus]]",
+          "validation-box": "combo",
+          "require-same-type": true,
+          "require-lowest-terms": true,
+          "fix-spaces": true,
+          "fix-stars": true,
+          "syntax-hint-type": 0
+        },
+        {
+          "name": "ansdv",
+          "tans": "ta_dv",
+          "type": "algebraic",
+          "input-width": 10,
+          "forbid-words": "[[basic-calculus]]",
+          "validation-box": "combo",
+          "require-same-type": true,
+          "require-lowest-terms": true,
+          "fix-spaces": true,
+          "fix-stars": true,
+          "syntax-hint-type": 0
+        },
+        {
+          "name": "ansdu",
+          "tans": "ta_du",
+          "type": "algebraic",
+          "input-width": 10,
+          "forbid-words": "[[basic-calculus]]",
+          "validation-box": "combo",
+          "require-same-type": true,
+          "require-lowest-terms": true,
+          "fix-spaces": true,
+          "fix-stars": true,
+          "syntax-hint-type": 0
+        }
+      ],
+      "vboxes": [
+        {
+          "name": "combo",
+          "type": "custom",
+          "text": "<p>Your answer was interpreted as:</p>\n<table style=\"margin-left:auto;margin-right:auto;\">\n\t<tr>\n    \t<td style=\"text-align:right;\">\\(u(x)=\\)</td><td style=\"padding-right:2em;\">{@ansu@}</td>\n        <td style=\"text-align:right;\">\\(v'(x)=\\)</td><td>{@ansdv@}</td>\n    </tr>\n    <tr>\n    \t<td style=\"text-align:right;\">\\(u'(x)=\\)</td><td style=\"padding-right:2em;\">{@ansdu@}</td>\n        <td style=\"text-align:right;\">\\(v(x)=\\)</td><td>{@ansv@}</td>\n    </tr>\n</table>\n[[ if test=\"not (%_valid_ansu and %_valid_ansdv and %_valid_ansdu and %_valid_ansv)\"]]\n<p>Please fill in all four correctly.</p>\n[[ else ]]\n<p>Now that all four have been given use the \"check\"-button to check them and if they fill the conditions we will move onwards.</p>\n[[/if]]\n[[list_errors:ansu,ansdu,ansv,ansdv]]\n[[list_variables:ansu,ansdu,ansv,ansdv]]"
+        }
+      ],
+      "prts": [
+        {
+          "name": "select",
+          "feedbackvariables": "/* We need to ensure more active simplification here. */\n_dir:coeff(ansu,exp(_c*x)),simp;",
+          "scoremode": "bestn",
+          "scoremodeparameters": "2",
+          "value": 1,
+          "root": "do the parts match",
+          "nodes": [
+            {
+              "name": "do the parts match",
+              "test": "AlgEquiv",
+              "sans": "ansu*ansdv",
+              "tans": "toIntegrate",
+              "options": "",
+              "quiet": true,
+              "true": {
+                "feedback": "",
+                "variables": "",
+                "next": "du matches u",
+                "scoremode": "=",
+                "score": "0",
+                "penaltymode": "=",
+                "penalty": "",
+                "tests": []
+              },
+              "false": {
+                "feedback": "<p>Your \\(u(x)v'(x)\\) is not equal to the required \\({@toIntegrate@}\\).</p>",
+                "variables": "",
+                "scoremode": "=",
+                "score": "0",
+                "penaltymode": "=",
+                "penalty": "",
+                "tests": [
+                  {
+                    "name": "Not matching",
+                    "condition": "true",
+                    "inputs": {
+                      "ansu": "x",
+                      "ansv": "x",
+                      "ansdv": "x",
+                      "ansdu": "x"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "name": "du matches u",
+              "test": "AlgEquiv",
+              "sans": "ansdu",
+              "tans": "diff(ansu, x)",
+              "options": "",
+              "quiet": true,
+              "true": {
+                "feedback": "",
+                "variables": "",
+                "next": "v matches dv",
+                "scoremode": "+",
+                "score": "",
+                "penaltymode": "+",
+                "penalty": "",
+                "tests": []
+              },
+              "false": {
+                "feedback": "<p>\\(u'(x)\\) does not seem to be the derivate of \\(u(x)\\).</p>",
+                "variables": "",
+                "scoremode": "+",
+                "score": "",
+                "penaltymode": "=",
+                "penalty": "",
+                "tests": [
+                  {
+                    "name": "du is wrong",
+                    "condition": "true",
+                    "inputs": {
+                      "ansu": "ta_u",
+                      "ansv": "ta_v",
+                      "ansdv": "ta_dv",
+                      "ansdu": "integrate(ta_u,x)+1"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "name": "v matches dv",
+              "test": "AlgEquiv",
+              "sans": "ansdv",
+              "tans": "diff(ansv, x)",
+              "options": "",
+              "quiet": true,
+              "true": {
+                "feedback": "",
+                "variables": "",
+                "next": "which direction",
+                "scoremode": "+",
+                "score": "",
+                "penaltymode": "+",
+                "penalty": "",
+                "tests": []
+              },
+              "false": {
+                "feedback": "<p>\\(v'(x)\\) does not seem to be the derivate of \\(v(x)\\).</p>",
+                "variables": "",
+                "scoremode": "+",
+                "score": "",
+                "penaltymode": "=",
+                "penalty": "",
+                "tests": [
+                  {
+                    "name": "v not matching",
+                    "condition": "true",
+                    "inputs": {
+                      "ansu": "ta_u",
+                      "ansv": "ta_v+x",
+                      "ansdv": "ta_dv",
+                      "ansdu": "ta_du"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "name": "which direction",
+              "test": "AlgEquiv",
+              "sans": "_dir",
+              "tans": "0",
+              "options": "",
+              "quiet": true,
+              "true": {
+                "feedback": "",
+                "variables": "/* Remember the values */\nus:append(us,[ansu]);\nvs:append(vs,[ansv]);\ndus:append(dus,[ansdu]);\ndvs:append(dvs,[ansdv]);\n/* This is the correct direction\n   lets signal that with 1. */\nselectionTypes:append(selectionTypes,[1]);",
+                "next": "$SCENE:decide",
+                "scoremode": "=",
+                "score": "1",
+                "penaltymode": "=",
+                "penalty": "0",
+                "tests": [
+                  {
+                    "name": "Correct direction",
+                    "condition": "true",
+                    "inputs": {
+                      "ansu": "ta_u",
+                      "ansv": "ta_v",
+                      "ansdv": "ta_dv",
+                      "ansdu": "ta_du"
+                    }
+                  }
+                ]
+              },
+              "false": {
+                "feedback": "",
+                "variables": "/* Remember the values */\nus:append(us,[ansu]);\nvs:append(vs,[ansv]);\ndus:append(dus,[ansdu]);\ndvs:append(dvs,[ansdv]);\n/* This is the wrong direction\n   lets signal that with -1. */\nselectionTypes:append(selectionTypes,[-1]);",
+                "next": "$SCENE:decide",
+                "scoremode": "=",
+                "score": "0.5",
+                "penaltymode": "=",
+                "penalty": "0",
+                "tests": [
+                  {
+                    "name": "Wrong direction",
+                    "condition": "not is(coeff(toIntegrate,exp(_c*x))=0)",
+                    "inputs": {
+                      "ansu": "wta_u",
+                      "ansv": "wta_v",
+                      "ansdv": "wta_dv",
+                      "ansdu": "wta_du"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "end",
+      "description": "The end of the question. Lets look into what happened.",
+      "scenevariables": "",
+      "scenetext": "<p>Congratulations, you integrated it.</p>\n<p>\\[{@'integrate(_a*x^_b*exp(_c*x), x)@} = {@expand(integrate(_a*x^_b*exp(_c*x), x))@}+C\\]</p>",
+      "inputs": [],
+      "vboxes": [],
+      "prts": []
+    }
+  ],
+  "entryscenename": "intro",
+  "options": {
+    "assumepositive": false,
+    "assumereal": false,
+    "complexno": "i",
+    "multiplicationsign": "dot",
+    "sqrtsign": true,
+    "inversetrig": "cos-1",
+    "matrixparens": "[",
+    "questionsimplify": true
+  },
+  "meta": {
+    "statevariablenumbers": {
+      "us": 6,
+      "vs": 7,
+      "dus": 8,
+      "dvs": 9,
+      "selectionTypes": 10
+    }
+  },
+  "variants": {
+    "_set": "B",
+    "A": [],
+    "B": [
+      3,
+      4,
+      14,
+      22,
+      25,
+      52,
+      59,
+      86
+    ],
+    "C": [
+      2,
+      11,
+      18,
+      24,
+      31,
+      32,
+      37,
+      65
+    ]
+  }
+}
