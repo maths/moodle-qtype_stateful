@@ -222,6 +222,9 @@ interface stateful_input_validation_source extends stateful_input_cas_value_gene
     public function get_functions(): array;
 
     // A list of variables in the input to be displayed in the validation box.
+    // This does not need to know if `i` or `e` etc. are actually variables,
+    // a simple list of directly referenced identifiers is enough.
+    // The logic higher up separates the true variables from bound values.
     public function get_variables(): array;
 
     // A list of units in the input to be displayed in the validation box.

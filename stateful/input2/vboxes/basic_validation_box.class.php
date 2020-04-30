@@ -115,7 +115,15 @@ class stateful_basic_validation_box implements stateful_input_validation_box {
         if (count($this->input->get_variables()) === 0) {
             $statement .= ',{}';
         } else {
-            $statement .= ',{stack_disp(\'' . implode(',""),stack_disp(\'', $this->input->get_variables()) . ',"")}';
+            // We need to actually check if the identifiers are
+            // constant or variables and we only show variables.
+            // Variables are not bound its that simple.
+            $log = [];
+            foreach ($this->input->get_variables() as $id) {
+                $log[] = 'if not constantp(' . $id . ') then stack_disp(\'' . $id . ',"") else ""';
+
+            }
+            $statement .= '{' . implode(',', $log) . '}';
         }
         if (count($this->input->get_units()) === 0) {
             $statement .= ',{}';
@@ -291,6 +299,10 @@ class stateful_validation_castext_processor implements castext2_processor {
                 } 
                 sort($variables);
                 $variables = array_unique($variables);
+                $i = array_search('', $variables);
+                if ($i !== false) {
+                    unset($variables[$i]);
+                }
                 $r = '<p>' . stateful_string('variables_in_input') . ' \(' . implode(',\: ', $variables) . '\)</p>';
                 return $r;
             }

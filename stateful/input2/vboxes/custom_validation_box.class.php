@@ -102,7 +102,15 @@ class stateful_custom_validation_box implements stateful_input_validation_box {
             if (count($input->get_variables()) === 0) {
                 $extras[] = '{}';
             } else {
-                $extras[] = '{stack_disp(\'' . implode(',""),stack_disp(\'', $input->get_variables()) . ',"")}';
+                // We need to actually check if the identifiers are
+                // constant or variables and we only show variables.
+                // Variables are not bound its that simple.
+                $log = [];
+                foreach ($input->get_variables() as $id) {
+                    $log[] = 'if not constantp(' . $id . ') then stack_disp(\'' . $id . ',"") else ""';
+
+                }
+                $extras[] = '{' . implode(',', $log) . '}';
             }
             if (count($input->get_units()) === 0) {
                 $extras[] = '{}';
