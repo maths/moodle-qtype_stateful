@@ -123,7 +123,7 @@ class stateful_basic_validation_box implements stateful_input_validation_box {
                 $log[] = 'if not constantp(' . $id . ') then stack_disp(\'' . $id . ',"") else ""';
 
             }
-            $statement .= '{' . implode(',', $log) . '}';
+            $statement .= ',{' . implode(',', $log) . '}';
         }
         if (count($this->input->get_units()) === 0) {
             $statement .= ',{}';
