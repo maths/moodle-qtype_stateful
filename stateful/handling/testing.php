@@ -309,7 +309,7 @@ class stateful_handling_testing {
         foreach ($tests as $tc => $testcase) {
 
             // Check if the input vas valid.
-            if (!$ics[$tc]->all_valid_and_validated_or_blank()) {
+            if ($testcase['inputs'] === 'inactive' || !$ics[$tc]->all_valid_and_validated_or_blank()) {
                 continue;
             }
             $somethingtoeval = true;
