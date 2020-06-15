@@ -67,8 +67,8 @@ class stateful_handling_moodle_formdata {
         }
 
 
-        foreach (['id', 'category', 'idnumber', 'version', 
-                  'stamp', 'parent', 'name', 'pointvalue', 
+        foreach (['id', 'category', 'idnumber', 'version',
+                  'stamp', 'parent', 'name', 'defaultmark',
                   'questiontext', 'generalfeedback'] as $key) {
             if (isset($from->$key)) {
                 $t[$key] = $from->$key;
