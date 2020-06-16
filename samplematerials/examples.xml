@@ -1,6 +1,642 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <quiz>
-<!-- question: 833  -->
+<!-- question: 869  -->
+  <question type="stateful">
+    <name>
+      <text>EXAMPLE: Area between curve and axis</text>
+    </name>
+    <questiontext format="html">
+      <text>Simple question reacting to specific errors with more than just feedback.
+
+The idea is to find out the surface area between a polynomial and the x-axis colored in a picture. The expected error is that the student does not note the sign change of the polynomial and forget to take it into account. i.e. we want them to evaluate \(\int_a^b{abs(p(x)) dx}\) instead of \(\int_a^b{p(x) dx}\)</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.0000000</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+<stateful statefulversion="2020040800" stackversion="2020052800" entryscene="question" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.0000000" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;B&quot;,&quot;A&quot;:[36,41,61],&quot;B&quot;:[14,45,47],&quot;C&quot;:[]}">
+  <questionvariables>
+<text><![CDATA[/* These define the range of interest. */
+_a: -4 + rand([-1,1]);
+_b: 4 + rand([-1,1]);
+
+/* To ensure sufficient complexity we use a third degree polynom, to make
+   things simpler we pick atleast one integer root that is easy to guess
+   when one sees the plot. For variations sake we may have a double root.
+*/
+/* The easy to guess one. i.e. an integer. */
+_theeasyroot: _a + 1 + rand(_b-_a-2);
+/* Set of others. */
+_candidates: [];
+_i: _a+1;
+while _i < _b-1 do (
+ if abs(_i-_theeasyroot) > 1 then (
+  /* Some limits, lets pick only 1/3 and 1/2 multiples. */
+  if integerp(ev(_i*3, simp)) or integerp(ev(_i*2, simp)) then (
+   _candidates: append(_candidates, [_i])
+  )
+ ),
+ _i: _i + 1/6
+);
+_otherroot: rand(_candidates);
+_thirdroot: _otherroot;
+/* We either use the other as a double root or limit the candidate set down. */
+if rand(50) > 10 then (
+ _candidates: sublist(_candidates, lambda([x],is(abs(_otherroot-x)>1))),
+ if length(_candidates) > 0 then _thirdroot: rand(_candidates)
+);
+_poly: expand((x-_theeasyroot)*(x-_otherroot)*(x-_thirdroot));
+/* Maybe flip the sign. */
+if rand([true,false]) then _poly: expand(-_poly);
+
+/* Some easy refenerces for future bits of code. */
+_roots: sort([_theeasyroot,_otherroot,_thirdroot]);
+_double: is(_otherroot=_thirdroot);
+
+/* As this is now a third degree polynom we want to keep the scale down and
+   shift the range ends closer to the roots. */
+if abs(_a-first(_roots)) > 1.5 then (
+ _a: floor(first(_roots)-0.5)
+);
+if abs(_b-last(_roots)) > 1.5 then (
+ _b: ceiling(last(_roots)+0.5)
+);
+
+/* Now we are still somewhat interested on the scale so lets find out 
+   the maximal values on that range. */
+_maximal: [ev(_poly, x=_a, float, numer), ev(_poly, x=_b, float, numer)];
+for _dz in solve(diff(_poly, x)=0, x) do (
+ _maximal: append(_maximal, [ev(_poly, _dz, float, numer)])
+);
+_maximal: [float(lmin(_maximal)), float(lmax(_maximal))];
+/* Might want to tone it down a bit. */
+while lmax(map(abs,_maximal)) > 15 do (
+ _maximal: _maximal/2,
+ _poly: expand(_poly/2)
+);
+
+/******************************************************/
+/* Then the actual solution bit */
+_int: int(_poly,x)+c;
+_theobviouserror: ev(_int,x=_b) - ev(_int,x=_a);
+/* Note that Maxima does not by default integrate the `abs(_poly)` so 
+   we will do it in parts by hand. No need to note the double root.
+   
+   One could also evaluate this: 
+    int(p(x)+bignumber,x,a,b)-(b-a)*bignumber
+   but we need those parts to generate the set of sign-errors.
+ */
+_parts: [];
+_ends: append([_a],_roots, [_b]);
+for _i in [1,2,3,4] do (
+ _parts: append(_parts,[abs(ev(_int,x=_ends[_i]) - ev(_int,x=_ends[_i+1]))])
+);
+_theanswer: apply("+",_parts);
+/* Now the bit that may seem odd is the generation of all the answers 
+   where the signs of the parts have been somehow flipped. */
+_singflips: {(-_theanswer)};
+for _perm in permutations(_parts) do (
+ /* Including the prefix sign we have 2^4 combinations of additions and 
+    substractions. We are not bothering with that we just flip some
+    signs and use the permutations to cover cases. */
+ for _i in [1,2,3] do (
+   _perm[_i]: -_perm[_i],
+   _signflips: union(_singflips, {apply("+", _perm)})
+ )
+);
+_signflips: setdifference(_signflips, {_theanswer, _theobviouserror});
+]]></text>
+
+  </questionvariables>
+  <questionnote>
+<text>{#_poly#}</text>
+
+  </questionnote>
+  <variable name="signError" type="Boolean" initialvalue="false" number="1">
+    <description>
+<text>If the student gave answer with one of the wrong areas. Used to block repetition of the corresponding error state.</text>
+
+    </description>
+  </variable>
+  <variable name="otherError" type="Boolean" initialvalue="false" number="2">
+    <description>
+<text>If the answer given does not fit any of the signErrors we take a side step to do the integration if it has been done we do nto want to repeat it.</text>
+
+    </description>
+  </variable>
+  <variable name="thatError" type="Boolean" initialvalue="false" number="3">
+    <description>
+<text>The obvious error.</text>
+
+    </description>
+  </variable>
+  <scene name="question">
+    <description>
+<text>The question itself.</text>
+
+    </description>
+    <scenevariables>
+<text></text>
+
+    </scenevariables>
+    <scenetext format="html">
+      <text><![CDATA[<p>
+[[if test="is((thatError or otherError or signError)=true)"]]
+<b>Now lets try this again.</b>
+[[/if]]
+Find out the area shaded in the plot below, between the polynomial \(p(x)={@_poly@}\) and the \(x\)-axis when \(x \in [{#_a#},{#_b#}]\). Provide an exact value as the answer.</p>
+
+<br/>
+<center>
+[[jsxgraph width="35em" height="20em"]]
+var board = JXG.JSXGraph.initBoard(divid, {boundingbox:[{#_a-1#},{#ceiling(second(_maximal))+1#},{#_b+1#},{#floor(first(_maximal))-1#}], axis:true, showNavigation:false});
+var f = board.jc.snippet("{#_poly#}", true, 'x', true);
+f = board.create('functiongraph', [f], {strokewidth:2});
+
+/* The range end lines. */
+var a1 = board.create('point',[{#_a#},1], {fixed:true,visible:false});
+var a2 = board.create('point',[{#_a#},-1], {fixed:true,visible:false});
+board.create('line',[a1,a2],{strokeWidth:2,strokeColor:'red'});
+var b1 = board.create('point',[{#_b#},1], {fixed:true,visible:false});
+var b2 = board.create('point',[{#_b#},-1], {fixed:true,visible:false});
+board.create('line',[b1,b2],{strokeWidth:2,strokeColor:'red'});
+
+/* That shade */
+var top = board.create('polygon',[[{#_a#},{#ceiling(second(_maximal))+1#}],[{#_b#},{#ceiling(second(_maximal))+1#}],[{#_b#},0],[{#_a#},0]], {fixed:true,borders:{visible:false},vertices: {visible:false},visible:false});
+var bottom = board.create('polygon',[[{#_a#},{#ceiling(first(_maximal))-1#}],[{#_b#},{#ceiling(first(_maximal))-1#}],[{#_b#},0],[{#_a#},0]], {fixed:true,borders:{visible:false},vertices: {visible:false},visible:false});
+var lower = board.create('inequality', [f],{visible:false});
+var upper = board.create('inequality', [f],{inverse:true,visible:false});
+
+
+var fill1 = board.create('curve', [[], []], {strokeWidth: 0.1, fillColor: 'yellow', fillOpacity: 0.3});
+fill1.updateDataArray = function() {
+  var a = JXG.Math.Clip.intersection(top, lower, this.board);
+  this.dataX = a[0];
+  this.dataY = a[1];
+};
+board.update();
+var fill2 = board.create('curve', [[], []], {strokeWidth: 0.1, fillColor: 'yellow', fillOpacity: 0.3});
+fill2.updateDataArray = function() {
+  var a = JXG.Math.Clip.intersection(bottom, upper, this.board);
+  this.dataX = a[0];
+  this.dataY = a[1];
+};
+board.update();
+[[/jsxgraph]]
+</center>
+<br/>                           
+[[if test='is(otherError=true)']]
+<p><b>Based on earlier attempts</b>, the integral-function of that polynomial is:</p>
+\[ {@int(p(x),x)=int(_poly,x)+c@} \]
+[[/if]]
+[[if test='is(signError=true)']]
+<p><b>Based on earlier attempts</b>, the sign of the polynomial changes at [[if test="is(_double=false)"]]
+\(x={@_roots[1]@}\), \(x={@_roots[2]@}\), and \(x={@_roots[3]@}\).
+[[else]]\(x={@_firstroot@}\)[[/if]].
+[[/if]]</p>
+  
+<p>The area is: [[input:ans1]]</p>
+<div>[[validation:ans1]]</div>
+<div>[[feedback:PRT1]]</div>]]></text>
+    </scenetext>
+    <input name="ans1" type="algebraic" guidance-label="&quot;The area as defined.&quot;" forbid-words="&quot;[[basic-calculus]]&quot;" forbid-lists="true" forbid-sets="true" fix-stars="true" fix-spaces="true" tans="&quot;_theanswer&quot;"/>
+    <prt name="PRT1" value="1.0000000" firstnodename="Correct" scoremode="best" scoremodeparameters="">
+      <feedbackvariables>
+<text>_points: 1-(if otherError then 0.1 else 0.0)-(if signError then 0.1 else 0.0);</text>
+
+      </feedbackvariables>
+      <node name="Correct" test="AlgEquiv" sans="ans1" tans="_theanswer" options="" quiet="1">
+        <true scoremode="=" score="_points" penaltymode="=" penalty="" nextnode="$SCENE:end">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>
+<text></text>
+
+        </feedback>
+          <tests>
+<text><![CDATA[[{"name":"The correct answer","condition":"true","inputs":{"ans1":"_theanswer"}}]]]></text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="" penaltymode="=" penalty="" nextnode="That error">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>\n<text></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </false>
+      </node>
+      <node name="That error" test="AlgEquiv" sans="ans1" tans="_theobviouserror" options="" quiet="1">
+        <true scoremode="=" score="" penaltymode="=" penalty="" nextnode="Did we already split?">
+          <variables>
+<text>thatError:true;</text>
+
+        </variables>
+          <feedback>
+<text></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="" penaltymode="=" penalty="" nextnode="Other errors">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>\n<text></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </false>
+      </node>
+      <node name="Did we already split?" test="AlgEquiv" sans="signError" tans="true" options="" quiet="1">
+        <true scoremode="=" score="" penaltymode="=" penalty="" nextnode="">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>
+<text><![CDATA[<p>You seem to still have issues with the signs of the areas, check the points where the signs change.</p>
+[[if test="is(ans1<_theanswer)"]]
+<p><i>Some part of the area is missing.</i></p>
+[[/if]]
+[[if test="is(ans1>_theanswer)"]]
+<p><i>There is some extra area there.</i></p>
+[[/if]]]]></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="" penaltymode="=" penalty="" nextnode="$SCENE:split">
+          <variables>
+<text>if is(ev(ans1-_theobviouserror=0,simp)) then (
+ thatError: true
+);</text>
+
+        </variables>
+          <feedback>\n<text></text>
+
+        </feedback>
+          <tests>
+<text><![CDATA[[{"name":"The obvious one","condition":"is(signError=false)","inputs":{"ans1":"_theobviouserror"}},{"name":"Other sign failure","condition":"is(signError=false)","inputs":{"ans1":"first(listify(_signflips)),eval,simp"}}]]]></text>
+
+        </tests>
+        </false>
+      </node>
+      <node name="Other errors" test="AlgEquiv" sans="ev(elementp(ans1,_signflips),eval,simp)" tans="true" options="" quiet="1">
+        <true scoremode="=" score="" penaltymode="=" penalty="" nextnode="Did we already split?">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>
+<text></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="" penaltymode="=" penalty="" nextnode="Did we already check the integral?">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>\n<text></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </false>
+      </node>
+      <node name="Did we already check the integral?" test="AlgEquiv" sans="otherError" tans="true" options="" quiet="1">
+        <true scoremode="=" score="" penaltymode="=" penalty="" nextnode="">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>
+<text><![CDATA[<p>That answer is still wrong, check the integral and the points where the sign changes.</p>]]></text>
+
+        </feedback>
+          <tests>
+<text><![CDATA[[{"name":"Somethign else again","condition":"is(otherError=true)","inputs":{"ans1":"_theanswer*100"}}]]]></text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="" penaltymode="=" penalty="" nextnode="$SCENE:checkIntegration">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>\n<text></text>
+
+        </feedback>
+          <tests>
+<text><![CDATA[[{"name":"Something completely different","condition":"is(otherError=false)","inputs":{"ans1":"_theanswer*100"}}]]]></text>
+
+        </tests>
+        </false>
+      </node>
+    </prt>
+  </scene>
+  <scene name="end">
+    <description>
+<text>The end</text>
+
+    </description>
+    <scenevariables>
+<text></text>
+
+    </scenevariables>
+    <scenetext format="html">
+      <text><![CDATA[<p><b>Congratulations, this question is now over.</b></p>
+[[if test="is(thatError=true)"]]
+<p>You should now know the difference of {@int(p(x),x,a,b)@} and {@int(abs(p(x)),x,a,b)@}.</p>
+[[/if]]
+[[if test="not (thatError or otherError or signError)"]]
+<p>Impressive, apparently you already knew about signs changing.</p>
+[[/if]]]]></text>
+    </scenetext>
+  </scene>
+  <scene name="checkIntegration">
+    <description>
+<text>The answer was odd so we better ask for the integral-function to check if things are correct.</text>
+
+    </description>
+    <scenevariables>
+<text></text>
+
+    </scenevariables>
+    <scenetext format="html">
+      <text><![CDATA[<p>The answer you gave did not quite make sense so lets check if you took the correct first step.</p>
+<p>The primary point of this question is to integrate the polynomial and use the indefinite integral generated to find out the area shaded in that plot. <i>Note that in this case the indefinite integral does not directly give the answer you need to do something more.</i></p>
+
+<p>Now give the indefinite integral:</p>
+
+<p>\({@int(p(x),x)@}={@'int(_poly,x)@}=\)[[input:ans2]]</p>
+<div>[[validation:ans2]]</div>
+<div>[[feedback:PRT2]]</div>]]></text>
+    </scenetext>
+    <input name="ans2" type="algebraic" forbid-words="&quot;[[basic-calculus]]&quot;" guidance-label="&quot;The indefineite integral of p(x)&quot;" forbid-lists="true" forbid-sets="true" input-width="20" tans="&quot;_int&quot;"/>
+    <prt name="PRT2" value="1.0000000" firstnodename="Is it it" scoremode="no score" scoremodeparameters="">
+      <feedbackvariables>
+<text></text>
+
+      </feedbackvariables>
+      <node name="Is it it" test="Int" sans="ans2" tans="_int" options="x" quiet="0">
+        <true scoremode="=" score="1" penaltymode="=" penalty="" nextnode="$SCENE:question">
+          <variables>
+<text>/* Remember that we did this.*/
+otherError:true;</text>
+
+        </variables>
+          <feedback>
+<text></text>
+
+        </feedback>
+          <tests>
+<text><![CDATA[[{"name":"Ok","condition":"true","inputs":{"ans2":"_int"}}]]]></text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="0" penaltymode="=" penalty="" nextnode="">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>\n<text></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </false>
+      </node>
+    </prt>
+  </scene>
+  <scene name="split">
+    <description>
+<text>So we evaluate that absolute value, and to do that it  is important to know where the signs change.</text>
+
+    </description>
+    <scenevariables>
+<text></text>
+
+    </scenevariables>
+    <scenetext format="html">
+      <text><![CDATA[[[if test='is(thaterror=true)']]
+<p>It seems like you have evaluated {@int(p(x),x,_a,_b)@}, unfortunately the polynomila changes sign between the ends of that range.</p>
+[[/if]]
+<p>Just integrating {@int(p(x),x,_a,_b)@} is a problem as it represents <i>signed area</i>. In this question you are expected to evaluate both the positive and negative areas and sum the absolute values. Basically, evaluate {@int(abs(p(x)),x,_a,_b)@} instead.</p>
+<p>The simplest way of doing that is to evaluate the definite integral in parts, i.e. splitting it at the points where the sign of {@p(x)@} changes.</p>
+<br/>
+<center>
+[[jsxgraph width="35em" height="20em"]]
+var board = JXG.JSXGraph.initBoard(divid, {boundingbox:[{#_a-1#},{#ceiling(second(_maximal))+1#},{#_b+1#},{#floor(first(_maximal))-1#}], axis:true, showNavigation:false});
+var f = board.jc.snippet("{#_poly#}", true, 'x', true);
+f = board.create('functiongraph', [f], {strokewidth:2});
+
+/* The range end lines. */
+var a1 = board.create('point',[{#_a#},1], {fixed:true,visible:false});
+var a2 = board.create('point',[{#_a#},-1], {fixed:true,visible:false});
+board.create('line',[a1,a2],{strokeWidth:2,strokeColor:'red'});
+var b1 = board.create('point',[{#_b#},1], {fixed:true,visible:false});
+var b2 = board.create('point',[{#_b#},-1], {fixed:true,visible:false});
+board.create('line',[b1,b2],{strokeWidth:2,strokeColor:'red'});
+
+/* That shade */
+var top = board.create('polygon',[[{#_a#},{#ceiling(second(_maximal))+1#}],[{#_b#},{#ceiling(second(_maximal))+1#}],[{#_b#},0],[{#_a#},0]], {fixed:true,borders:{visible:false},vertices: {visible:false},visible:false});
+var bottom = board.create('polygon',[[{#_a#},{#ceiling(first(_maximal))-1#}],[{#_b#},{#ceiling(first(_maximal))-1#}],[{#_b#},0],[{#_a#},0]], {fixed:true,borders:{visible:false},vertices: {visible:false},visible:false});
+var lower = board.create('inequality', [f],{visible:false});
+var upper = board.create('inequality', [f],{inverse:true,visible:false});
+
+var fill1 = board.create('curve', [[], []], {strokeWidth: 0, fillColor: 'green', fillOpacity: 0.3});
+fill1.updateDataArray = function() {
+  var a = JXG.Math.Clip.intersection(top, lower, this.board);
+  this.dataX = a[0];
+  this.dataY = a[1];
+};
+board.update();
+var fill2 = board.create('curve', [[], []], {strokeWidth: 0, fillColor: 'red', fillOpacity: 0.3});
+fill2.updateDataArray = function() {
+  var a = JXG.Math.Clip.intersection(bottom, upper, this.board);
+  this.dataX = a[0];
+  this.dataY = a[1];
+};
+board.update();
+[[/jsxgraph]]
+</center>
+<br/>
+<p>To simplify this task, note that \(p(x)={@_poly@}={@ev(expand(_poly/(x-_thirdroot)),simp,eval,ratexpand)*(x-_thirdroot),simp=false@}\) and you can guess one of the remaining roots based on the plot.</p>
+<p>Give the points where the sign changes, as many as needed:</p>
+  <table>
+  <tr><td>\(x\in\)</td><td>[[input:ans3]]</td></tr>
+  </table>
+<div>[[validation:ans3]]</div>
+<div>[[feedback:PRT3]]</div>]]></text>
+    </scenetext>
+    <input name="ans3" type="matrix" guidance-label="&quot;The values of x wher the sign changes.&quot;" forbid-words="&quot;[[basic:algebra]]&quot;" forbid-lists="true" forbid-sets="true" matrix-min-rows="&quot;1&quot;" matrix-init-rows="&quot;1&quot;" matrix-max-rows="&quot;1&quot;" matrix-min-columns="&quot;1&quot;" matrix-max-columns="&quot;3&quot;" matrix-init-columns="&quot;1&quot;" matrix-wrap-left="&quot;{&quot;" matrix-wrap-right="&quot;}&quot;" matrix-wrap-top="&quot;&quot;" input-width="5" tans="&quot;matrix([_firstroot])&quot;"/>
+    <prt name="PRT3" value="1.0000000" firstnodename="Is this the double root case" scoremode="no score" scoremodeparameters="">
+      <feedbackvariables>
+<text><![CDATA[_unpack:first(ans3);
+/* @assume _unpack = "List"; */
+_unpack:sort(_unpack);]]></text>
+
+      </feedbackvariables>
+      <node name="Is this the double root case" test="AlgEquiv" sans="_double" tans="true" options="" quiet="1">
+        <true scoremode="=" score="1" penaltymode="=" penalty="" nextnode="Is the only root correct">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>
+<text></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="0" penaltymode="=" penalty="" nextnode="All matching">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>\n<text></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </false>
+      </node>
+      <node name="Is the only root correct" test="AlgEquiv" sans="_unpack" tans="[_theeasyroot]" options="" quiet="1">
+        <true scoremode="=" score="1" penaltymode="=" penalty="" nextnode="$SCENE:question">
+          <variables>
+<text>/* We do not want to repeat this. */
+signError:true;</text>
+
+        </variables>
+          <feedback>
+<text></text>
+
+        </feedback>
+          <tests>
+<text><![CDATA[[{"name":"The double-root case","condition":"is(_double=true)","inputs":{"ans3":"matrix([_theeasyroot])"}}]]]></text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="0" penaltymode="=" penalty="" nextnode="Check for extras">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>\n<text></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </false>
+      </node>
+      <node name="All matching" test="AlgEquiv" sans="_unpack" tans="_roots" options="" quiet="1">
+        <true scoremode="=" score="1" penaltymode="=" penalty="" nextnode="$SCENE:question">
+          <variables>
+<text>/* We do not want to repeat this. */
+signError:true;</text>
+
+        </variables>
+          <feedback>
+<text></text>
+
+        </feedback>
+          <tests>
+<text><![CDATA[[{"name":"All roots","condition":"is(_double=false)","inputs":{"ans3":"matrix([_theeasyroot,_otherroot,_thirdroot])"}}]]]></text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="0" penaltymode="=" penalty="" nextnode="">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>\n<text><![CDATA[<p>Something is wrong.</p>
+[[if test="length(_unpack) < 3"]]
+<p>Maybe you are missing some?</p>
+[[/if]]]]></text>
+
+        </feedback>
+          <tests>
+<text><![CDATA[[{"name":"Missing one root.","condition":"is(_double=false)","inputs":{"ans3":"matrix([_theeasyroot,_otherroot])"}}]]]></text>
+
+        </tests>
+        </false>
+      </node>
+      <node name="Check for extras" test="AlgEquiv" sans="length(_unpack)" tans="1" options="" quiet="1">
+        <true scoremode="=" score="1" penaltymode="=" penalty="" nextnode="">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>
+<text><![CDATA[<p>That is not the point where the sign changes.</p>]]></text>
+
+        </feedback>
+          <tests>
+<text><![CDATA[[{"name":"Bad root","condition":"is(_double=true)","inputs":{"ans3":"matrix([_otherroot])"}}]]]></text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="0" penaltymode="=" penalty="" nextnode="">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>\n<text><![CDATA[<p>You seem to be providing more points than there actually are.</p>
+[[if test="elementp(_theeasyroot,setify(_unpack))"]]
+<p>The set given does intersect with the correct one though.</p>
+[[/if]]]]></text>
+
+        </feedback>
+          <tests>
+<text><![CDATA[[{"name":"Extra roots","condition":"is(_double=true)","inputs":{"ans3":"matrix([_theeasyroot,_otherroot])"}}]]]></text>
+
+        </tests>
+        </false>
+      </node>
+    </prt>
+  </scene>
+</stateful>  </question>
+
+<!-- question: 862  -->
   <question type="stateful">
     <name>
       <text>EXAMPLE: Partial integration</text>
@@ -20,7 +656,7 @@ Scoring here:
     <penalty>0.3333333</penalty>
     <hidden>0</hidden>
     <idnumber></idnumber>
-<stateful statefulversion="2020040800" stackversion="2020040300" entryscene="intro" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;B&quot;,&quot;A&quot;:[],&quot;B&quot;:[3,4,14,22,25,52,59,86],&quot;C&quot;:[2,11,18,24,31,32,37,65]}">
+<stateful statefulversion="2020040800" stackversion="2020052800" entryscene="intro" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;B&quot;,&quot;A&quot;:[],&quot;B&quot;:[3,4,14,22,25,52,59,86],&quot;C&quot;:[2,11,18,24,31,32,37,65]}">
   <questionvariables>
 <text>/* We adjust the presentation of integrals in the whole question
    with this. Essenttially, it keeps the multiplier within 
@@ -432,7 +1068,7 @@ dvs: reverse(lastn(reverse(dvs), length(dvs) - 1));</text>
 
       </feedbackvariables>
       <node name="Just do it" test="Int" sans="integration" tans="ev(integrate(last(vs)*last(dus),x),simp)" options="x" quiet="0">
-        <true scoremode="=" score="1" penaltymode="=" penalty="" nextnode="$SCENE:end">
+        <true scoremode="=" score="1" penaltymode="=" penalty="0" nextnode="$SCENE:end">
           <variables>
 <text></text>
 
@@ -669,7 +1305,7 @@ selectionTypes:append(selectionTypes,[-1]);</text>
   </scene>
 </stateful>  </question>
 
-<!-- question: 834  -->
+<!-- question: 863  -->
   <question type="stateful">
     <name>
       <text>TECH: Algebraic input options tester</text>
@@ -684,7 +1320,7 @@ selectionTypes:append(selectionTypes,[-1]);</text>
     <penalty>0.3333333</penalty>
     <hidden>0</hidden>
     <idnumber></idnumber>
-<stateful statefulversion="2020040800" stackversion="2020040300" entryscene="A" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;_free&quot;,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
+<stateful statefulversion="2020040800" stackversion="2020051400" entryscene="A" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;_free&quot;,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
   <questionvariables>
 <text></text>
 
@@ -987,7 +1623,7 @@ samples.on('click', function(e) {
   </scene>
 </stateful>  </question>
 
-<!-- question: 835  -->
+<!-- question: 864  -->
   <question type="stateful">
     <name>
       <text>TECH: Answer-tests in Stateful</text>
@@ -1006,7 +1642,7 @@ Note 2, the 'no-units' option of inputs is used as this material contains both u
     <penalty>0.3333333</penalty>
     <hidden>0</hidden>
     <idnumber></idnumber>
-<stateful statefulversion="2020040800" stackversion="2020040300" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:0,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
+<stateful statefulversion="2020040800" stackversion="2020052800" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:0,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
   <questionvariables>
 <text></text>
 
@@ -2400,7 +3036,7 @@ samples.on('click', function(e) {
     </scenetext>
     <input name="anss" type="algebraic" validation-box="&quot;val&quot;" no-units="true" tans="&quot;x+c&quot;"/>
     <input name="anst" type="algebraic" validation-box="&quot;val&quot;" no-units="true" tans="&quot;1&quot;"/>
-    <input name="anso" type="algebraic" validation-box="&quot;val&quot;" no-units="true" tans="&quot;x&quot;"/>
+    <input name="anso" type="algebraic" validation-box="&quot;val&quot;" no-units="true" allow-words="&quot;NOCONST&quot;" tans="&quot;x&quot;"/>
     <input name="back" type="button" input-label="&quot;Back&quot;" guidance-label="&quot;back to the test selection&quot;"/>
     <vbox name="val" type="custom" text="&quot;&lt;p&gt;These parameters would be equivalent to calling &lt;code&gt;ATInt({#anss#},{#anst#},{#anso#})&lt;\/code&gt;&lt;\/p&gt;\n\n[[ if test=\&quot;%_valid_anss and %_valid_anst and %_valid_anso and check_opt(anso)\&quot; ]]\n[[ define tr=\&quot;ATInt(anss,anst,anso)\&quot;\/]]\n&lt;p&gt;The test would\n[[ if test=\&quot;tr[2]\&quot;]]\npass,\n[[else]]\nfail,\n[[\/if]]\n[[ if test='is(tr[3]=\&quot;\&quot;)']]\nthere would be no notes,\n[[else]]\nit would return specific notes &lt;code&gt;{@tr[3]@}&lt;\/code&gt;,\n[[\/if]]\n[[ if test='is(tr[4]=\&quot;\&quot;)']]\nand no feedback.\n[[else]]\nand some feedback to see it press 'Check'.\n[[\/if]]\n&lt;\/p&gt;\n[[\/ if ]]&quot;"/>
     <prt name="back" value="1.0000000" firstnodename="Root node" scoremode="no score" scoremodeparameters="">
@@ -4073,7 +4709,7 @@ ATUnitsStrictAbsolute(sans,tans,tolerance)</code></h3>
   </scene>
 </stateful>  </question>
 
-<!-- question: 836  -->
+<!-- question: 865  -->
   <question type="stateful">
     <name>
       <text>TECH: Default validation-messages for the different input-types</text>
@@ -4088,7 +4724,7 @@ ATUnitsStrictAbsolute(sans,tans,tolerance)</code></h3>
     <penalty>0.3333333</penalty>
     <hidden>0</hidden>
     <idnumber></idnumber>
-<stateful statefulversion="2020040800" stackversion="2020040300" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:0,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
+<stateful statefulversion="2020040800" stackversion="2020051400" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:0,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
   <questionvariables>
 <text></text>
 
@@ -4203,7 +4839,7 @@ ans10;ans11;ans12;</text>
   </scene>
 </stateful>  </question>
 
-<!-- question: 837  -->
+<!-- question: 866  -->
   <question type="stateful">
     <name>
       <text>TECH: MCQ input options tester</text>
@@ -4218,7 +4854,7 @@ ans10;ans11;ans12;</text>
     <penalty>0.3333333</penalty>
     <hidden>0</hidden>
     <idnumber></idnumber>
-<stateful statefulversion="2020040800" stackversion="2020040300" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;_free&quot;,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
+<stateful statefulversion="2020040800" stackversion="2020051400" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;_free&quot;,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
   <questionvariables>
 <text></text>
 
@@ -4369,7 +5005,7 @@ ans10;ans11;ans12;</text>
   </scene>
 </stateful>  </question>
 
-<!-- question: 838  -->
+<!-- question: 867  -->
   <question type="stateful">
     <name>
       <text>TECH: Numerical input options tester</text>
@@ -4384,7 +5020,7 @@ ans10;ans11;ans12;</text>
     <penalty>0.3333333</penalty>
     <hidden>0</hidden>
     <idnumber></idnumber>
-<stateful statefulversion="2020040800" stackversion="2020040300" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;_free&quot;,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
+<stateful statefulversion="2020040800" stackversion="2020051400" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;_free&quot;,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
   <questionvariables>
 <text></text>
 
@@ -4530,7 +5166,7 @@ samples.on('click', function(e) {
   </scene>
 </stateful>  </question>
 
-<!-- question: 839  -->
+<!-- question: 868  -->
   <question type="stateful">
     <name>
       <text>TECH: String input</text>
@@ -4545,7 +5181,7 @@ samples.on('click', function(e) {
     <penalty>0.3333333</penalty>
     <hidden>0</hidden>
     <idnumber></idnumber>
-<stateful statefulversion="2020040800" stackversion="2020040300" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;_free&quot;,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
+<stateful statefulversion="2020040800" stackversion="2020051400" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;_free&quot;,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
   <questionvariables>
 <text></text>
 
