@@ -17,7 +17,7 @@ The idea is to find out the surface area between a polynomial and the x-axis col
     <penalty>0.0000000</penalty>
     <hidden>0</hidden>
     <idnumber></idnumber>
-<stateful statefulversion="2020040800" stackversion="2020052800" entryscene="question" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.0000000" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;B&quot;,&quot;A&quot;:[36,41,61],&quot;B&quot;:[14,45,47],&quot;C&quot;:[]}">
+<stateful statefulversion="2020040800" stackversion="2020052800" entryscene="question" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.0000000" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;A&quot;,&quot;A&quot;:[36,41,61,81,86,94],&quot;B&quot;:[14,45,47,68,74],&quot;C&quot;:[]}">
   <questionvariables>
 <text><![CDATA[/* These define the range of interest. */
 _a: -4 + rand([-1,1]);
@@ -49,12 +49,16 @@ if rand(50) > 10 then (
  if length(_candidates) > 0 then _thirdroot: rand(_candidates)
 );
 _poly: expand((x-_theeasyroot)*(x-_otherroot)*(x-_thirdroot));
-/* Maybe flip the sign. */
-if rand([true,false]) then _poly: expand(-_poly);
 
-/* Some easy refenerces for future bits of code. */
+/* Some easy references for future bits of code. */
 _roots: sort([_theeasyroot,_otherroot,_thirdroot]);
 _double: is(_otherroot=_thirdroot);
+_sing: true;
+/* Maybe flip the sign. */
+if rand([true,false]) then (
+ _poly: expand(-_poly),
+ _sign: false
+);
 
 /* As this is now a third degree polynom we want to keep the scale down and
    shift the range ends closer to the roots. */
@@ -67,16 +71,17 @@ if abs(_b-last(_roots)) > 1.5 then (
 
 /* Now we are still somewhat interested on the scale so lets find out 
    the maximal values on that range. */
-_maximal: [ev(_poly, x=_a, float, numer), ev(_poly, x=_b, float, numer)];
+_maximal: [float(ev(_poly, x=_a, numer)), float(ev(_poly, x=_b, numer))];
 for _dz in solve(diff(_poly, x)=0, x) do (
- _maximal: append(_maximal, [ev(_poly, _dz, float, numer)])
+ _maximal: append(_maximal, [float(ev(_poly, _dz, numer))])
 );
-_maximal: [float(lmin(_maximal)), float(lmax(_maximal))];
+_maximal: [lmin(_maximal), lmax(_maximal)];
 /* Might want to tone it down a bit. */
 while lmax(map(abs,_maximal)) > 15 do (
- _maximal: _maximal/2,
+ _maximal: _maximal*0.5,
  _poly: expand(_poly/2)
 );
+_coeffs: [coeff(_poly,x,3),coeff(_poly,x,2),coeff(_poly,x,1),coeff(_poly,x,0)];
 
 /******************************************************/
 /* Then the actual solution bit */
@@ -108,7 +113,45 @@ for _perm in permutations(_parts) do (
  )
 );
 _signflips: setdifference(_signflips, {_theanswer, _theobviouserror});
-]]></text>
+
+
+
+
+
+/* This a bit of shared logic, that is irrelevant form the point of view of the pedagogical content.*/
+/* This is a graphical function placing line segments between the polynomial and x-axis. */
+_k: abs(_maximal[1]-_maximal[2])/abs(_a-_b);
+_findSegments(b):=(
+    _frags:[],
+    _intersections: append(solve(_k*x+b=0,x),realroots(_k*x+b=_poly),[x=_a,x=_b]),
+    _intersections: sort(unique(map(rhs,_intersections))),
+    _intersections: sublist(_intersections, lambda([x],is(x>=_a-5e-3))),
+    _intersections: sublist(_intersections, lambda([x],is(x<=_b+5e-3))),
+    _intersections: map(lambda([x],[float(floor(x*10000)/10000),float(floor((_k*x+b)*10000)/10000)]),_intersections),
+    while length(_intersections) > 1 do (
+     _A: pop(_intersections),
+     if length(_intersections) > 0 then (
+       _B: first(_intersections),
+       _mid: (_A+_B)/2,
+       if _A[2] <= 1e-3 and _B[2] <=0 and _A[2] >= ev(_poly,x=_A[1]) - 5e-3 then (
+        if _mid[2] > ev(_poly,x=_mid[1]) then 
+          _frags: append(_frags,[[[_A,_B],false]])
+       ),
+       if _A[2] >= -1e-3 and _B[2] >=0 and _A[2] <= ev(_poly,x=_A[1]) + 5e-3 then (
+        if _mid[2] < ev(_poly,x=_mid[1]) then 
+          _frags: append(_frags,[[[_A,_B],true]])
+       )
+     )
+    ),
+	_frags
+);
+findSegments(range):=(
+ 	_frags: [],
+     for b in makelist(x,x,floor(rhs(realroots(_k*_b+x=range[1])[1])),ceiling(rhs(realroots(_k*_a+x=range[2])[1])),0.5) do ( 
+      _frags: append(_frags,_findSegments(b))
+    ),
+	_frags
+);]]></text>
 
   </questionvariables>
   <questionnote>
@@ -151,11 +194,11 @@ Find out the area shaded in the plot below, between the polynomial \(p(x)={@_pol
 
 <br/>
 <center>
-[[jsxgraph width="35em" height="20em"]]
+[[jsxgraph width="35em" height="25em"]]
 var board = JXG.JSXGraph.initBoard(divid, {boundingbox:[{#_a-1#},{#ceiling(second(_maximal))+1#},{#_b+1#},{#floor(first(_maximal))-1#}], axis:true, showNavigation:false});
-var f = board.jc.snippet("{#_poly#}", true, 'x', true);
-f = board.create('functiongraph', [f], {strokewidth:2});
-
+var f = function(x) { return ({#_coeffs[1],numer#})*x*x*x+({#_coeffs[2],numer#})*x*x+({#_coeffs[3],numer#})*x+({#_coeffs[4],numer#});};
+f = board.create('functiongraph', [f, {#_a#}, {#_b#}], {strokewidth:1.5});
+                                           
 /* The range end lines. */
 var a1 = board.create('point',[{#_a#},1], {fixed:true,visible:false});
 var a2 = board.create('point',[{#_a#},-1], {fixed:true,visible:false});
@@ -165,26 +208,13 @@ var b2 = board.create('point',[{#_b#},-1], {fixed:true,visible:false});
 board.create('line',[b1,b2],{strokeWidth:2,strokeColor:'red'});
 
 /* That shade */
-var top = board.create('polygon',[[{#_a#},{#ceiling(second(_maximal))+1#}],[{#_b#},{#ceiling(second(_maximal))+1#}],[{#_b#},0],[{#_a#},0]], {fixed:true,borders:{visible:false},vertices: {visible:false},visible:false});
-var bottom = board.create('polygon',[[{#_a#},{#ceiling(first(_maximal))-1#}],[{#_b#},{#ceiling(first(_maximal))-1#}],[{#_b#},0],[{#_a#},0]], {fixed:true,borders:{visible:false},vertices: {visible:false},visible:false});
-var lower = board.create('inequality', [f],{visible:false});
-var upper = board.create('inequality', [f],{inverse:true,visible:false});
-
-
-var fill1 = board.create('curve', [[], []], {strokeWidth: 0.1, fillColor: 'yellow', fillOpacity: 0.3});
-fill1.updateDataArray = function() {
-  var a = JXG.Math.Clip.intersection(top, lower, this.board);
-  this.dataX = a[0];
-  this.dataY = a[1];
-};
-board.update();
-var fill2 = board.create('curve', [[], []], {strokeWidth: 0.1, fillColor: 'yellow', fillOpacity: 0.3});
-fill2.updateDataArray = function() {
-  var a = JXG.Math.Clip.intersection(bottom, upper, this.board);
-  this.dataX = a[0];
-  this.dataY = a[1];
-};
-board.update();
+[[comment]]One could use inequalities and intersections but those seem 
+to have various issues and one cannot fill those areas with any patterns
+so lets draw some lines we can just ask maxima to do the math.[[/comment]]
+var s={strokeWidth:1, dash:2, straightFirst:false, straightLast:false, strokeWidth:2, color:'gray', fixed:true};
+[[foreach segment="findSegments(_maximal)"]]
+board.create('line',{#segment[1],stackfltfmt="~,4f"#},s);
+[[/foreach]]
 [[/jsxgraph]]
 </center>
 <br/>                           
@@ -470,25 +500,15 @@ var b2 = board.create('point',[{#_b#},-1], {fixed:true,visible:false});
 board.create('line',[b1,b2],{strokeWidth:2,strokeColor:'red'});
 
 /* That shade */
-var top = board.create('polygon',[[{#_a#},{#ceiling(second(_maximal))+1#}],[{#_b#},{#ceiling(second(_maximal))+1#}],[{#_b#},0],[{#_a#},0]], {fixed:true,borders:{visible:false},vertices: {visible:false},visible:false});
-var bottom = board.create('polygon',[[{#_a#},{#ceiling(first(_maximal))-1#}],[{#_b#},{#ceiling(first(_maximal))-1#}],[{#_b#},0],[{#_a#},0]], {fixed:true,borders:{visible:false},vertices: {visible:false},visible:false});
-var lower = board.create('inequality', [f],{visible:false});
-var upper = board.create('inequality', [f],{inverse:true,visible:false});
+[[comment]]One could use inequalities and intersections but those seem 
+to have various issues and one cannot fill those areas with any patterns
+so lets draw some lines we can just ask maxima to do the math.[[/comment]]
+var sp={strokeWidth:1, dash:2, straightFirst:false, straightLast:false, strokeWidth:2, color:'green', fixed:true};
+var sn={strokeWidth:1, dash:2, straightFirst:false, straightLast:false, strokeWidth:2, color:'red', fixed:true};
 
-var fill1 = board.create('curve', [[], []], {strokeWidth: 0, fillColor: 'green', fillOpacity: 0.3});
-fill1.updateDataArray = function() {
-  var a = JXG.Math.Clip.intersection(top, lower, this.board);
-  this.dataX = a[0];
-  this.dataY = a[1];
-};
-board.update();
-var fill2 = board.create('curve', [[], []], {strokeWidth: 0, fillColor: 'red', fillOpacity: 0.3});
-fill2.updateDataArray = function() {
-  var a = JXG.Math.Clip.intersection(bottom, upper, this.board);
-  this.dataX = a[0];
-  this.dataY = a[1];
-};
-board.update();
+[[foreach segment="findSegments(_maximal)"]][[if test="is(segment[2]=true)"]]
+board.create('line',{#segment[1],stackfltfmt="~,4f"#},sp);[[else]]board.create('line',{#segment[1],stackfltfmt="~,4f"#},sn);[[/if]]
+[[/foreach]]
 [[/jsxgraph]]
 </center>
 <br/>
