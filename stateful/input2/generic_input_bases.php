@@ -68,8 +68,9 @@ abstract class stateful_input_base_with_options implements stateful_input_option
     public function render_scripts(string $prefix, bool $readonly = false): array {
         // Most inputs do not need scripts.
 
-        // But most do have ajax validation.
-        if (!$readonly && $this->get_option('validation-box') !== null && $this->get_option('validation-box') !== '') {
+        // But most do have ajax validation. Also for fields that have no
+        // validation-box, as this ties into reveal and other dynamic logic.
+        if (!$readonly) {
             $keys = [];
             foreach ($this->get_expected_data() as $key => $value) {
                 if (strlen($key) < 5 || substr($key, -5) !== '__val') {

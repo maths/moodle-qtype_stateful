@@ -21,7 +21,7 @@
  * @copyright  2020 Aalto University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(['jquery', 'core/event'], function($, coreevent) {
+define(['jquery'], function($) {
 
     var r = {
         /* Essenttially react to the small + and - buttons and

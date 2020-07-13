@@ -29,8 +29,9 @@ define(['jquery', 'core/ajax', 'core/event'], function($, ajax, coreevent) {
 
         timeoutHandles: {}, /* The debounce handles for multiple questions */
 
-        activeFields: {} /* inputs to collect when doing validation calls,
+        activeFields: {}, /* inputs to collect when doing validation calls,
                              note can track multiple questions */
+        listeners: [] /* Other things requiring notifications of changed inputs. */
     };
 
     var r = {
@@ -111,6 +112,13 @@ define(['jquery', 'core/ajax', 'core/event'], function($, ajax, coreevent) {
                             }
                             coreevent.notifyFilterContentUpdated(vbox);
                         });
+
+                        // Let our listeners know that something may have changed.
+                        // Again, but we need to deal with validation message related
+                        // stuff as well.
+                        for (var i = 0; i < StatefulInput2.listeners.length; i++) {
+                            StatefulInput2.listeners[i]();
+                        }
                     }
                 }]);
             };
@@ -118,6 +126,11 @@ define(['jquery', 'core/ajax', 'core/event'], function($, ajax, coreevent) {
             for (var i = 0; i < fields.length; i++) {
                 var field = $('#' + $.escapeSelector(prefix + fields[i]));
                 field.on('input', function() {
+                    // Let our listeners know that something may have changed.
+                    for (var i = 0; i < StatefulInput2.listeners.length; i++) {
+                        StatefulInput2.listeners[i]();
+                    }
+
                     if (StatefulInput2.timeoutHandles[prefix] !== null) {
                         clearTimeout(StatefulInput2.timeoutHandles[prefix]);
                         StatefulInput2.timeoutHandles[prefix] = null;
@@ -125,7 +138,25 @@ define(['jquery', 'core/ajax', 'core/event'], function($, ajax, coreevent) {
                     StatefulInput2.timeoutHandles[prefix] = setTimeout(upload, StatefulInput2.typingDelay);
                 });
 
-                $('input[type="radio"][name="' + $.escapeSelector(prefix + fields[i]) + '"]').on('input', function() {
+                $('input[type=radio][name="' + $.escapeSelector(prefix + fields[i]) + '"]').on('click', function() {
+                    // Let our listeners know that something may have changed.
+                    for (var i = 0; i < StatefulInput2.listeners.length; i++) {
+                        StatefulInput2.listeners[i]();
+                    }
+
+                    if (StatefulInput2.timeoutHandles[prefix] !== null) {
+                        clearTimeout(StatefulInput2.timeoutHandles[prefix]);
+                        StatefulInput2.timeoutHandles[prefix] = null;
+                    }
+                    StatefulInput2.timeoutHandles[prefix] = setTimeout(upload, StatefulInput2.typingDelay);
+                });
+
+                $('select[name="' + $.escapeSelector(prefix + fields[i]) + '"]').on('change', function() {
+                    // Let our listeners know that something may have changed.
+                    for (var i = 0; i < StatefulInput2.listeners.length; i++) {
+                        StatefulInput2.listeners[i]();
+                    }
+
                     if (StatefulInput2.timeoutHandles[prefix] !== null) {
                         clearTimeout(StatefulInput2.timeoutHandles[prefix]);
                         StatefulInput2.timeoutHandles[prefix] = null;
@@ -133,6 +164,10 @@ define(['jquery', 'core/ajax', 'core/event'], function($, ajax, coreevent) {
                     StatefulInput2.timeoutHandles[prefix] = setTimeout(upload, StatefulInput2.typingDelay);
                 });
             }
+        },
+
+        registerListener: function(listener) {
+            StatefulInput2.listeners[StatefulInput2.listeners.length] = listener;
         }
     };
 

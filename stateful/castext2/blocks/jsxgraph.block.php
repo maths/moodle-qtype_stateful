@@ -197,7 +197,7 @@ class stateful_cas_castext2_jsxgraph extends stateful_cas_castext2_block {
                 $varname = substr($key, 10);
                 if ($input_definitions === null
                     || !$input_definitions->exists($varname)) {
-                    $errors[] = stack_string('stackBlock_jsxgraph_height_num',
+                    $errors[] = stack_string('stackBlock_jsxgraph_input_missing',
                         ['var' => $varname]);
                 }
             } else if ($key !== 'width' && $key !== 'height') {

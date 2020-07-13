@@ -52,6 +52,10 @@ class stateful_input_mcq extends stateful_input_algebraic {
                 }
                 case 'radio':
                 case 'dropdown':
+                    if (!$this->get_option('mcq-hidden-values') && $response[$this->get_name()] !== '%_unselect') {
+                        $this->rawvalue = $response[$this->get_name()];
+                        break;
+                    }
                     // Values of form "%0", "%1"...
                     $i = intval(substr($response[$this->get_name()], 1));
                     if ($response[$this->get_name()] === '') {
@@ -129,6 +133,9 @@ class stateful_input_mcq extends stateful_input_algebraic {
                              'value' => '%' . $i, 
                              'name' => $fieldname,
                              'id' => $fieldname . '__' . $i];
+                    if (!$this->get_option('mcq-hidden-values')) {
+                        $attr['value'] = $value;
+                    }
                     if ($attr['value'] === $valuesv) {
                         $attr['checked'] = 'checked';
                         $found = true;
@@ -217,6 +224,9 @@ class stateful_input_mcq extends stateful_input_algebraic {
                 $i = 0;
                 foreach ($this->mcqoptions as $value => $label) {
                     $attr = ['value' => '%' . $i];
+                    if (!$this->get_option('mcq-hidden-values')) {
+                        $attr['value'] = $value;
+                    }
                     // Use "numeric" value to stop submission of anythign else.
                     if ('%' . $i === $valuesv) {
                         $hadone = true;
@@ -331,7 +341,11 @@ class stateful_input_mcq extends stateful_input_algebraic {
                 $opts = [['value' => '', 'label' => stateful_string('input_mcq_dropdown_select_one')]];
                 $i = 0;
                 foreach ($this->mcqoptions as $value => $label) {
-                    $opts[] = ['value' => '%' . $i, 'label' => $mjx->filter($label)];
+                    if (!$this->get_option('mcq-hidden-values')) {
+                        $opts[] = ['value' => $value, 'label' => $mjx->filter($label)];
+                    } else {
+                        $opts[] = ['value' => '%' . $i, 'label' => $mjx->filter($label)];
+                    }
                     $i = $i + 1;
                 }
                 $r['js_call_amd'][] = ['qtype_stateful/mcq', 'declareDropdown', [$prefix . $this->get_name(), $opts]];
@@ -459,6 +473,13 @@ class stateful_input_mcq extends stateful_input_algebraic {
             'description' => stateful_string('input_option_mcq_dropdown_vanilla_description')
         ];
 
+        $base['properties']['mcq-hidden-values'] = [
+            'default' => true,
+            'type' => 'boolean',
+            'title' => stateful_string('input_option_mcq_hidden_values_label'),
+            'description' => stateful_string('input_option_mcq_hidden_values_description')
+        ];
+
         // No use for these.
         unset($base['properties']['syntax-hint-type']);
         unset($base['properties']['syntax-hint']);
@@ -480,6 +501,7 @@ class stateful_input_mcq extends stateful_input_algebraic {
         $base['mcq-random-distractors'] = -1;
         $base['mcq-no-deselect'] = false;
         $base['mcq-dropdown-vanilla'] = false;
+        $base['mcq-hidden-values'] = true;
         $base['validation-box'] = '';
         $base['must-verify'] = false;
         $base['validation-box'] = '';
@@ -504,7 +526,7 @@ class stateful_input_mcq extends stateful_input_algebraic {
         }
         $base = parent::get_layout_for_options();
 
-        $fieldset = ['title' => stateful_string('input_options_mcq'), 'fields' => ['mcq-type', 'mcq-options', 'mcq-random-corrects', 'mcq-random-distractors', 'mcq-randomise-order', 'mcq-no-deselect', 'mcq-dropdown-vanilla']];
+        $fieldset = ['title' => stateful_string('input_options_mcq'), 'fields' => ['mcq-type', 'mcq-options', 'mcq-random-corrects', 'mcq-random-distractors', 'mcq-randomise-order', 'mcq-no-deselect', 'mcq-dropdown-vanilla', 'mcq-hidden-values']];
 
         // Lets position that among the fieldsets. Also we drop syntaxhints.
         $newfieldsetslist = [];
@@ -740,7 +762,11 @@ class stateful_input_mcq extends stateful_input_algebraic {
                 $i = 0;
                 foreach ($this->mcqoptions as $value => $label) {
                     if ($value === $theone) {
-                        return [$this->get_name() => '%' . $i];
+                        if ($this->get_option('mcq-hidden-values')) {
+                            return [$this->get_name() => '%' . $i];
+                        } else {
+                            return [$this->get_name() => $theone];
+                        }
                     }
                     $i = $i + 1;
                 }

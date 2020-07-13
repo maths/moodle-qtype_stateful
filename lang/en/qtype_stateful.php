@@ -293,6 +293,8 @@ $string['input_option_mcqnodeselect_label'] = 'Disable deselect';
 $string['input_option_mcqnodeselect_description'] = 'removes the deselection option';
 $string['input_option_mcq_dropdown_vanilla_label'] = 'Bare HTML widget';
 $string['input_option_mcq_dropdown_vanilla_description'] = 'if your platform does not support the custom dropdown implementation you can turn it off, you will lose the math-rendering but will gain better ARIA support';
+$string['input_option_mcq_hidden_values_label'] = 'Hidden values';
+$string['input_option_mcq_hidden_values_description'] = 'The actual values related to the options are repalced with placeholders in the HTML. Saves space, but might make scripting difficult, if you need these valeus for "reveal"-purposes turn this off.';
 $string['input_options_mcq'] = 'MCQ specific options';
 
 /// /stateful/input2/inputs/mcq_legacy.input.php

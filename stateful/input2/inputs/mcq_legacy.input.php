@@ -117,6 +117,9 @@ class stateful_input_mcq_legacy extends stateful_input_mcq {
         // The legacy version does not allow the new one.
         $base['mcq-dropdown-vanilla'] = true;
 
+        // In the old world we did not hide the values.
+        $base['mcq-hidden-values'] = false;
+
         return $base;
     }
 
