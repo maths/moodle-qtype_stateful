@@ -44,7 +44,7 @@ class stateful_cas_castext2_index extends stateful_cas_castext2_block {
 	}
 
     public function is_flat() : bool {
-        return true;
+        return false;
     }
 
     public function postprocess(array $params, castext2_processor $processor): string {

@@ -484,6 +484,9 @@ class stateful_input_mcq extends stateful_input_algebraic {
         unset($base['properties']['syntax-hint-type']);
         unset($base['properties']['syntax-hint']);
 
+        $base['properties']['must-verify']['default'] = false;
+        $base['properties']['validation-box']['default'] = '';
+
         return $base;
     }
 

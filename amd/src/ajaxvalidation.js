@@ -168,6 +168,12 @@ define(['jquery', 'core/ajax', 'core/event'], function($, ajax, coreevent) {
 
         registerListener: function(listener) {
             StatefulInput2.listeners[StatefulInput2.listeners.length] = listener;
+        },
+
+        executeListeners: function() {
+            for (var i = 0; i < StatefulInput2.listeners.length; i++) {
+                StatefulInput2.listeners[i]();
+            }
         }
     };
 

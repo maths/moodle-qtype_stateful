@@ -138,6 +138,12 @@ class stateful_cas_castext2_indexing extends stateful_cas_castext2_block {
                         case 'I':
                             // Romans.
                             break;
+                        case ' ':
+                            // For empty. Used when you want to drop numbering.
+                            break;
+                        case '?':
+                            // For question marks. Same as empty.
+                            break;
                         default:
                             $ok = false;
                             $errors[] = stack_string('stackBlock_indexing_unknown_style', ['key' => $value]);       

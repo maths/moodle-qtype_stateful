@@ -27,7 +27,7 @@ define(['jquery'], function($) {
 
     var r = {
         /**
-         * Finds an input with a given name from within the question 
+         * Finds an input with a given name from within the question
          * that contains the relatedelement.
          * @param  {element} any element within a question
          * @param  {string} name    name of the input

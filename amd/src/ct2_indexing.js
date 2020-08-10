@@ -75,6 +75,12 @@ define(['jquery', 'qtype_stateful/ajaxvalidation'], function($, input2ajax) {
                     case '1.':
                         item.innerHTML = i + '.';
                         break;
+                    case '?':
+                        item.innerHTML = '?';
+                        break;
+                    case ' ':
+                        item.innerHTML = '';
+                        break;
                     case 'I':
                         // We only go to four digit numbers and this is not
                         // the best ever algorithmn. Behaviour with negative

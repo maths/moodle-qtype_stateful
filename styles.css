@@ -366,3 +366,123 @@
     height:1px;
 }
 
+.que.stateful div.stateful-order-container,
+.que.stateful div.stateful-order-container-horizontal {
+    border: 0.1em solid black;
+    border-radius: 0.5em;
+    width: max-content;
+}
+
+.que.stateful div.stateful-order-container.stateful-order-in-place {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.que.stateful div.stateful-order-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.que.stateful div.stateful-order-container-horizontal {
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.que.stateful div.stateful-order-container div.stateful-order-list-item,
+.que.stateful div.stateful-order-container-horizontal div.stateful-order-list-item {
+    
+    margin: 0.2em;
+    padding: 0.2em;
+    background-color: #fcfcfc;
+}
+
+.que.stateful div.stateful-order-container div.stateful-order-list-item:hover,
+.que.stateful div.stateful-order-container-horizontal div.stateful-order-list-item:hover {
+    border: 0.1em solid black;
+    border-radius: 0.5em;
+}
+
+.que.stateful div.stateful-order-container-horizontal div.stateful-order-list-item {
+    display: inline-block;
+}
+
+.que.stateful div.stateful-order-container div.stateful-order-list-blank,
+.que.stateful div.stateful-order-container-horizontal div.stateful-order-list-blank {
+    border: 0.1em dashed grey;
+    margin: 0.2em;
+    padding: 0.2em;
+    border-radius: 0.5em;
+    background-color: #fefefe;
+    display: none;
+    text-align: center;
+    width: 2.5em;
+}
+
+.que.stateful div.stateful-order-container div.stateful-order-list-fixed-item,
+.que.stateful div.stateful-order-container-horizontal div.stateful-order-list-fixed-item {
+    margin: 0.2em;
+    padding: 0.2em;
+    background-color: #f0f0f0;
+}
+
+.que.stateful div.stateful-order-container div.stateful-order-list-fixed-item:hover,
+.que.stateful div.stateful-order-container-horizontal div.stateful-order-list-fixed-item:hover {
+    border: 0.2em solid black;
+    border-radius: 0.5em;
+}
+
+.que.stateful div.stateful-order-container-horizontal div.stateful-order-list-fixed-item {
+    display: inline-block;
+}
+
+.que.stateful div.stateful-order-container div.stateful-order-shufflebox {
+    border: 0.1em solid black;
+    border-radius: 0.5em;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    width: max-content;
+    height: 100%;
+}
+
+.que.stateful div.stateful-order-container-horizontal div.stateful-order-shufflebox {
+    border: 0.1em solid black;
+    border-radius: 0.5em;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    width: 100%;
+}
+
+.que.stateful div.stateful-order-container div.stateful-order-list {
+    border: 0.1em solid black;
+    border-radius: 0.5em;
+    width: max-content;
+}
+
+.que.stateful div.stateful-order-container div.stateful-order-shufflebox span.stateful-order-shufflebox-label {
+    border-bottom: 0.1em solid black;
+    text-align: center;
+    padding: 0.2em;
+    margin: 0;
+    font-weight: bolder;
+}
+
+.que.stateful div.stateful-order-container-horizontal div.stateful-order-shufflebox span.stateful-order-shufflebox-label {
+    border-right: 0.1em solid black;
+    text-align: center;
+    padding: 0.2em;
+    margin: 0;
+    font-weight: bolder;
+}
+
+.que.stateful div.stateful-order-container .stateful-order-indent-plus,
+.que.stateful div.stateful-order-container .stateful-order-indent-minus {
+    background-color: lightgray;
+    border: 0.1em solid black;
+    width: 1.6em;
+    height: 1.6em;
+    padding: 0.1em;
+    margin: 0.1em;
+    text-align: center;
+    border-radius: 0.4em;
+    display: inline-block;
+}

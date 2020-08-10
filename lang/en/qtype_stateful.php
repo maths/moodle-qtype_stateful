@@ -188,6 +188,46 @@ $string['input_option_align_right'] = 'Right';
 $string['input_option_align_browser_locale'] = 'Default';
 
 
+/// /stateful/input2/inputs/order.input.php:
+$string['input_option_order_enum_ip_horizontal']      = 'In-place horizontal';
+$string['input_option_order_enum_ip_vertical']        = 'In-place vertical';
+$string['input_option_order_enum_fi_horizontal']      = 'Fill-in horizontal';
+$string['input_option_order_enum_fi_vertical']        = 'Fill-in vertical';
+$string['input_option_order_enum_fi_vertical_indent'] = 'Fill-in vertical with indentation';
+$string['input_option_order_type_label']              = 'Type of ordering';
+$string['input_option_order_type_description']        = 'In-place means that the elements are all in a list already and they need to be dragged to order, fill-in has another box with elements that need to be dragged to empty places in the list. Both return lists of element tokens. The indenation case would also require definition of indentation for each element and return a list of tuples that define the level of indentation as well as the token.';
+$string['input_option_order_template_label']          = 'Template';
+$string['input_option_order_template_description']    = 'A list describing the initial configuration of the input, consists of lists where the first element can be <code>"empty"</code>, <code>"fixed"</code>, <code>"initial"</code>, in the case of empty the list may have one or two elements describing the min/max number of slots at this position. For fixed and initial the second item in the list describes the element present at that position. In the <i>In-place</i> variants if left empty will construct a list of all the tokens, shuffled to an order different from the teachers answer, if more than one answer can be correct declare your order yourself.';
+
+$string['input_option_order_enum_indexing_type_zp2']  = 'Zero padded to 00';
+$string['input_option_order_enum_indexing_type_zp3']  = 'Zero padded to 000';
+$string['input_option_order_enum_indexing_type_zp4']  = 'Zero padded to 0000';
+$string['input_option_order_enum_indexing_type_num']  = 'Just an integer';
+$string['input_option_order_enum_indexing_type_num_dot'] = 'An integer with a dot';
+$string['input_option_order_enum_indexing_type_roman'] = 'Roman literal';
+$string['input_option_order_indexing_type_label']     = 'Indexing type';
+$string['input_option_order_indexing_type_description'] = 'The format used for any <code>[[index/]]</code> in the tokens. For example for line-numbers or targeting specific element in the feedback.';
+$string['input_option_order_indexing_offset_label']   = 'Indexing offset';
+$string['input_option_order_indexing_offset_description'] = 'Should you want that indexing to start from some other number than 1.';
+$string['input_option_order_indent_label']            = 'Indentation size';
+$string['input_option_order_indent_description']      = 'If this is the indentation type of an order-input this is the number of non-breaking spaces the logic will inject to each "#indent#" placeholder in the relevant token.';
+$string['input_option_order_max_indent_label']            = 'Max indent';
+$string['input_option_order_max_indent_description']      = 'Maximum number of indent steps allowed, keep small to keep the number of potenttial combinations small.';
+$string['input_option_order_tokens_item_value_label'] = 'Indexing offset';
+$string['input_option_order_tokens_item_label_label'] = 'Indexing offset';
+$string['input_option_order_tokens_item_inclusion_label'] = 'Indexing offset';
+$string['input_option_order_tokens_label']            = 'The tokens';
+$string['input_option_order_tokens_description']      = 'All elements that are to be ordered must have an unique value which is used to identify them. They may also have an inclusion rule which is used if they are not fixed or initially placed in the template and we are not dealing with in-place ordering. The label is what is visible and may use most features of CASText.';
+$string['input_option_order_shuffle_label']           = 'Shuffle unplaced';
+$string['input_option_order_shuffle_description']     = 'If not in-place, shuffle elements in the unplaced elements box, otherwise shown in the order defined.';
+$string['input_order_shufflebox_label']               = 'Unused parts';
+$string['input_options_order'] = 'Order specific options';
+
+$string['input_order_error_unfilled_slots']           = 'There are unfilled positions, look for the boxes with "?".';
+$string['input_order_error_excess_input']             = 'Somehow this input received a list with too many terms.';
+$string['input_order_error_fixed_element_missing']    = 'Somehow an element that has a fixed position has been removed.';
+
+
 /// /stateful/input2/inputs/button.input.php:
 $string['input_option_aliasfor_label']       = 'Alias';
 $string['input_option_aliasfor_description'] = 'this button acts as an alias for the designated button, pressing this button also triggers that other button but sets its value to this buttons value';

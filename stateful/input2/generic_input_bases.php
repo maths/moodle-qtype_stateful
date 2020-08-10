@@ -246,51 +246,6 @@ abstract class stateful_input_base_with_options implements stateful_input_option
             $err[$key][] = $e->error;
         }
 
-        /*
-        // Note this bit is from the justinrainbow/json-schema
-        // version, which had the benfit of spotting multiple 
-        // errors but took way too long
-
-        if (!$validator->isValid()) {
-            // Lets do some translation.
-            $props = [];
-            foreach ($validator->getErrors() as $error) {
-                if ($error['constraint'] === 'oneOf' || $error['constraint'] === 'type' || $error['constraint'] === 'enum' || $error['constraint'] === 'minimum' || $error['constraint'] === 'maximum' || $error['constraint'] === 'uniqueItems') {
-                    // Debug phase.
-                } else {
-                    print_r($error);
-                }
-
-                if (isset($props[$error['property']])) {
-                    $props[$error['property']][$error['constraint']] =  true;
-                } else {
-                    $props[$error['property']] = [$error['constraint'] =>  true];
-                }
-            }
-            foreach ($props as $key => $typesofissues) {
-                if (!isset($err[$key])) {
-                    $err[$key] = [];
-                }
-                if (isset($typesofissues['type'])) {
-                    $err[$key][] = stateful_string('option_type_not_expected');
-                }
-                if (isset($typesofissues['oneOf']) || isset($typesofissues['enum'])) {
-                    $err[$key][] = stateful_string('option_not_one_of_expected');   
-                }
-                if (isset($typesofissues['minimum'])) {
-                    $err[$key][] = stateful_string('option_value_too_small');
-                }
-                if (isset($typesofissues['maximum'])) {
-                    $err[$key][] = stateful_string('option_value_too_big');
-                }
-                if (isset($typesofissues['uniqueItems'])) {
-                    $err[$key][] = stateful_string('option_repeated_value');    
-                }
-            }
-        }
-
-        */
-
         // Basic parsing check for the options that are of 
         // the casstring-type note that the schema does not declare them.
         // But we do have some hints in the layout-schema.
