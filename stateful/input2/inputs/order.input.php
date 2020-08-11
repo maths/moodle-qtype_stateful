@@ -170,6 +170,21 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
             'description' => stateful_string('input_option_order_shuffle_description')
         ];
 
+        $base['properties']['order-shufflebox-label'] = [
+            'default' => '[[commonstring key="input_order_shufflebox_label"/]]',
+            'type' => 'string', 
+            'title' => stateful_string('input_option_order_shufflebox_label_label'),
+            'description' => stateful_string('input_option_order_shufflebox_label_description')
+        ];
+
+        $base['properties']['order-list-label'] = [
+            'default' => '',
+            'type' => 'string', 
+            'title' => stateful_string('input_option_order_list_label_label'),
+            'description' => stateful_string('input_option_order_list_label_description')
+        ];
+
+
         return $base;
     }
 
@@ -190,6 +205,9 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
         $base['order-tokens'] = [['value' => 'A','label' => 'Yes'],
                                  ['value' => 'B','label' => 'No']];
 
+        $base['order-list-label'] = '';
+        $base['order-shufflebox-label'] = '[[commonstring key="input_order_shufflebox_label"/]]';
+
         // No use for these.
         unset($base['syntax-hint-type']);
         unset($base['syntax-hint']);
@@ -207,7 +225,7 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
         }
         $base = parent::get_layout_for_options();
 
-        $fieldset = ['title' => stateful_string('input_options_order'), 'fields' => ['order-type', 'order-tokens', 'order-template', 'order-indexing-type', 'order-indexing-offset', 'order-indent', 'order-max-indent', 'order-shuffle']];
+        $fieldset = ['title' => stateful_string('input_options_order'), 'fields' => ['order-type', 'order-list-label', 'order-shufflebox-label', 'order-tokens', 'order-template', 'order-indexing-type', 'order-indexing-offset', 'order-indent', 'order-max-indent', 'order-shuffle']];
 
         // Lets position that among the fieldsets. Also we drop syntaxhints.
         $newfieldsetslist = [];
@@ -239,6 +257,11 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
         $base['widgets']['order-indexing-type'] = 'select';
         $base['widgets']['order-indexing-offset'] = 'casstring-integer';
         $base['widgets']['order-indent'] = 'casstring-integer';
+
+        $base['widgets']['order-list-label'] = 'castext';
+        $base['widgets']['order-shufflebox-label'] = 'castext';
+
+
 
         // Again not needed.
         unset($base['widgets']['syntax-hint-type']);
@@ -305,20 +328,28 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
 
         // 4. UI-frame.
         $uiframe = '""';
+        $listlabel = '';
+        $sblabel = '';
+        if ($this->get_option('order-list-label') !== '') {
+            $listlabel = '<span class="stateful-order-list-label">' . $this->get_option('order-list-label') . '</span>';
+        }
+        if ($this->get_option('order-shufflebox-label') !== '') {
+            $sblabel = '<span class="stateful-order-shufflebox-label">' . $this->get_option('order-shufflebox-label') . '</span>';
+        }
         switch ($this->get_option('order-type')) {
             case 'in-place horizontal':
                 $uiframe = '<div class="stateful-order-container-horizontal stateful-order-in-place">';
-                $uiframe .= '[[indexing style="' . $this->get_option('order-indexing-type') . '" start="' . $this->get_option('order-indexing-offset') . '"]]<div class="stateful-order-list">%%SORTAREA%%</div>[[/indexing]]';
+                $uiframe .= '[[indexing style="' . $this->get_option('order-indexing-type') . '" start="' . $this->get_option('order-indexing-offset') . '"]]<div class="stateful-order-list">' . $listlabel . '%%SORTAREA%%</div>[[/indexing]]';
                 $uiframe .= '%%INPUTS%%</div>';
                 break;
             case 'in-place vertical':
                 $uiframe = '<div class="stateful-order-container stateful-order-in-place">';
-                $uiframe .= '[[indexing style="' . $this->get_option('order-indexing-type') . '" start="' . $this->get_option('order-indexing-offset') . '"]]<div class="stateful-order-list">%%SORTAREA%%</div>[[/indexing]]';
+                $uiframe .= '[[indexing style="' . $this->get_option('order-indexing-type') . '" start="' . $this->get_option('order-indexing-offset') . '"]]<div class="stateful-order-list">' . $listlabel . '%%SORTAREA%%</div>[[/indexing]]';
                 $uiframe .= '%%INPUTS%%</div>';
                 break;
             case 'fill-in horizontal':
                 $uiframe = '<div class="stateful-order-container-horizontal" data-template={#str_to_html(stackjson_stringify(%_template)),simp=true#}>';
-                $uiframe .= '[[indexing style="' . $this->get_option('order-indexing-type') . '" start="' . $this->get_option('order-indexing-offset') . '"]]<div class="stateful-order-list">%%SORTAREA%%</div>[[/indexing]]';
+                $uiframe .= '[[indexing style="' . $this->get_option('order-indexing-type') . '" start="' . $this->get_option('order-indexing-offset') . '"]]<div class="stateful-order-list">' . $listlabel . '%%SORTAREA%%</div>[[/indexing]]';
                 $uiframe .= '[[indexing style=" "]]<div class="stateful-order-shufflebox">';
                 $uiframe .= '<span class="stateful-order-shufflebox-label">[[commonstring key="input_order_shufflebox_label"/]]</span>';
                 $uiframe .= '%%SHUFFLEBOX%%</div>[[/indexing]]';
@@ -326,7 +357,7 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
                 break;
             case 'fill-in vertical':
                 $uiframe = '<div class="stateful-order-container" data-template={#str_to_html(stackjson_stringify(%_template)),simp=true#}>';
-                $uiframe .= '[[indexing style="' . $this->get_option('order-indexing-type') . '" start="' . $this->get_option('order-indexing-offset') . '"]]<div class="stateful-order-list">%%SORTAREA%%</div>[[/indexing]]';
+                $uiframe .= '[[indexing style="' . $this->get_option('order-indexing-type') . '" start="' . $this->get_option('order-indexing-offset') . '"]]<div class="stateful-order-list">' . $listlabel . '%%SORTAREA%%</div>[[/indexing]]';
                 $uiframe .= '[[indexing style=" "]]<div class="stateful-order-shufflebox">';
                 $uiframe .= '<span class="stateful-order-shufflebox-label">[[commonstring key="input_order_shufflebox_label"/]]</span>';
                 $uiframe .= '%%SHUFFLEBOX%%</div>[[/indexing]]';
@@ -336,7 +367,7 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
                 $uiframe = '<div class="stateful-order-container" data-template={#str_to_html(stackjson_stringify(%_template)),simp=true#}';
                 $uiframe .= ' data-indent="{#' . $this->get_option('order-indent'). ',simp=true#}"';
                 $uiframe .= ' data-maxindent="{#' . $this->get_option('order-max-indent'). ',simp=true#}">';
-                $uiframe .= '[[indexing style="' . $this->get_option('order-indexing-type') . '" start="' . $this->get_option('order-indexing-offset') . '"]]<div class="stateful-order-list">%%SORTAREA%%</div>[[/indexing]]';
+                $uiframe .= '[[indexing style="' . $this->get_option('order-indexing-type') . '" start="' . $this->get_option('order-indexing-offset') . '"]]<div class="stateful-order-list">' . $listlabel . '%%SORTAREA%%</div>[[/indexing]]';
                 $uiframe .= '[[indexing style=" "]]<div class="stateful-order-shufflebox">';
                 $uiframe .= '<span class="stateful-order-shufflebox-label">[[commonstring key="input_order_shufflebox_label"/]]</span>';
                 $uiframe .= '%%SHUFFLEBOX%%</div>[[/indexing]]';

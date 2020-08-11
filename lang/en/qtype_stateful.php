@@ -220,6 +220,11 @@ $string['input_option_order_tokens_label']            = 'The tokens';
 $string['input_option_order_tokens_description']      = 'All elements that are to be ordered must have an unique value which is used to identify them. They may also have an inclusion rule which is used if they are not fixed or initially placed in the template and we are not dealing with in-place ordering. The label is what is visible and may use most features of CASText.';
 $string['input_option_order_shuffle_label']           = 'Shuffle unplaced';
 $string['input_option_order_shuffle_description']     = 'If not in-place, shuffle elements in the unplaced elements box, otherwise shown in the order defined.';
+$string['input_option_order_shufflebox_label_label']  = 'Label for extra parts';
+$string['input_option_order_shufflebox_label_description']  = 'Header text for the area storing the extra or unplaced parts.';
+$string['input_option_order_list_label_label']  = 'Label for the list';
+$string['input_option_order_list_label_description']  = 'Header text for the area where the list is being ordered or where parts are placed.';
+
 $string['input_order_shufflebox_label']               = 'Unused parts';
 $string['input_options_order'] = 'Order specific options';
 
