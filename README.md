@@ -1,4 +1,12 @@
-# Stateful question type 1.0
+# Stateful question type 1.0.2
+
+### Changelog
+
+**1.0.2** adds the order-input type for drag & drop ordering of lists and doing Parsons problems. Also new castext2 blocks index/indexing and reveal. Enabled general-feedback/model-solution.
+
+**1.0** Initial release.
+
+
 
 Stateful is a question type based on [STACK](https://github.com/maths/moodle-qtype_stack/) like STACK it's well suited for assessment of STEM subjects. However, the thing that distinguishes it from STACK also opens up usage in other fields.
 

@@ -89,6 +89,8 @@ question_stateful, stateful_model {
     // Scenetext gets rendered during init lets keep a hold on in.
     private $scenetext;
 
+    // General feedback is also rendered during init.
+    private $modelsolution;
 
     // Some flags to track execution, in case we are using the question 
     // through simpler APIs that do things direct.
@@ -881,9 +883,11 @@ question_stateful, stateful_model {
         $statements[] = new stack_secure_loader(explode(':=', $svfunction->
             get_evaluationform())[0], '');
 
-        // 4. Scene-text.
+        // 4. Scene-text. and the model solution.
         $scenetext = $this->get_compiled('scene-' . $scene->name . '-text');
         $statements[] = $scenetext;
+        $modelsolution = $this->get_compiled('modelsolution');
+        $statements[] = $modelsolution;
 
         // 5. Input initialisation. Note that the input controller handles all.
         $statements = array_merge($statements, $this->inputs->collect_initialisation_statements());
@@ -929,6 +933,7 @@ question_stateful, stateful_model {
 
         // Take in the scene-text.
         $this->scenetext = $scenetext->get_rendered();
+        $this->modelsolution = $modelsolution;
     }
 
     // All things should exist in compiled form. But this might be some exotic situation.
@@ -975,8 +980,8 @@ question_stateful, stateful_model {
         }
 
         // CASText
-        if (strpos($thing, 'scene-') === 0 && substr($thing, -strlen('-text'))
-            === '-text') {
+        if ((strpos($thing, 'scene-') === 0 && substr($thing, -strlen('-text'))
+            === '-text') || $thing === 'modelsolution') {
             return castext2_evaluatable::make_from_compiled($this->compiledcache[$thing], 'scenetext');
         }
 
@@ -1093,6 +1098,16 @@ question_stateful, stateful_model {
                 $this->init_from_state();
             }
             return $this->scenetext;
+        }
+        if ('modelsolution' === $what) {
+            if ($this->modelsolution === null) {
+                $this->init_from_state();   
+            }
+            if ($this->modelsolution instanceof castext2_evaluatable) {
+                // No need to render twice if ever.
+                $this->modelsolution = $this->modelsolution->get_rendered();
+            }
+            return $this->modelsolution;
         }
 
         // Common statements.

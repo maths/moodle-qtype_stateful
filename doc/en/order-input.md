@@ -1,0 +1,12 @@
+## Order-input
+
+The new order-input is primarily meant for in-place ordering of a small number of elements using drag & drop with mouse of touch interfaces. It is unlikely to be suitable for use cases where accessibility is a factor. Should, sensible solutions for accessibility appear then this input type might start providing alternative user interfaces for those requesting them.
+
+In addition to in-place ordering a fill-in mode is also present, in this mode a set of elements is being stored in a separate box from which they can be moved into the answer. The answer can be limited by giving a template that declares the amount (min/max) of blank spaces that can be filled at a given point of the list, defines initially filled values or even fixed values. While in the in-place mode the answer is always valid, unless it is in the initial order which is considered the blank-answer, in the fill-in mode the answer is valid only if the minimum number of empty slots have been filled. The validation will also ensure that fixed-elements are in the correct places so that DOM-level input manipulation cannot lead to invalid values passing through.
+
+For completeness sake a third mode matching typical Parsons problems does exist, it relies on the element labels to contain specific markers (`#indent#`) for it to fill in the modified indent. It also requires that addition options are set with the size of an indent and the maximum indent depth. Unlike the other modes this mode returns a list of lists where each element list has the name of the element as its first item and the second element is the indentation level. These lists must also be used when defining the initial or fixed values for the template.
+
+
+### Tight connection to the index/indexing castext2 blocks
+
+All order inputs exist in their own unnamed `indexing` block and the input itself can be used to tune the offset and style details of that block. The idea is that if you place `index`-blocks in your element-labels then the elements will get a running numbering that can be referenced in feedback. This is especially convenient when using the Parsons problem mode as one can place actual line numbers using this method there.

@@ -560,6 +560,12 @@ class stateful_handling_validation {
         // The forbidden variablenames
         $question->compiledcache['forbiddenkeys'] = array_keys($forbiddenkeys);
 
+        $gf = $question->generalfeedback;
+        if ($gf === null) {
+            $gf = '';
+        }
+        $question->compiledcache['modelsolution'] = castext2_parser_utils::compile($gf);
+
         return $result;
     }
 

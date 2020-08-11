@@ -205,7 +205,7 @@ function xmldb_qtype_stateful_upgrade($oldversion) {
         }
     }
 
-    $latest = 2020020100;
+    $latest = 2020081100;
     if ($oldversion < $latest) {
 
         upgrade_plugin_savepoint(true, $latest, 'qtype', 'stateful');

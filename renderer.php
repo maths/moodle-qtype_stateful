@@ -243,21 +243,7 @@ class qtype_stateful_renderer extends qtype_renderer {
             return '';
         }
 
-        return '';
-        /* The following is currently incomplete.
-        $solution = $question->render('generalfeedback');
-        // Using the STACK display logic requires a qtype_stack_renderer,
-        // luckilly it is not used for anything so we can just fake it.
-        $dummyrenderer = new qtype_stack_renderer($PAGE, null);
-
-        // Do format things, but the format will always be the (X)HTML-format.
-        $solution = $question->format_text(
-            stack_maths::process_display_castext($solution, $dummyrenderer)
-            ,
-            FORMAT_HTML,
-            $qa, 'question', 'generalfeedback', $question->id);
-        return $solution;
-        */
+        return $question->render('modelsolution');
     }
 
 }
