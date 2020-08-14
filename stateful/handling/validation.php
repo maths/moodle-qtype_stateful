@@ -512,7 +512,7 @@ class stateful_handling_validation {
                     // Should something new fail or maybe STACK exceptions...
                     $result['result'] = false;
                     // No section or finer resolution data provided for exceptions of unknown type.
-                    $result['errors'][] = ['message' => $e->getMessage(),
+                    $result['errors'][] = ['message' => $ee->getMessage(),
                         'path' => self::path_creator($prt, 'generic')];
                 }
 

@@ -68,7 +68,7 @@ class stateful_handling_moodle_formdata {
 
 
         foreach (['id', 'category', 'idnumber', 'version',
-                  'stamp', 'parent', 'name', 'defaultmark',
+                  'stamp', 'parent', 'name', 'defaultmark', 'penalty',
                   'questiontext', 'generalfeedback'] as $key) {
             if (isset($from->$key)) {
                 $t[$key] = $from->$key;
@@ -94,6 +94,7 @@ class stateful_handling_moodle_formdata {
         unset($json['name']);
         unset($json['description']);
         unset($json['pointvalue']);
+        unset($json['penalty']);
 
         // Some prefil if this is an empty question.
         if (!isset($json['questionvariables']) || $json['questionvariables'] === null) {

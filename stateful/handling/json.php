@@ -557,7 +557,7 @@ class stateful_handling_json {
         $r['statevariables'] = [];
 
         if ($question->parlength !== null && $question->parlength > 0) {
-            $r['parlength'] = $question->parlength;            
+            $r['parlength'] = intval($question->parlength);
         }
 
         $reservednumbers = [];

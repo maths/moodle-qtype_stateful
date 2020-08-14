@@ -35,7 +35,6 @@ class qtype_stateful_edit_form extends question_edit_form {
     protected function data_preprocessing($questiondata) {
         $questiondata = parent::data_preprocessing($questiondata);
         $questiondata = $this->data_preprocessing_hints($questiondata);
-
         $questiondata = stateful_handling_moodle_formdata::data_preprocessing($questiondata);
 
         return $questiondata;
@@ -61,6 +60,13 @@ class qtype_stateful_edit_form extends question_edit_form {
             $el = $this->_form->createElement('submit', 'editor_' . $id, $editor->get_name());
             $this->_form->insertElementBefore($el, 'generalheader');
         }
+
+        // Like stack we need to control penalty somewhat.
+        $pen = $this->_form->createElement('text', 'penalty', stateful_string('editor_penalty'), array('size' => 5));
+        $this->_form->insertElementBefore($pen, 'generalfeedback');
+        $this->_form->setType('penalty', PARAM_FLOAT);
+        $this->_form->setDefault('penalty', 0.1000000);
+        $this->_form->addRule('penalty', null, 'required', null, 'client');
 
     }
 

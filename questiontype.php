@@ -399,7 +399,7 @@ class qtype_stateful extends question_type {
         $question->statefulversion = $questiondata->options->statefulversion;
         $question->compiledcache   = $questiondata->options->compiledcache;
         $question->genericmeta     = $questiondata->options->genericmeta;
-        $question->parlength       = $questiondata->options->parlength;
+        $question->parlength       = intval($questiondata->options->parlength);
         $question->variants        = $questiondata->options->variants;
 
         $question->options = new stack_options();
@@ -574,8 +574,6 @@ class qtype_stateful extends question_type {
             'stateful', 0, '@', 'assumepositive'], 0);
         $question->options->assumereal = $format->getpath($xml, ['#', 'stateful', 0
             , '@', 'assumereal'], 0);
-        $question->options->penalty = $format->getpath($xml, ['#', 'stateful', 0,
-            '@', 'penalty'], 0.1);
         $question->options->multiplicationsign = $format->getpath($xml, ['#',
             'stateful', 0, '@', 'multiplicationsign'], 'dot');
         $question->options->sqrtsign = $format->getpath($xml, ['#', 'stateful', 0,
@@ -586,8 +584,8 @@ class qtype_stateful extends question_type {
             0, '@', 'inversetrig'], 'cos-1');
         $question->options->matrixparens = $format->getpath($xml, ['#', 'stateful',
             0, '@', 'matrixparens'], '[');
-        $question->options->parlength = $format->getpath($xml, ['#', 'stateful',
-            0, '@', 'parlength'], '-1');
+        $question->options->parlength = intval($format->getpath($xml, ['#', 'stateful',
+            0, '@', 'parlength'], '-1'));
         $question->options->variants = $format->getpath($xml, ['#', 'stateful',
             0, '@', 'variants'], '{}');
 
@@ -824,8 +822,6 @@ class qtype_stateful extends question_type {
             assumepositive, ENT_XML1 | ENT_COMPAT, 'UTF-8') . '"';
         $r .= ' assumereal="' . htmlspecialchars($question->options->assumereal
             , ENT_XML1 | ENT_COMPAT, 'UTF-8') . '"';
-        $r .= ' penalty="' . htmlspecialchars($question->penalty, ENT_XML1 |
-            ENT_COMPAT, 'UTF-8') . '"';
         $r .= ' multiplicationsign="' . htmlspecialchars($question->options->
             multiplicationsign, ENT_XML1 | ENT_COMPAT, 'UTF-8') . '"';
         $r .= ' sqrtsign="' . htmlspecialchars($question->options->sqrtsign,

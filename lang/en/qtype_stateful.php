@@ -40,6 +40,7 @@ $string['exceptionmessage'] = '{$a}';
 
 /// /edit_stateful_form.php
 $string['questiontext_ie_description'] = 'Question description';
+$string['editor_penalty'] = 'Default penalty';
 $string['yaml_edit'] = 'YAML-edit';
 $string['json_edit'] = 'JSON-edit';
 $string['editordesc'] = 'This is the fall-back editor for use when no other editor is available, you should really try to find a more refined editor. Should one exist on this system open it with the button near this text.';
