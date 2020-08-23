@@ -79,16 +79,18 @@ class stateful_scene implements stateful_model {
             }
         }
         $this->vboxes = [];
-        foreach ($data->vboxes as $id => $vboxdata) {
-            $opts = [];
-            if ($vboxdata->options !== '' && is_string($vboxdata->options)) {
-                $opts = json_decode($vboxdata->options, true);
+        if (isset($data->vboxes)) {
+            foreach ($data->vboxes as $id => $vboxdata) {
+                $opts = [];
+                if ($vboxdata->options !== '' && is_string($vboxdata->options)) {
+                    $opts = json_decode($vboxdata->options, true);
+                }
+
+                $vbox = stateful_input_controller::get_validation_box_instance($vboxdata->type, $vboxdata->name, $opts);
+                $this->vboxes[$vbox->get_name()] = $vbox;
             }
-
-            $vbox = stateful_input_controller::get_validation_box_instance($vboxdata->type, $vboxdata->name, $opts);
-            $this->vboxes[$vbox->get_name()] = $vbox;
         }
-
+        
         ksort($tmp);
         $this->inputs = [];
         foreach ($tmp as $input) {

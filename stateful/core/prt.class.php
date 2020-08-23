@@ -49,7 +49,9 @@ class stateful_prt implements stateful_model {
         if ($data === null) {
             return;
         }
-        $this->id                  = $data->id;
+        if (isset($data->id)) {
+            $this->id              = $data->id;
+        }
         $this->name                = $data->name;
         $this->feedbackvariables   = $data->feedbackvariables;
         $this->scoremode           = $data->scoremode;

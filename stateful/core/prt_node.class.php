@@ -73,7 +73,9 @@ class stateful_prt_node implements stateful_model {
         if ($data === null) {
             return;
         }
-        $this->id = $data->id;
+        if (isset($data->id)) {
+            $this->id  = $data->id;
+        }
 
         // TODO: rename these three.
         $this->name    = $data->name;

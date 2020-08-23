@@ -558,6 +558,9 @@ class qtype_stateful extends question_type {
 
         // So within that <question type="stateful">...</question> is
         // a <stateful> tag with some meta as attributes and the payload in it.
+        if (!isset($question->options)) {
+            $question->options = new stdClass();
+        }
         $question->options->entryscene   = $xml['#']['stateful'][0]['@']['entryscene'];
         $question->options->stackversion = $xml['#']['stateful'][0]['@']['stackversion']
         ;

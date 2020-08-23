@@ -44,8 +44,9 @@ class stateful_statevariable implements stateful_model {
         if ($data === null) {
             return;
         }
-
-        $this->id           = $data->id;
+        if (isset($data->id)) {
+            $this->id       = $data->id;
+        }
         $this->name         = $data->name;
         $this->description  = $data->description;
         $this->type         = $data->type;
