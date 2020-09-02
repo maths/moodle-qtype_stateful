@@ -654,7 +654,7 @@ class stateful_input_mcq extends stateful_input_algebraic {
         $optlist = $list->items[2];
         $this->mcqoptions = [];
         foreach ($optlist->items as $opt) {
-            $this->mcqoptions[$opt->items[0]->value] = castext2_parser_utils::postprocess_mp_parsed($opt->items[1]);
+            $this->mcqoptions[strval($opt->items[0]->value)] = castext2_parser_utils::postprocess_mp_parsed($opt->items[1]);
         }
     }
 
@@ -686,8 +686,12 @@ class stateful_input_mcq extends stateful_input_algebraic {
                 // Which value?
                 $i = 0;
                 foreach ($this->mcqoptions as $value => $label) {
-                    if ($value === $theone) {
-                        return [$this->get_name() => '%' . $i];
+                    if (strval($value) === $theone) {
+                        if ($this->get_option('mcq-hidden-values')) {
+                            return [$this->get_name() => '%' . $i];
+                        } else {
+                            return [$this->get_name() => $theone];
+                        }
                     }
                     $i = $i + 1;
                 }
@@ -738,7 +742,7 @@ class stateful_input_mcq extends stateful_input_algebraic {
         if ($val instanceof MP_Statement) {
             $val = $val->statement;
         }
-    
+
         switch ($this->get_option('mcq-type')) {
             case 'checkbox':
                 if (!($val instanceof MP_List)) {
@@ -764,7 +768,7 @@ class stateful_input_mcq extends stateful_input_algebraic {
                 $theone = $val->toString();
                 $i = 0;
                 foreach ($this->mcqoptions as $value => $label) {
-                    if ($value === $theone) {
+                    if (strval($value) === $theone) {
                         if ($this->get_option('mcq-hidden-values')) {
                             return [$this->get_name() => '%' . $i];
                         } else {
