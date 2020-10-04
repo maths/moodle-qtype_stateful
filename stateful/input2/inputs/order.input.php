@@ -668,7 +668,7 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
                     }
                 }
             } else if ($item[0] === 'initial') {
-                $pattern[] = 1;
+                $pattern[] = 0;
             } else if ($item[0] === 'fixed')  {
                 if ($this->get_option('order-type') === 'fill-in vertical with indentation') {
                     $pattern[] = $item[1][0];
