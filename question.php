@@ -324,7 +324,6 @@ question_stateful, stateful_model {
                 }
             }
 
-
             $session = new stack_cas_session2($statements, $this->options, $this->seed);
             $session->instantiate();
 
@@ -535,17 +534,16 @@ question_stateful, stateful_model {
                 $i = $i + 1;
             }
 
-            foreach ($this->variables as $statevar) {
-                $this->state->set($statevar->number, $state[
-                    $statevar->name]->get_evaluated_state());
-            }
-            $this->state->set(self::SCENE_PATH, $state[
-                'SCENE_PATH']->get_evaluated_state());
-            $this->state->set(self::SCENE_CURRENT, $state[
-                'SCENE_CURRENT']->get_evaluated_state());
-
-            // 9. If scene change happened initialise inputs.
-            if ($state['SCENE_NEXT']->get_evaluated_state() !== 'false') {
+            // 9. If scene change happened initialise inputs. And store the changed state.
+            // state only changes if scene changes.
+            // And scene changes may have been deactivated.
+            if ($state['SCENE_NEXT']->get_evaluated_state() !== 'false' && ! isset($input['%deactivate%'])) {
+                foreach ($this->variables as $statevar) {
+                    $this->state->set($statevar->number, $state[
+                        $statevar->name]->get_evaluated_state());
+                }
+                $this->state->set(self::SCENE_PATH, $state[
+                    'SCENE_PATH']->get_evaluated_state());
                 $this->state->set(self::SCENE_CURRENT, $state['SCENE_NEXT']->get_evaluated_state());
                 $this->init_from_state();
                 // Ensure reinitilaisation of input in cases where

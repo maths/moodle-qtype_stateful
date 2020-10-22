@@ -154,6 +154,10 @@ class qtype_stateful_renderer extends qtype_renderer {
                     unset($response[$key]);
                 }
             }
+            // Add the magic input token. For those inputs that don't do validation at all
+            // problem if all the inputs are like that and we have a countter based error
+            // handling PRTs.
+            $response['%deactivate%'] = true;
         }
 
         if (!$question->prtsprocessed) {
