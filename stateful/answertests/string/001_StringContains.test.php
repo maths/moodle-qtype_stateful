@@ -59,7 +59,7 @@ class stack_test_StringContains implements stack_answertest {
         // Special logic here. If the $sans is a direct reference to
         // an input we will map things to the inputs raw string-value.
         $san = $sans;
-        if (!$input_definitions->exists(trim($sans))) {
+        if ($input_definitions->exists(trim($sans))) {
             $san = 'stackmap_get(_INPUT_STRING,"' . trim($sans) . '")';
         }
         return "ATSRegExp($san,string_to_regex($tans))";
