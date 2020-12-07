@@ -247,7 +247,7 @@ class castext2_parser_utils {
         // Now we have the map for the mathmode of each char in the code.
         // Then to apply it.
         $paint = function ($node) use ($mathmodes) {
-            if (array_key_exists($node->position['start'], $mathmodes)) {
+            if (isset($node->position) && array_key_exists($node->position['start'], $mathmodes)) {
                 $node->mathmode = $mathmodes[$node->position['start']];
             }
             return true;
