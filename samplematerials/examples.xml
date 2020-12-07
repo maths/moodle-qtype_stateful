@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <quiz>
-<!-- question: 869  -->
+<!-- question: 29  -->
   <question type="stateful">
     <name>
       <text>EXAMPLE: Area between curve and axis</text>
@@ -17,7 +17,7 @@ The idea is to find out the surface area between a polynomial and the x-axis col
     <penalty>0.0000000</penalty>
     <hidden>0</hidden>
     <idnumber></idnumber>
-<stateful statefulversion="2020040800" stackversion="2020052800" entryscene="question" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.0000000" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;A&quot;,&quot;A&quot;:[19,36,45,47,48,68],&quot;B&quot;:[26,40,41,55,65,74],&quot;C&quot;:[]}">
+<stateful statefulversion="2020081100" stackversion="2020070300" entryscene="question" questionsimplify="1" assumepositive="0" assumereal="0" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;A&quot;,&quot;A&quot;:[36,41,61,81,86,94],&quot;B&quot;:[14,45,47,68,74],&quot;C&quot;:[]}">
   <questionvariables>
 <text><![CDATA[/* These define the range of interest. */
 _a: -4 + rand([-1,1]);
@@ -155,7 +155,7 @@ findSegments(range):=(
 
   </questionvariables>
   <questionnote>
-<text>{#_double#} {#_poly#}</text>
+<text>{@_double@}: {#_poly#}</text>
 
   </questionnote>
   <variable name="signError" type="Boolean" initialvalue="false" number="1">
@@ -187,14 +187,14 @@ findSegments(range):=(
     </scenevariables>
     <scenetext format="html">
       <text><![CDATA[<p>
-[[if test="(thatError or otherError or signError)"]]
+[[if test="is((thatError or otherError or signError)=true)"]]
 <b>Now lets try this again.</b>
 [[/if]]
-Find out the area shaded in the plot below, between the polynomial \(p(x)={@_poly@}\) and the \(x\)-axis when \(x \in [{#_a#},{#_b#}]\). Provide the exact value as your answer.</p>
+Find out the area shaded in the plot below, between the polynomial \(p(x)={@_poly@}\) and the \(x\)-axis when \(x \in [{#_a#},{#_b#}]\). Provide an exact value as the answer.</p>
 
 <br/>
 <center>
-[[jsxgraph width="35em" height="20em"]]
+[[jsxgraph width="35em" height="25em"]]
 var board = JXG.JSXGraph.initBoard(divid, {boundingbox:[{#_a-1#},{#ceiling(second(_maximal))+1#},{#_b+1#},{#floor(first(_maximal))-1#}], axis:true, showNavigation:false});
 var f = function(x) { return ({#_coeffs[1],numer#})*x*x*x+({#_coeffs[2],numer#})*x*x+({#_coeffs[3],numer#})*x+({#_coeffs[4],numer#});};
 f = board.create('functiongraph', [f, {#_a#}, {#_b#}], {strokewidth:1.5});
@@ -218,11 +218,11 @@ board.create('line',{#segment[1],stackfltfmt="~,4f"#},s);
 [[/jsxgraph]]
 </center>
 <br/>                           
-[[if test='otherError']]
+[[if test='is(otherError=true)']]
 <p><b>Based on earlier attempts</b>, the integral-function of that polynomial is:</p>
 \[ {@int(p(x),x)=int(_poly,x)+c@} \]
 [[/if]]
-[[if test='signError']]
+[[if test='is(signError=true)']]
 <p><b>Based on earlier attempts</b>, the sign of the polynomial changes at [[if test="is(_double=false)"]]
 \(x={@_roots[1]@}\), \(x={@_roots[2]@}\), and \(x={@_roots[3]@}\).
 [[else]]\(x={@_firstroot@}\)[[/if]].
@@ -239,7 +239,7 @@ board.create('line',{#segment[1],stackfltfmt="~,4f"#},s);
 
       </feedbackvariables>
       <node name="Correct" test="AlgEquiv" sans="ans1" tans="_theanswer" options="" quiet="1">
-        <true scoremode="=" score="_points" penaltymode="=" penalty="0" nextnode="$SCENE:end">
+        <true scoremode="=" score="_points" penaltymode="=" penalty="" nextnode="$SCENE:end">
           <variables>
 <text></text>
 
@@ -297,7 +297,7 @@ board.create('line',{#segment[1],stackfltfmt="~,4f"#},s);
         </false>
       </node>
       <node name="Did we already split?" test="AlgEquiv" sans="signError" tans="true" options="" quiet="1">
-        <true scoremode="=" score="" penaltymode="=" penalty="0" nextnode="">
+        <true scoremode="=" score="" penaltymode="=" penalty="" nextnode="">
           <variables>
 <text></text>
 
@@ -317,7 +317,7 @@ board.create('line',{#segment[1],stackfltfmt="~,4f"#},s);
 
         </tests>
         </true>
-        <false scoremode="=" score="" penaltymode="=" penalty="0" nextnode="$SCENE:split">
+        <false scoremode="=" score="" penaltymode="=" penalty="" nextnode="$SCENE:split">
           <variables>
 <text>if is(ev(ans1-_theobviouserror=0,simp)) then (
  thatError: true
@@ -334,7 +334,7 @@ board.create('line',{#segment[1],stackfltfmt="~,4f"#},s);
         </false>
       </node>
       <node name="Other errors" test="AlgEquiv" sans="ev(elementp(ans1,_signflips),eval,simp)" tans="true" options="" quiet="1">
-        <true scoremode="=" score="" penaltymode="=" penalty="0" nextnode="Did we already split?">
+        <true scoremode="=" score="" penaltymode="=" penalty="" nextnode="Did we already split?">
           <variables>
 <text></text>
 
@@ -348,7 +348,7 @@ board.create('line',{#segment[1],stackfltfmt="~,4f"#},s);
 
         </tests>
         </true>
-        <false scoremode="=" score="" penaltymode="=" penalty="0" nextnode="Did we already check the integral?">
+        <false scoremode="=" score="" penaltymode="=" penalty="" nextnode="Did we already check the integral?">
           <variables>
 <text></text>
 
@@ -363,7 +363,7 @@ board.create('line',{#segment[1],stackfltfmt="~,4f"#},s);
         </false>
       </node>
       <node name="Did we already check the integral?" test="AlgEquiv" sans="otherError" tans="true" options="" quiet="1">
-        <true scoremode="=" score="" penaltymode="=" penalty="0" nextnode="">
+        <true scoremode="=" score="" penaltymode="=" penalty="" nextnode="">
           <variables>
 <text></text>
 
@@ -377,7 +377,7 @@ board.create('line',{#segment[1],stackfltfmt="~,4f"#},s);
 
         </tests>
         </true>
-        <false scoremode="=" score="" penaltymode="=" penalty="0" nextnode="$SCENE:checkIntegration">
+        <false scoremode="=" score="" penaltymode="=" penalty="" nextnode="$SCENE:checkIntegration">
           <variables>
 <text></text>
 
@@ -392,31 +392,6 @@ board.create('line',{#segment[1],stackfltfmt="~,4f"#},s);
         </false>
       </node>
     </prt>
-  </scene>
-  <scene name="end">
-    <description>
-<text>The end</text>
-
-    </description>
-    <scenevariables>
-<text></text>
-
-    </scenevariables>
-    <scenetext format="html">
-      <text><![CDATA[<p><b>Congratulations, this question is now over.</b></p>
-[[if test="thatError"]]
-<p>You should now know the difference of {@int(p(x),x,a,b)@} and {@int(abs(p(x)),x,a,b)@}.</p>
-[[/if]]
-[[if test="not (thatError or otherError or signError)"]]
-<p>Impressive, apparently you already knew about signs changing.</p>
-[[/if]]
-[[if test="signError"]]
-<p>Did you know that finding out the places where the sign changes is not even necessary. Consider this:<p/>
-\[{@'int(abs(p(x)+B),x,_a,_b)@} = {@'int(p(x),x,_a,_b)-B*(_b-_a),simp:false@}\]
-<p>Where \(B\) just needs to be large enough.</p>
-[[/if]]
-]]></text>
-    </scenetext>
   </scene>
   <scene name="checkIntegration">
     <description>
@@ -486,7 +461,7 @@ otherError:true;</text>
     </scenevariables>
     <scenetext format="html">
       <text><![CDATA[[[if test='thatError']]
-<p>It seems like you have evaluated {@int(p(x),x,_a,_b)@}, unfortunately the polynomila changes sign between the ends of that range.</p>
+<p>It seems like you have evaluated {@int(p(x),x,_a,_b)@}, unfortunately the polynomial changes sign between the ends of that range.</p>
 [[/if]]
 <p>Just integrating {@int(p(x),x,_a,_b)@} is a problem as it represents <i>signed area</i>. In this question you are expected to evaluate both the positive and negative areas and sum the absolute values. Basically, evaluate {@int(abs(p(x)),x,_a,_b)@} instead.</p>
 <p>The simplest way of doing that is to evaluate the definite integral in parts, i.e. splitting it at the points where the sign of {@p(x)@} changes.</p>
@@ -660,9 +635,522 @@ signError:true;</text>
       </node>
     </prt>
   </scene>
+  <scene name="end">
+    <description>
+<text>The end</text>
+
+    </description>
+    <scenevariables>
+<text></text>
+
+    </scenevariables>
+    <scenetext format="html">
+      <text><![CDATA[<p><b>Congratulations, this question is now over.</b></p>
+[[if test="is(thatError=true)"]]
+<p>You should now know the difference of {@int(p(x),x,a,b)@} and {@int(abs(p(x)),x,a,b)@}.</p>
+[[/if]]
+[[if test="not (thatError or otherError or signError)"]]
+<p>Impressive, apparently you already knew about signs changing.</p>
+[[/if]]
+[[if test="signError"]]
+<p>Did you know that finding out the places where the sign changes is not even necessary. Consider this:<p/>
+\[{@'int(abs(p(x)+B),x,_a,_b)@} = {@'int(p(x),x,_a,_b)-B*(_b-_a),simp:false@}\]
+<p>Where \(B\) just needs to be large enough.</p>
+[[/if]]]]></text>
+    </scenetext>
+  </scene>
 </stateful>  </question>
 
-<!-- question: 862  -->
+<!-- question: 30  -->
+  <question type="stateful">
+    <name>
+      <text>EXAMPLE: MCQ and Order-inputs with tool generated large answer sets</text>
+    </name>
+    <questiontext format="html">
+      <text>This example presents a way of combining various types of inputs for telling a story. It also contains Parssons problems style parts where that PRTs and input-options have been generated by scripting or specialised editors.
+
+This question has no randomisation, however if one turns randomisation on it will affect the order-inputs by shuffling the extra parts, which might be nice to do.</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.1000000</penalty>
+    <hidden>0</hidden>
+    <idnumber></idnumber>
+<stateful statefulversion="2020081100" stackversion="2020070300" entryscene="Parson tool" questionsimplify="1" assumepositive="0" assumereal="0" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;&quot;,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
+  <questionvariables>
+<text></text>
+
+  </questionvariables>
+  <questionnote>
+<text></text>
+
+  </questionnote>
+  <scene name="the name">
+    <description>
+<text>We will start by telling a story about recursion.</text>
+
+    </description>
+    <scenevariables>
+<text></text>
+
+    </scenevariables>
+    <scenetext format="html">
+      <text><![CDATA[<p>You have been tasked to go through some badly commented and oddly named code by your predecessor. You just spotted this "gem", and you are starting to worry that your predecessor had some unhealthy tendencies towards recursion.</p>
+
+<div style="display:grid;place-items:center;;margin:1em;">
+[[indexing style="000"]]
+<pre style="margin:0;background-color:white;"><span style="width:2em;display:inline-block;background-color:lightgray;">[[index/]]</span>&nbsp;<span style="color:#383a42;"><span style="color:#a626a4;">def</span> <span style="color:#4078f2;">f</span>(<span style="color:#383a42;">s</span>):</span>
+<span style="width:2em;display:inline-block;background-color:lightgray;">[[index/]]</span>&nbsp;  <span style="color:#a626a4;">if</span> len(s) &lt;= <span style="color:#986801;">1</span>:
+<span style="width:2em;display:inline-block;background-color:lightgray;">[[index/]]</span>&nbsp;    <span style="color:#a626a4;">return</span> s[<span style="color:#986801;">0</span>:<span style="color:#986801;">1</span>]
+<span style="width:2em;display:inline-block;background-color:lightgray;">[[index/]]</span>&nbsp;  <span style="color:#a626a4;">return</span> s[<span style="color:#986801;">-1</span>:] + f(s[<span style="color:#986801;">0</span>:<span style="color:#986801;">-1</span>])</pre>
+[[/indexing]]
+</div>
+
+<p>First of all, it would be nice if that function had a sensible name, please pick the one making the most sense from these:</p>
+<div style="display:grid;place-items:center;">
+<div>
+[[input:name]]
+</div>
+</div>
+
+[[feedback:prt1]]
+
+<p>Also note that the variable name for the argument <code>s</code> seems rather terse, for now, we will assume that it is not short for a string but for a sequence.</p>]]></text>
+    </scenetext>
+    <input name="name" type="mcq" mcq-options="[{&quot;value&quot;:&quot;\&quot;reverse\&quot;&quot;,&quot;label&quot;:&quot;&lt;code&gt;reverse&lt;\/code&gt;&quot;,&quot;group&quot;:&quot;correct&quot;},{&quot;value&quot;:&quot;\&quot;sort\&quot;&quot;,&quot;label&quot;:&quot;&lt;code&gt;sort&lt;\/code&gt;&quot;,&quot;group&quot;:&quot;distractor&quot;},{&quot;value&quot;:&quot;\&quot;iterate\&quot;&quot;,&quot;label&quot;:&quot;&lt;code&gt;iterate&lt;\/code&gt;&quot;,&quot;group&quot;:&quot;distractor&quot;,&quot;inclusion&quot;:&quot;true&quot;},{&quot;value&quot;:&quot;\&quot;recurse\&quot;&quot;,&quot;label&quot;:&quot;&lt;code&gt;recurse&lt;\/code&gt;&quot;,&quot;group&quot;:&quot;distractor&quot;,&quot;inclusion&quot;:&quot;true&quot;}]" mcq-randomise-order="true" mcq-no-deselect="true" tans="&quot;\&quot;reverse\&quot;&quot;"/>
+    <prt name="prt1" value="1.0000000" firstnodename="Is it correct" scoremode="best" scoremodeparameters="">
+      <feedbackvariables>
+<text></text>
+
+      </feedbackvariables>
+      <node name="Is it correct" test="AlgEquiv" sans="name" tans="&quot;reverse&quot;" options="" quiet="0">
+        <true scoremode="=" score="1" penaltymode="=" penalty="0" nextnode="$SCENE:the problem">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>
+<text></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="0" penaltymode="=" penalty="" nextnode="Sort?">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>\n<text></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </false>
+      </node>
+      <node name="Sort?" test="AlgEquiv" sans="name" tans="&quot;sort&quot;" options="" quiet="0">
+        <true scoremode="=" score="0" penaltymode="=" penalty="" nextnode="">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>
+<text><![CDATA[<p>This function does not seem to sort anything, maybe some other name would make more sense.</p>]]></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="0" penaltymode="=" penalty="" nextnode="Recurse">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>\n<text></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </false>
+      </node>
+      <node name="Recurse" test="AlgEquiv" sans="name" tans="&quot;recurse&quot;" options="" quiet="0">
+        <true scoremode="=" score="0" penaltymode="=" penalty="" nextnode="">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>
+<text><![CDATA[<p>It is indeed a recursive function, but what does it do? Compared to the input what is the output?</p>]]></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="0" penaltymode="=" penalty="" nextnode="">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>\n<text><![CDATA[<p>In some sense it iterates over the input, but is that its primary purpose?</p>]]></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </false>
+      </node>
+    </prt>
+  </scene>
+  <scene name="the problem">
+    <description>
+<text>Now we start to explore the problem of recursion being used in this type of an use case.</text>
+
+    </description>
+    <scenevariables>
+<text></text>
+
+    </scenevariables>
+    <scenetext format="html">
+      <text><![CDATA[<p>Now that we have a sensible name, and you added some comments, we can start to explore this code in more detail.</p>
+
+<div style="display:grid;place-items:center;margin:1em;">
+[[indexing style="000"]]
+<pre style="margin:0;background-color:white;"><span style="width:2em;display:inline-block;background-color:lightgray;color:#212529;">[[index/]]</span>&nbsp;<span style="color:#383a42;"><span style="color:#a626a4;">def</span> <span style="color:#4078f2;">reverse</span>(<span style="color:#383a42;">sequence</span>):</span>
+<span style="width:2em;display:inline-block;background-color:lightgray;color:#212529;">[[index/]]</span>&nbsp;  <span style="color:#50a14f;">&quot;&quot;&quot;Reverses a sequence.
+<span style="width:2em;display:inline-block;background-color:lightgray;color:#212529;">[[index/]]</span>&nbsp;  
+<span style="width:2em;display:inline-block;background-color:lightgray;color:#212529;">[[index/]]</span>&nbsp;  Args:
+<span style="width:2em;display:inline-block;background-color:lightgray;color:#212529;">[[index/]]</span>&nbsp;    sequence: The sequence to reverse, any concatenation supporting sequence type will do.
+<span style="width:2em;display:inline-block;background-color:lightgray;color:#212529;">[[index/]]</span>&nbsp;
+<span style="width:2em;display:inline-block;background-color:lightgray;color:#212529;">[[index/]]</span>&nbsp;  Returns:
+<span style="width:2em;display:inline-block;background-color:lightgray;color:#212529;">[[index/]]</span>&nbsp;    Reversed copy of the sequence.
+<span style="width:2em;display:inline-block;background-color:lightgray;color:#212529;">[[index/]]</span>&nbsp;  &quot;&quot;&quot;</span>
+<span style="width:2em;display:inline-block;background-color:lightgray;color:#212529;">[[index/]]</span>&nbsp;  <span style="color:#a626a4;">if</span> len(sequence) &lt;= <span style="color:#986801;">1</span>:
+<span style="width:2em;display:inline-block;background-color:lightgray;color:#212529;">[[index/]]</span>&nbsp;    <span style="color:#a626a4;">return</span> sequence[<span style="color:#986801;">0</span>:<span style="color:#986801;">1</span>] <span style="color:#a0a1a7;font-style:italic;"># Return a sequence, not just the 0th element.</span>
+<span style="width:2em;display:inline-block;background-color:lightgray;color:#212529;">[[index/]]</span>&nbsp;  <span style="color:#a626a4;">return</span> sequence[<span style="color:#986801;">-1</span>:] + reverse(sequence[<span style="color:#986801;">0</span>:<span style="color:#986801;">-1</span>])</pre>
+[[/indexing]]
+</div>
+
+<p>At this point it is worth noting that most sequence types in Python already have a <code>reverse</code> method. However, it is defined as an in place operation, which is quite different than what we have here. In any case, <code>sequence.copy().reverse()</code> would be equivalent to what we have and we could just replace all calls to this with that.</p>
+
+<p>Unless, there is a reason for that particular function to do this in this way. For example, there might be a function-wrapper, added by some decorator or by introspection, that would do something during each recursion-call which would require us to generate equivalent behaviour if we were to replace this function. We'll just assume that no such complications exist and start to look at the actual problem with this function.</p>
+
+<p>Given a sequence with five elements how many times the following things happen if the function is called with that sequence of 5 elements?</p>
+
+<table>
+<tr><td>[[input:slices]]</td><td>Slices, e.g. <code>sequence[a:b]</code></td></tr>
+<tr><td>[[input:concats]]</td><td>Concatenations, e.g. <code>[a,b] + [c]</code></td></tr>
+<tr><td>[[input:calls]]</td><td>Calls of <code>reverse</code>, including the initial call</td></tr>
+<tr><td colspan="2">[[validation:nums]]</td></tr>
+</table>
+
+[[feedback:nums]]]]></text>
+    </scenetext>
+    <input name="slices" type="algebraic" validation-box="&quot;nums&quot;" require-same-type="true" input-width="5" tans="&quot;9&quot;"/>
+    <input name="concats" type="algebraic" validation-box="&quot;nums&quot;" require-same-type="true" input-width="5" tans="&quot;4&quot;"/>
+    <input name="calls" type="algebraic" validation-box="&quot;nums&quot;" require-same-type="true" input-width="5" tans="&quot;5&quot;"/>
+    <vbox name="nums" type="custom" text="&quot;[[list_errors:slices,concats,calls]].&quot;"/>
+    <prt name="nums" value="3.0000000" firstnodename="Calls" scoremode="best" scoremodeparameters="">
+      <feedbackvariables>
+<text></text>
+
+      </feedbackvariables>
+      <node name="Calls" test="AlgEquiv" sans="calls" tans="5" options="" quiet="0">
+        <true scoremode="=" score="1" penaltymode="=" penalty="0" nextnode="Slices">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>
+<text></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="" penaltymode="+" penalty="0" nextnode="Less calls?">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>\n<text></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </false>
+      </node>
+      <node name="Less calls?" test="AlgEquiv" sans="is(calls&lt;5),simp" tans="true" options="" quiet="0">
+        <true scoremode="=" score="" penaltymode="=" penalty="" nextnode="Slices">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>
+<text><![CDATA[<p>There should be more calls.</p>]]></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="" penaltymode="=" penalty="" nextnode="Slices">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>\n<text><![CDATA[<p>You have managed to find more calls than actually happened.</p>]]></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </false>
+      </node>
+      <node name="Slices" test="AlgEquiv" sans="slices" tans="9" options="" quiet="0">
+        <true scoremode="+" score="1" penaltymode="+" penalty="0" nextnode="Concats">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>
+<text></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="" penaltymode="+" penalty="0" nextnode="Less slices?">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>\n<text></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </false>
+      </node>
+      <node name="Less slices?" test="AlgEquiv" sans="is(slices&lt;9),simp" tans="true" options="" quiet="0">
+        <true scoremode="=" score="" penaltymode="=" penalty="" nextnode="Concats">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>
+<text><![CDATA[<p>There should be more slices.</p>]]></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="" penaltymode="=" penalty="" nextnode="Concats">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>\n<text><![CDATA[<p>You have managed to find more slices than actually happened.</p>]]></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </false>
+      </node>
+      <node name="Concats" test="AlgEquiv" sans="concats" tans="4" options="" quiet="0">
+        <true scoremode="+" score="1" penaltymode="+" penalty="0" nextnode="">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>
+<text></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="" penaltymode="+" penalty="0" nextnode="Less concats?">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>\n<text></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </false>
+      </node>
+      <node name="Less concats?" test="AlgEquiv" sans="is(concats&lt;4),simp" tans="true" options="" quiet="0">
+        <true scoremode="=" score="" penaltymode="=" penalty="" nextnode="">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>
+<text><![CDATA[<p>There should be more concats.</p>]]></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </true>
+        <false scoremode="=" score="" penaltymode="=" penalty="" nextnode="">
+          <variables>
+<text></text>
+
+        </variables>
+          <feedback>\n<text><![CDATA[<p>You have managed to find more concatenations than actually happened.</p>]]></text>
+
+        </feedback>
+          <tests>
+<text>[]</text>
+
+        </tests>
+        </false>
+      </node>
+    </prt>
+  </scene>
+  <scene name="Parson tool">
+    <description>
+<text><![CDATA[Generated from <pre>###BLOCK_START:TEMPLATE
+[["empty",0,1],["initial",["P1",0]],["initial",["P2",0]],["empty",1,4]]
+###BLOCK_END:TEMPLATE
+
+###BLOCK_START:INDENT-SIZE
+2
+###BLOCK_END:INDENT-SIZE
+
+###BLOCK_START:MAX-INDENT
+4
+###BLOCK_END:MAX-INDENT
+
+###BLOCK_START:S1
+def f(s):
+  if len(s) <= 1:
+    return s[0:1]
+  return s[-1:] + f(s[0:-1])
+###BLOCK_END:S1
+
+
+###BLOCK_START:P3
+tmp = sequence[0:0]
+###BLOCK_END:P3
+####BLOCK_START:P4
+for c in sequence:
+  tmp = c + tmp
+###BLOCK_END:P4
+#####BLOCK_START:P5
+return tmp
+###BLOCK_END:P5
+
+#####BLOCK_START:P6
+mid = math.ceil(len(sequence)/2)
+###BLOCK_END:P6
+
+#####BLOCK_START:P7
+import math
+###BLOCK_END:P7
+
+#####BLOCK_START:P8
+for i in range(0, mid):
+###BLOCK_END:P8
+
+#####BLOCK_START:P9
+tmp = sequence[i]
+sequence[i] = sequence[-i]
+sequence[-i] = tmp
+###BLOCK_END:P9
+
+#####BLOCK_START:P10
+sequence = sequence[:]
+###BLOCK_END:P10
+
+###BLOCK_START:P1
+def reverse(sequence):
+  """Reverses a sequence.
+  
+  Args:
+    sequence: The sequence to reverse, any concatenation supporting sequence type will do.
+
+  Returns:
+    Reversed copy of the sequence.
+  """
+###BLOCK_END:P1
+####BLOCK_START:P2
+  if len(sequence) <= 1:
+    return sequence[0:1] # Return a sequence, not just the 0th element.
+  return sequence[-1:] + reverse(sequence[0:-1])
+###BLOCK_END:P2
+
+
+###BLOCK_START:TEST
+test = [1,2,3,4,5,6]
+tst1 = test[:]
+clas = 'NOT REVERSED'
+if reverse(tst1) == test[::-1]:
+  clas = 'REVERSED'
+  if not tst1 == test:
+    clas = 'IN PLACE'
+print(clas)
+###BLOCK_END:TEST</pre>]]></text>
+
+    </description>
+    <scenevariables>
+<text></text>
+
+    </scenevariables>
+    <scenetext format="html">
+      <text><![CDATA[Generated fragments
+
+<p>A generated block "S1"</p>[[indexing style="000"]]
+
+<div class="highlight" style="background: #f8f8f8; margin:0;background-color:#f8f8f8;"><pre style="line-height: 125%"><span style="width:2em;display:inline-block;background-color:lightgray;color:#212529;">[[index/]]</span>&nbsp;<span style="color: #008000; font-weight: bold">def</span> <span style="color: #0000FF">f</span>(s):
+<span style="width:2em;display:inline-block;background-color:lightgray;color:#212529;">[[index/]]</span>&nbsp;  <span style="color: #008000; font-weight: bold">if</span> <span style="color: #008000">len</span>(s) <span style="color: #666666">&lt;=</span> <span style="color: #666666">1</span>:
+<span style="width:2em;display:inline-block;background-color:lightgray;color:#212529;">[[index/]]</span>&nbsp;    <span style="color: #008000; font-weight: bold">return</span> s[<span style="color: #666666">0</span>:<span style="color: #666666">1</span>]
+<span style="width:2em;display:inline-block;background-color:lightgray;color:#212529;">[[index/]]</span>&nbsp;  <span style="color: #008000; font-weight: bold">return</span> s[<span style="color: #666666">-1</span>:] <span style="color: #666666">+</span> f(s[<span style="color: #666666">0</span>:<span style="color: #666666">-1</span>])
+</pre></div>
+[[/indexing]]
+
+<div>[[input:parsons]]</div><div>[[feedback:parsons]]</div>]]></text>
+    </scenetext>
+    <input name="parsons" type="order" validation-box="&quot;&quot;" must-verify="false" order-indent="&quot;2&quot;" order-type="&quot;fill-in vertical with indentation&quot;" order-tokens="[{&quot;value&quot;:&quot;P3&quot;,&quot;label&quot;:&quot;&lt;div class=\&quot;highlight\&quot; style=\&quot;background: #f8f8f8; margin:0;background-color:#f8f8f8;\&quot;&gt;&lt;pre style=\&quot;line-height: 125%\&quot;&gt;&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#tmp &lt;span style=\&quot;color: #666666\&quot;&gt;=&lt;\/span&gt; sequence[&lt;span style=\&quot;color: #666666\&quot;&gt;0&lt;\/span&gt;:&lt;span style=\&quot;color: #666666\&quot;&gt;0&lt;\/span&gt;]\n&lt;\/pre&gt;&lt;\/div&gt;\n&quot;},{&quot;value&quot;:&quot;P4&quot;,&quot;label&quot;:&quot;&lt;div class=\&quot;highlight\&quot; style=\&quot;background: #f8f8f8; margin:0;background-color:#f8f8f8;\&quot;&gt;&lt;pre style=\&quot;line-height: 125%\&quot;&gt;&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#&lt;span style=\&quot;color: #008000; font-weight: bold\&quot;&gt;for&lt;\/span&gt; c &lt;span style=\&quot;color: #AA22FF; font-weight: bold\&quot;&gt;in&lt;\/span&gt; sequence:\n&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#  tmp &lt;span style=\&quot;color: #666666\&quot;&gt;=&lt;\/span&gt; c &lt;span style=\&quot;color: #666666\&quot;&gt;+&lt;\/span&gt; tmp\n&lt;\/pre&gt;&lt;\/div&gt;\n&quot;},{&quot;value&quot;:&quot;P5&quot;,&quot;label&quot;:&quot;&lt;div class=\&quot;highlight\&quot; style=\&quot;background: #f8f8f8; margin:0;background-color:#f8f8f8;\&quot;&gt;&lt;pre style=\&quot;line-height: 125%\&quot;&gt;&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#&lt;span style=\&quot;color: #008000; font-weight: bold\&quot;&gt;return&lt;\/span&gt; tmp\n&lt;\/pre&gt;&lt;\/div&gt;\n&quot;},{&quot;value&quot;:&quot;P6&quot;,&quot;label&quot;:&quot;&lt;div class=\&quot;highlight\&quot; style=\&quot;background: #f8f8f8; margin:0;background-color:#f8f8f8;\&quot;&gt;&lt;pre style=\&quot;line-height: 125%\&quot;&gt;&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#mid &lt;span style=\&quot;color: #666666\&quot;&gt;=&lt;\/span&gt; math&lt;span style=\&quot;color: #666666\&quot;&gt;.&lt;\/span&gt;ceil(&lt;span style=\&quot;color: #008000\&quot;&gt;len&lt;\/span&gt;(sequence)&lt;span style=\&quot;color: #666666\&quot;&gt;\/2&lt;\/span&gt;)\n&lt;\/pre&gt;&lt;\/div&gt;\n&quot;},{&quot;value&quot;:&quot;P7&quot;,&quot;label&quot;:&quot;&lt;div class=\&quot;highlight\&quot; style=\&quot;background: #f8f8f8; margin:0;background-color:#f8f8f8;\&quot;&gt;&lt;pre style=\&quot;line-height: 125%\&quot;&gt;&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#&lt;span style=\&quot;color: #008000; font-weight: bold\&quot;&gt;import&lt;\/span&gt; &lt;span style=\&quot;color: #0000FF; font-weight: bold\&quot;&gt;math&lt;\/span&gt;\n&lt;\/pre&gt;&lt;\/div&gt;\n&quot;},{&quot;value&quot;:&quot;P8&quot;,&quot;label&quot;:&quot;&lt;div class=\&quot;highlight\&quot; style=\&quot;background: #f8f8f8; margin:0;background-color:#f8f8f8;\&quot;&gt;&lt;pre style=\&quot;line-height: 125%\&quot;&gt;&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#&lt;span style=\&quot;color: #008000; font-weight: bold\&quot;&gt;for&lt;\/span&gt; i &lt;span style=\&quot;color: #AA22FF; font-weight: bold\&quot;&gt;in&lt;\/span&gt; &lt;span style=\&quot;color: #008000\&quot;&gt;range&lt;\/span&gt;(&lt;span style=\&quot;color: #666666\&quot;&gt;0&lt;\/span&gt;, mid):\n&lt;\/pre&gt;&lt;\/div&gt;\n&quot;},{&quot;value&quot;:&quot;P9&quot;,&quot;label&quot;:&quot;&lt;div class=\&quot;highlight\&quot; style=\&quot;background: #f8f8f8; margin:0;background-color:#f8f8f8;\&quot;&gt;&lt;pre style=\&quot;line-height: 125%\&quot;&gt;&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#tmp &lt;span style=\&quot;color: #666666\&quot;&gt;=&lt;\/span&gt; sequence[i]\n&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#sequence[i] &lt;span style=\&quot;color: #666666\&quot;&gt;=&lt;\/span&gt; sequence[&lt;span style=\&quot;color: #666666\&quot;&gt;-&lt;\/span&gt;i]\n&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#sequence[&lt;span style=\&quot;color: #666666\&quot;&gt;-&lt;\/span&gt;i] &lt;span style=\&quot;color: #666666\&quot;&gt;=&lt;\/span&gt; tmp\n&lt;\/pre&gt;&lt;\/div&gt;\n&quot;},{&quot;value&quot;:&quot;P10&quot;,&quot;label&quot;:&quot;&lt;div class=\&quot;highlight\&quot; style=\&quot;background: #f8f8f8; margin:0;background-color:#f8f8f8;\&quot;&gt;&lt;pre style=\&quot;line-height: 125%\&quot;&gt;&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#sequence &lt;span style=\&quot;color: #666666\&quot;&gt;=&lt;\/span&gt; sequence[:]\n&lt;\/pre&gt;&lt;\/div&gt;\n&quot;},{&quot;value&quot;:&quot;P1&quot;,&quot;label&quot;:&quot;&lt;div class=\&quot;highlight\&quot; style=\&quot;background: #f8f8f8; margin:0;background-color:#f8f8f8;\&quot;&gt;&lt;pre style=\&quot;line-height: 125%\&quot;&gt;&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#&lt;span style=\&quot;color: #008000; font-weight: bold\&quot;&gt;def&lt;\/span&gt; &lt;span style=\&quot;color: #0000FF\&quot;&gt;reverse&lt;\/span&gt;(sequence):\n&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#  &lt;span style=\&quot;color: #BA2121; font-style: italic\&quot;&gt;&amp;quot;&amp;quot;&amp;quot;Reverses a sequence.&lt;\/span&gt;\n&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#&lt;span style=\&quot;color: #BA2121; font-style: italic\&quot;&gt;  &lt;\/span&gt;\n&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#&lt;span style=\&quot;color: #BA2121; font-style: italic\&quot;&gt;  Args:&lt;\/span&gt;\n&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#&lt;span style=\&quot;color: #BA2121; font-style: italic\&quot;&gt;    sequence: The sequence to reverse, any concatenation supporting sequence type will do.&lt;\/span&gt;\n&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#\n&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#&lt;span style=\&quot;color: #BA2121; font-style: italic\&quot;&gt;  Returns:&lt;\/span&gt;\n&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#&lt;span style=\&quot;color: #BA2121; font-style: italic\&quot;&gt;    Reversed copy of the sequence.&lt;\/span&gt;\n&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#&lt;span style=\&quot;color: #BA2121; font-style: italic\&quot;&gt;  &amp;quot;&amp;quot;&amp;quot;&lt;\/span&gt;\n&lt;\/pre&gt;&lt;\/div&gt;\n&quot;},{&quot;value&quot;:&quot;P2&quot;,&quot;label&quot;:&quot;&lt;div class=\&quot;highlight\&quot; style=\&quot;background: #f8f8f8; margin:0;background-color:#f8f8f8;\&quot;&gt;&lt;pre style=\&quot;line-height: 125%\&quot;&gt;&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#  &lt;span style=\&quot;color: #008000; font-weight: bold\&quot;&gt;if&lt;\/span&gt; &lt;span style=\&quot;color: #008000\&quot;&gt;len&lt;\/span&gt;(sequence) &lt;span style=\&quot;color: #666666\&quot;&gt;&amp;lt;=&lt;\/span&gt; &lt;span style=\&quot;color: #666666\&quot;&gt;1&lt;\/span&gt;:\n&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#    &lt;span style=\&quot;color: #008000; font-weight: bold\&quot;&gt;return&lt;\/span&gt; sequence[&lt;span style=\&quot;color: #666666\&quot;&gt;0&lt;\/span&gt;:&lt;span style=\&quot;color: #666666\&quot;&gt;1&lt;\/span&gt;] &lt;span style=\&quot;color: #408080; font-style: italic\&quot;&gt;# Return a sequence, not just the 0th element.&lt;\/span&gt;\n&lt;span style=\&quot;width:2em;display:inline-block;background-color:lightgray;color:#212529;\&quot;&gt;[[index\/]]&lt;\/span&gt;&amp;nbsp;#indent#  &lt;span style=\&quot;color: #008000; font-weight: bold\&quot;&gt;return&lt;\/span&gt; sequence[&lt;span style=\&quot;color: #666666\&quot;&gt;-1&lt;\/span&gt;:] &lt;span style=\&quot;color: #666666\&quot;&gt;+&lt;\/span&gt; reverse(sequence[&lt;span style=\&quot;color: #666666\&quot;&gt;0&lt;\/span&gt;:&lt;span style=\&quot;color: #666666\&quot;&gt;-1&lt;\/span&gt;])\n&lt;\/pre&gt;&lt;\/div&gt;\n&quot;}]" order-template="&quot;[[\&quot;empty\&quot;,0,1],[\&quot;initial\&quot;,[\&quot;P1\&quot;,0]],[\&quot;initial\&quot;,[\&quot;P2\&quot;,0]],[\&quot;empty\&quot;,1,4]]&quot;" tans="&quot;[]&quot;"/>
+  </scene>
+</stateful>  </question>
+
+<!-- question: 31  -->
   <question type="stateful">
     <name>
       <text>EXAMPLE: Partial integration</text>
@@ -679,10 +1167,10 @@ Scoring here:
       <text></text>
     </generalfeedback>
     <defaultgrade>4.0000000</defaultgrade>
-    <penalty>0.3333333</penalty>
+    <penalty>0.0000000</penalty>
     <hidden>0</hidden>
     <idnumber></idnumber>
-<stateful statefulversion="2020040800" stackversion="2020052800" entryscene="intro" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;B&quot;,&quot;A&quot;:[],&quot;B&quot;:[3,4,14,22,25,52,59,86],&quot;C&quot;:[2,11,18,24,31,32,37,65]}">
+<stateful statefulversion="2020081100" stackversion="2020070300" entryscene="intro" questionsimplify="1" assumepositive="0" assumereal="0" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;B&quot;,&quot;A&quot;:[],&quot;B&quot;:[3,4,14,22,25,52,59,86],&quot;C&quot;:[2,11,18,24,31,32,37,65]}">
   <questionvariables>
 <text>/* We adjust the presentation of integrals in the whole question
    with this. Essenttially, it keeps the multiplier within 
@@ -1094,7 +1582,7 @@ dvs: reverse(lastn(reverse(dvs), length(dvs) - 1));</text>
 
       </feedbackvariables>
       <node name="Just do it" test="Int" sans="integration" tans="ev(integrate(last(vs)*last(dus),x),simp)" options="x" quiet="0">
-        <true scoremode="=" score="1" penaltymode="=" penalty="0" nextnode="$SCENE:end">
+        <true scoremode="=" score="1" penaltymode="=" penalty="" nextnode="$SCENE:end">
           <variables>
 <text></text>
 
@@ -1331,7 +1819,7 @@ selectionTypes:append(selectionTypes,[-1]);</text>
   </scene>
 </stateful>  </question>
 
-<!-- question: 863  -->
+<!-- question: 32  -->
   <question type="stateful">
     <name>
       <text>TECH: Algebraic input options tester</text>
@@ -1346,7 +1834,7 @@ selectionTypes:append(selectionTypes,[-1]);</text>
     <penalty>0.3333333</penalty>
     <hidden>0</hidden>
     <idnumber></idnumber>
-<stateful statefulversion="2020040800" stackversion="2020051400" entryscene="A" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;_free&quot;,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
+<stateful statefulversion="2020081100" stackversion="2020112400" entryscene="A" questionsimplify="1" assumepositive="0" assumereal="0" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;_free&quot;,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
   <questionvariables>
 <text></text>
 
@@ -1649,7 +2137,7 @@ samples.on('click', function(e) {
   </scene>
 </stateful>  </question>
 
-<!-- question: 864  -->
+<!-- question: 33  -->
   <question type="stateful">
     <name>
       <text>TECH: Answer-tests in Stateful</text>
@@ -1668,7 +2156,7 @@ Note 2, the 'no-units' option of inputs is used as this material contains both u
     <penalty>0.3333333</penalty>
     <hidden>0</hidden>
     <idnumber></idnumber>
-<stateful statefulversion="2020040800" stackversion="2020052800" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:0,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
+<stateful statefulversion="2020081100" stackversion="2020112400" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;&quot;,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
   <questionvariables>
 <text></text>
 
@@ -2373,7 +2861,7 @@ samples.on('click', function(e) {
 
         </feedback>
           <tests>
-<text><![CDATA[[{"name":"3-figs 0.001 != 0; 3","condition":"true","inputs":{"anss":"dispdp(0.001,3)","anst":"0","ansoptions":"3"}},{"name":"Just 3-digs 0.12 != 0; [3,0]","condition":"true","inputs":{"anss":"dispdp(0.12,2)","anst":"0","ansoptions":"[3,0]"}},{"name":"Var-ref 0.12345 != 0; four","condition":"true","inputs":{"anss":"0.12345","anst":"0","ansoptions":"RAW:four"}},{"name":"Excessive and wrong 1.10001 != 1; [3,-1]","condition":"true","inputs":{"anss":"dispdp(1.10001,5)","anst":"1.1","ansoptions":"[3,-1]"}}]]]></text>
+<text><![CDATA[[{"name":"3-figs 0.001 != 0; 3","condition":"true","inputs":{"anss":"dispdp(0.001,3)","anst":"0","ansoptions":"3"}},{"name":"Just 3-digs 0.12 != 0; [3,0]","condition":"true","inputs":{"anss":"dispdp(0.12,2)","anst":"0","ansoptions":"[3,0]"}},{"name":"Var-ref 0.12345 != 0; four","condition":"true","inputs":{"anss":"0.12345","anst":"0","ansoptions":"RAW:four"}}]]]></text>
 
         </tests>
         </false>
@@ -3062,7 +3550,7 @@ samples.on('click', function(e) {
     </scenetext>
     <input name="anss" type="algebraic" validation-box="&quot;val&quot;" no-units="true" tans="&quot;x+c&quot;"/>
     <input name="anst" type="algebraic" validation-box="&quot;val&quot;" no-units="true" tans="&quot;1&quot;"/>
-    <input name="anso" type="algebraic" validation-box="&quot;val&quot;" no-units="true" allow-words="&quot;NOCONST&quot;" tans="&quot;x&quot;"/>
+    <input name="anso" type="algebraic" validation-box="&quot;val&quot;" no-units="true" tans="&quot;x&quot;"/>
     <input name="back" type="button" input-label="&quot;Back&quot;" guidance-label="&quot;back to the test selection&quot;"/>
     <vbox name="val" type="custom" text="&quot;&lt;p&gt;These parameters would be equivalent to calling &lt;code&gt;ATInt({#anss#},{#anst#},{#anso#})&lt;\/code&gt;&lt;\/p&gt;\n\n[[ if test=\&quot;%_valid_anss and %_valid_anst and %_valid_anso and check_opt(anso)\&quot; ]]\n[[ define tr=\&quot;ATInt(anss,anst,anso)\&quot;\/]]\n&lt;p&gt;The test would\n[[ if test=\&quot;tr[2]\&quot;]]\npass,\n[[else]]\nfail,\n[[\/if]]\n[[ if test='is(tr[3]=\&quot;\&quot;)']]\nthere would be no notes,\n[[else]]\nit would return specific notes &lt;code&gt;{@tr[3]@}&lt;\/code&gt;,\n[[\/if]]\n[[ if test='is(tr[4]=\&quot;\&quot;)']]\nand no feedback.\n[[else]]\nand some feedback to see it press 'Check'.\n[[\/if]]\n&lt;\/p&gt;\n[[\/ if ]]&quot;"/>
     <prt name="back" value="1.0000000" firstnodename="Root node" scoremode="no score" scoremodeparameters="">
@@ -3142,7 +3630,7 @@ samples.on('click', function(e) {
 
     </description>
     <scenevariables>
-<text><![CDATA[foo(a,b,c):=ATUnitsSigFigs_CASSigFigsWrapper(a,b,c,stackmap_get(_INPUT_STRING,"anss"),false);
+<text><![CDATA[foo(a,b,c):=ATUnitsSigFigs_CASSigFigsWrapper(a,b,ev(c,simp),stackmap_get(_INPUT_STRING,"anss"),false);
 validoptions(opts):=ev(
 	if integerp(opts) then (
     	if opts > 0 then true else false
@@ -3281,7 +3769,7 @@ samples.on('click', function(e) {
 
         </feedback>
           <tests>
-<text><![CDATA[[{"name":"3-figs 0.001m != 0m; 3","condition":"true","inputs":{"anss":"dispdp(0.001,3)*m","anst":"stackunits(0,m)","ansoptions":"3"}},{"name":"Just 3-digs 0.12g != 0g; [3,0]","condition":"true","inputs":{"anss":"dispdp(0.12,2)*g","anst":"stackunits(0,g)","ansoptions":"[3,0]"}},{"name":"Var-ref 0.12345m != 0m; four","condition":"true","inputs":{"anss":"0.12345*m","anst":"stackunits(0,m)","ansoptions":"RAW:four"}},{"name":"Excessive and wrong 1.10001g != 1g; [3,-1]","condition":"true","inputs":{"anss":"dispdp(1.10001,5)*g","anst":"1.1*g","ansoptions":"[3,-1]"}},{"name":"Wrong dimension","condition":"true","inputs":{"anss":"11*mg","anst":"11*mm","ansoptions":"2"}}]]]></text>
+<text><![CDATA[[{"name":"3-figs 0.001m != 0m; 3","condition":"true","inputs":{"anss":"dispdp(0.001,3)*m","anst":"stackunits(0,m)","ansoptions":"3"}},{"name":"Just 3-digs 0.12g != 0g; [3,0]","condition":"true","inputs":{"anss":"dispdp(0.12,2)*g","anst":"stackunits(0,g)","ansoptions":"[3,0]"}},{"name":"Var-ref 0.12345m != 0m; four","condition":"true","inputs":{"anss":"0.12345*m","anst":"stackunits(0,m)","ansoptions":"RAW:four"}},{"name":"Wrong dimension","condition":"true","inputs":{"anss":"11*mg","anst":"11*mm","ansoptions":"2"}}]]]></text>
 
         </tests>
         </false>
@@ -3503,7 +3991,7 @@ samples.on('click', function(e) {
 
     </description>
     <scenevariables>
-<text><![CDATA[foo(a,b,c):=ATUnitsSigFigs_CASSigFigsWrapper(a,b,c,stackmap_get(_INPUT_STRING,"anss"),true);
+<text><![CDATA[foo(a,b,c):=ATUnitsSigFigs_CASSigFigsWrapper(a,b,ev(c,simp),stackmap_get(_INPUT_STRING,"anss"),true);
 validoptions(opts):=ev(
 	if integerp(opts) then (
     	if opts > 0 then true else false
@@ -3644,7 +4132,7 @@ samples.on('click', function(e) {
 
         </feedback>
           <tests>
-<text><![CDATA[[{"name":"3-figs 0.001m != 0m; 3","condition":"true","inputs":{"anss":"dispdp(0.001,3)*m","anst":"stackunits(0,m)","ansoptions":"3"}},{"name":"Just 3-digs 0.12g != 0g; [3,0]","condition":"true","inputs":{"anss":"dispdp(0.12,2)*g","anst":"stackunits(0,g)","ansoptions":"[3,0]"}},{"name":"Var-ref 0.12345m != 0m; four","condition":"true","inputs":{"anss":"0.12345*m","anst":"stackunits(0,m)","ansoptions":"RAW:four"}},{"name":"Excessive and wrong 1.10001g != 1g; [3,-1]","condition":"true","inputs":{"anss":"dispdp(1.10001,5)*g","anst":"1.1*g","ansoptions":"[3,-1]"}},{"name":"Wrong dimension","condition":"true","inputs":{"anss":"11*mg","anst":"11*mm","ansoptions":"2"}},{"name":"Different prefix","condition":"true","inputs":{"anss":"1.000*kg","anst":"1000*g","ansoptions":"3"}}]]]></text>
+<text><![CDATA[[{"name":"3-figs 0.001m != 0m; 3","condition":"true","inputs":{"anss":"dispdp(0.001,3)*m","anst":"stackunits(0,m)","ansoptions":"3"}},{"name":"Just 3-digs 0.12g != 0g; [3,0]","condition":"true","inputs":{"anss":"dispdp(0.12,2)*g","anst":"stackunits(0,g)","ansoptions":"[3,0]"}},{"name":"Var-ref 0.12345m != 0m; four","condition":"true","inputs":{"anss":"0.12345*m","anst":"stackunits(0,m)","ansoptions":"RAW:four"}},{"name":"Wrong dimension","condition":"true","inputs":{"anss":"11*mg","anst":"11*mm","ansoptions":"2"}},{"name":"Different prefix","condition":"true","inputs":{"anss":"1.000*kg","anst":"1000*g","ansoptions":"3"}}]]]></text>
 
         </tests>
         </false>
@@ -4735,7 +5223,7 @@ ATUnitsStrictAbsolute(sans,tans,tolerance)</code></h3>
   </scene>
 </stateful>  </question>
 
-<!-- question: 865  -->
+<!-- question: 34  -->
   <question type="stateful">
     <name>
       <text>TECH: Default validation-messages for the different input-types</text>
@@ -4750,7 +5238,7 @@ ATUnitsStrictAbsolute(sans,tans,tolerance)</code></h3>
     <penalty>0.3333333</penalty>
     <hidden>0</hidden>
     <idnumber></idnumber>
-<stateful statefulversion="2020040800" stackversion="2020051400" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:0,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
+<stateful statefulversion="2020081100" stackversion="2020070300" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:0,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
   <questionvariables>
 <text></text>
 
@@ -4865,7 +5353,7 @@ ans10;ans11;ans12;</text>
   </scene>
 </stateful>  </question>
 
-<!-- question: 866  -->
+<!-- question: 35  -->
   <question type="stateful">
     <name>
       <text>TECH: MCQ input options tester</text>
@@ -4880,7 +5368,7 @@ ans10;ans11;ans12;</text>
     <penalty>0.3333333</penalty>
     <hidden>0</hidden>
     <idnumber></idnumber>
-<stateful statefulversion="2020040800" stackversion="2020051400" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;_free&quot;,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
+<stateful statefulversion="2020081100" stackversion="2020070300" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;_free&quot;,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
   <questionvariables>
 <text></text>
 
@@ -5031,7 +5519,7 @@ ans10;ans11;ans12;</text>
   </scene>
 </stateful>  </question>
 
-<!-- question: 867  -->
+<!-- question: 36  -->
   <question type="stateful">
     <name>
       <text>TECH: Numerical input options tester</text>
@@ -5046,7 +5534,7 @@ ans10;ans11;ans12;</text>
     <penalty>0.3333333</penalty>
     <hidden>0</hidden>
     <idnumber></idnumber>
-<stateful statefulversion="2020040800" stackversion="2020051400" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;_free&quot;,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
+<stateful statefulversion="2020081100" stackversion="2020070300" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;_free&quot;,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
   <questionvariables>
 <text></text>
 
@@ -5192,7 +5680,7 @@ samples.on('click', function(e) {
   </scene>
 </stateful>  </question>
 
-<!-- question: 868  -->
+<!-- question: 37  -->
   <question type="stateful">
     <name>
       <text>TECH: String input</text>
@@ -5207,7 +5695,7 @@ samples.on('click', function(e) {
     <penalty>0.3333333</penalty>
     <hidden>0</hidden>
     <idnumber></idnumber>
-<stateful statefulversion="2020040800" stackversion="2020051400" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" penalty="0.3333333" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;_free&quot;,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
+<stateful statefulversion="2020081100" stackversion="2020070300" entryscene="entry" questionsimplify="1" assumepositive="0" assumereal="0" multiplicationsign="dot" sqrtsign="1" complexno="i" inversetrig="cos-1" matrixparens="[" parlength="-1" variants="{&quot;_set&quot;:&quot;_free&quot;,&quot;A&quot;:[],&quot;B&quot;:[],&quot;C&quot;:[]}">
   <questionvariables>
 <text></text>
 
