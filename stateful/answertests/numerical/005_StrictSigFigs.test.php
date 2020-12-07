@@ -79,8 +79,8 @@ class stack_test_StrictSigFigs implements stack_answertest {
     ): string {
         // Note that we have an injection hole here if this gets generated for invalid options.
         // TODO. Construct that sans string better.
-        return "ATSigFigsStrict_CASSigFigsWrapper(ev($options,simp)
-                         ,stackmap_get(_INPUT_STRING,\"" . trim($sans) . '"))'
+        return "ATSigFigsStrict($sans,1,ev($options,simp)," . 
+            "stackmap_get(_INPUT_STRING,\"" . trim($sans) . '"))'
         ;
     }
 

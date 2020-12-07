@@ -86,7 +86,7 @@ class stack_test_NumSigFigs implements stack_answertest {
     ): string {
         // Note that we have an injection hole here if this gets generated for invalid options.
         // TODO. Construct that sans string better.
-        return "ATNumSigFigs_CASSigFigsWrapper($sans,$tans,ev($options,simp)
+        return "ATNumSigFigs($sans,$tans,ev($options,simp)
                           ,stackmap_get(_INPUT_STRING,\"" . trim($sans) . '"))'
         ;
     }

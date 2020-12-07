@@ -68,7 +68,7 @@ class stack_test_UnitsStrictAbsolute implements stack_answertest {
         string $options,
         stateful_inputs $input_definitions
     ): string {
-        return "ATUnitsStrictAbsolute($sans,$tans,ev($options,simp))";
+        return "ATUnitsStrictAbsolute($sans,$tans,ev($options,simp),\"\")";
     }
 
     public function option_meta(): array{

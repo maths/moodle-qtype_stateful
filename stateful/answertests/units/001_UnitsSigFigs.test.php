@@ -84,8 +84,8 @@ class stack_test_UnitsSigFigs implements stack_answertest {
         string $options,
         stateful_inputs $input_definitions
     ): string {
-        return "ATUnitsSigFigs_CASSigFigsWrapper($sans,$tans,ev($options,simp)" .
-        ',stackmap_get(_INPUT_STRING,"' . trim($sans) . '"),false)';
+        return "ATUnitsSigFigs($sans,$tans,ev($options,simp)" .
+        ',stackmap_get(_INPUT_STRING,"' . trim($sans) . '"))';
     }
 
     public function option_meta(): array{

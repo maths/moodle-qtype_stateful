@@ -87,7 +87,7 @@ class stack_test_NumDecPlaces implements stack_answertest {
     ): string {
         // Note that we have an injection hole here if this gets generated for invalid options.
         // TODO. Construct that sans string better.
-        return "ATNumDecPlaces_CASDecPlacesWrapper($sans,$tans,ev($options,simp)
+        return "ATNumDecPlaces($sans,$tans,ev($options,simp)
                          ,stackmap_get(_INPUT_STRING,\"" . trim($sans) . '"))'
         ;
     }
