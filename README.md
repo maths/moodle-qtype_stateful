@@ -1,6 +1,8 @@
-# Stateful question type 1.0.2
+# Stateful question type 1.0.3
 
 ### Changelog
+
+**1.0.3** sync up to STACK 4.3.8, fixes some errors in MCQ inputs as well as String tests. As a major fix deals with situations where transitioning to scenes with inputs (simillarily named) that do not require validation.
 
 **1.0.2** adds the order-input type for drag & drop ordering of lists and doing Parsons problems. Also new castext2 blocks index/indexing and reveal. Enabled general-feedback/model-solution.
 

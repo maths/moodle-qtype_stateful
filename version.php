@@ -19,8 +19,8 @@ $plugin->requires     = 2018051700;
 $plugin->supported    = [35,39];
 $plugin->component    = 'qtype_stateful';
 $plugin->maturity     = MATURITY_BETA;
-$plugin->release      = '1.0.2 for Moodle 3.5+, PHP 7.1+';
+$plugin->release      = '1.0.3 for Moodle 3.5+, PHP 7.1+';
 $plugin->dependencies = [
-    'qtype_stack' => 2020070100,
+    'qtype_stack' => 2020120600,
     'qbehaviour_stateful' => 2020040800
 ];
