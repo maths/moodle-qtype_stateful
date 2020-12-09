@@ -34,7 +34,7 @@ class stateful_cas_castext2_commonstring extends stateful_cas_castext2_block {
 
     public function postprocess(array $params, castext2_processor $processor): string {
         $a = null;
-        if (len($params) > 2) {
+        if (count($params) > 2) {
             // Note that the keys of parameters transferred like this are numeric.
             $a = array_slice($params, 2);
         }
