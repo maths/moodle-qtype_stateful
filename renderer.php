@@ -147,8 +147,11 @@ class qtype_stateful_renderer extends qtype_renderer {
         // as we cannot display inputs as valid before the student has a chance to do
         // something. Bit dirty to access the behaviour vars like this, maybe we should
         // have the state object map to them.
+        $lastsubmitstep = $qa->get_last_step_with_qt_var('submit');
+        $currentstep = $qa->get_last_step();
         if ($qa->get_last_behaviour_var('_seqn_pre') < $qa->
-            get_last_behaviour_var('_seqn_post')) {
+            get_last_behaviour_var('_seqn_post') || 
+            $lastsubmitstep->get_id() !== $currentstep->get_id()) {
             foreach ($response as $key => $value) {
                 if (strrpos($key, '_val') === (strlen($key) - 4)) {
                     unset($response[$key]);
