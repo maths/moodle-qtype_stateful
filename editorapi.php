@@ -256,6 +256,9 @@ switch ($apimode) {
         $data['urls']['qnote'] = (new moodle_url(
             '/question/type/stateful/editorapi.php', ['mode' => 'qnote']))->out(false);
 
+        $data['urls']['report'] = (new moodle_url(
+            '/question/type/stateful/reportapi.php'))->out(false);
+
 
         // Options.
         $stackopts = new stack_options();
