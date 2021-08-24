@@ -1,4 +1,4 @@
-# Stateful question type 1.0.3
+# Stateful question type 1.0.4
 
 ### Changelog
 
