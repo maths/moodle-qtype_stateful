@@ -2,6 +2,8 @@
 
 ### Changelog
 
+**1.0.4** sync up to STACK 4.3.9, an issue related to the precious validation problem and the state of inputs moving forward while the scene text did not has now been reolved. Also tools for extracting easier to process data for analysis.
+
 **1.0.3** sync up to STACK 4.3.8, fixes some errors in MCQ inputs as well as String tests. As a major fix deals with situations where transitioning to scenes with inputs (simillarily named) that do not require validation.
 
 **1.0.2** adds the order-input type for drag & drop ordering of lists and doing Parsons problems. Also new castext2 blocks index/indexing and reveal. Enabled general-feedback/model-solution.
