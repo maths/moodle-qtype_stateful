@@ -147,16 +147,10 @@ class qtype_stateful_renderer extends qtype_renderer {
         // as we cannot display inputs as valid before the student has a chance to do
         // something. Bit dirty to access the behaviour vars like this, maybe we should
         // have the state object map to them.
-        $lastsubmitstep = $qa->get_last_step_with_qt_var('submit');
         $currentstep = $qa->get_last_step();
         if ($qa->get_last_behaviour_var('_seqn_pre') < $qa->
             get_last_behaviour_var('_seqn_post') || 
-            $lastsubmitstep->get_id() !== $currentstep->get_id()) {
-            foreach ($response as $key => $value) {
-                if (strrpos($key, '_val') === (strlen($key) - 4)) {
-                    unset($response[$key]);
-                }
-            }
+            !$currentstep->has_behaviour_var('submit')) {
             // Add the magic input token. For those inputs that don't do validation at all
             // problem if all the inputs are like that and we have a countter based error
             // handling PRTs.
@@ -177,14 +171,60 @@ class qtype_stateful_renderer extends qtype_renderer {
         $prefix = $qa->get_field_prefix();
         $questiontext = $question->inputs->fill_in_placeholders($questiontext, $prefix, $response, $options->readonly);
 
+        // Figure out which PRTs should render feedback, don't render if not 
+        // submitted to this now.
+        $lastsubmitstep = $qa->get_last_step_with_qt_var('-submit');
+        $lastsubmitstepvalues = $lastsubmitstep->get_qt_data();
+        /// If we are in a different scene that the last submit we cannot show any feedback.
+        $blockallfeedback = $question->get_scene_sequence_number() != $lastsubmitstep->get_behaviour_var('_seqn_pre');
+        /// Now compare the raw input for each PRT in the last submitted step to current
+        /// to figure out if that PRT has changed.
+        $prtdisplay = [];
+        foreach ($question->get_prts() as $name => $prt) {
+            $prtdisplay[$name] = true;
+            $inputs = $question->get_compiled('scene-' . $question->get_current_scene()->name . '-prt-' .
+            $name . '|inputs');
+            // All inputs use the full name or a prefix of "$name__".
+            foreach ($inputs as $iname => $ignore) {
+                // Not same base input-field.
+                if (isset($response[$iname]) !== isset($lastsubmitstepvalues[$iname]) ||
+                    (isset($response[$iname]) && $response[$iname] !== $lastsubmitstepvalues[$iname])) {
+                    $prtdisplay[$name] = false;
+                    break;
+                }
+                // Check the prefixed ones. Note needs to be checked both ways.
+                foreach ($response as $key => $value) {
+                    if (strpos($key, $iname . '__') === 0) {
+                        if (isset($response[$key]) !== isset($lastsubmitstepvalues[$key]) ||
+                            (isset($response[$key]) && $response[$key] !== $lastsubmitstepvalues[$key])) {
+                            $prtdisplay[$name] = false;
+                            break;
+                        }
+                    }
+                }
+                foreach ($lastsubmitstepvalues as $key => $value) {
+                    if (strpos($key, $iname . '__') === 0) {
+                        if (isset($response[$key]) !== isset($lastsubmitstepvalues[$key]) ||
+                            (isset($response[$key]) && $response[$key] !== $lastsubmitstepvalues[$key])) {
+                            $prtdisplay[$name] = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         // Replace PRTs.
         foreach ($question->get_prts() as $name => $prt) {
             // Note that we ignore the feedback option in Stateful questions you
             // do not not display the feedback if it exists.
             if (mb_strpos($questiontext, "[[feedback:$name]]") !==
                 false) {
+                $feedback = '';
                 // Only generate and render if required.
-                $feedback = $question->render("prt-$name", $response);
+                if (!$blockallfeedback && $prtdisplay[$name]) {
+                    $feedback = $question->render("prt-$name", $response);
+                }
                 if (trim($feedback) !== '') {
                     $feedback = html_writer::nonempty_tag('div', $feedback,
                         ['class' => 'statefulprtfeedback']);
