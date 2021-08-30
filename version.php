@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Stateful.  If not, see <http://www.gnu.org/licenses/>.
 defined('MOODLE_INTERNAL') || die();
-$plugin->version      = 2021082400;
+$plugin->version      = 2021083000;
 $plugin->requires     = 2018051700;
 $plugin->supported    = [35,39];
 $plugin->component    = 'qtype_stateful';

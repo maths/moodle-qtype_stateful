@@ -1,6 +1,8 @@
-# Stateful question type 1.0.4
+# Stateful question type 1.0.5
 
 ### Changelog
+
+**1.0.5** Fix rendering of feedback to follow similar logic as the adaptivemultipart behaviour. This is important for questions implementing "counters" and ensures that students cannot receive feedback without actually submitting values for feedback.
 
 **1.0.4** sync up to STACK 4.3.9, an issue related to the precious validation problem and the state of inputs moving forward while the scene text did not has now been reolved. Also tools for extracting easier to process data for analysis.
 
