@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Stateful.  If not, see <http://www.gnu.org/licenses/>.
 require_once __DIR__ . '/basic_validation_box.class.php';
+require_once(__DIR__ . '/../../../stacklib.php');
 
 class stateful_custom_validation_box implements stateful_input_validation_box {
     private $name;
@@ -52,7 +53,7 @@ class stateful_custom_validation_box implements stateful_input_validation_box {
 
     public function get_cached(): string {
         if ($this->cached === false) {
-            $this->cached = castext2_parser_utils::compile($this->castext);
+            $this->cached = castext2_parser_utils::compile($this->castext, null, ['errclass' => 'stateful_cas_error', 'context' => 'TODO-customvalidationbox']);
         }
 
         return $this->cached;

@@ -15,8 +15,8 @@
 // along with Stateful.  If not, see <http://www.gnu.org/licenses/>.
 defined('MOODLE_INTERNAL') || die();
 
-require_once __DIR__ . '/../block.interface.php';
-require_once __DIR__ . '/../block.factory.php';
+require_once(__DIR__ . '/../../../stacklib.php');
+
 
 /**
  * This block implements simplified scripting, it allows one to have
@@ -26,11 +26,11 @@ require_once __DIR__ . '/../block.factory.php';
  * For not it does a case-sensitive full value match, but could be
  * made to do more by adding some extra parameters.
  */
-class stateful_cas_castext2_reveal extends stateful_cas_castext2_block {
+class stateful_cas_castext2_reveal extends stack_cas_castext2_block {
 
     private static $count = 0;
 
-    public function compile():  ? string{
+    public function compile($format, $options):  ? string{
         $r = '["reveal"';
 
         // We need to transfer the parameters forward.
@@ -91,15 +91,15 @@ class stateful_cas_castext2_reveal extends stateful_cas_castext2_block {
 
 
 
-    public function validate(&$errors = [], stateful_inputs $input_definitions = null, array $prts): bool {
+    public function validate(&$errors = [], array $options): bool {
         $ok = true;
         $seen = 0;
         foreach ($this->params as $key => $value) {
             switch ($key) {
                 case 'input':
                     $seen++;
-                    if ($input_definitions === null
-                        || !$input_definitions->exists($value)) {
+                    if (isset($options['inputs'])
+                        || !isset($options['inputs'][$value])) {
                         $errors[] = stack_string('stackBlock_reveal_input_missing',
                             ['var' => $value]);
                         $ok = false;

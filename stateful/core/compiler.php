@@ -17,7 +17,6 @@ declare(strict_types = 1);
 
 
 require_once __DIR__ . '/../../stacklib.php';
-require_once __DIR__ . '/../castext2/utils.php';
 
 
 /**
@@ -30,6 +29,59 @@ require_once __DIR__ . '/../castext2/utils.php';
 class stateful_compiler {
 
     /**
+     * Now using STACK side compile logic. Slightly different but better 
+     * to be equal.
+     */
+    public static function compile_keyval(string $keyval, string $errorref, string $exceptionref, stack_cas_security $securitymodel): array {
+
+        $refs = ['read' => [], 'write' => [], 'calls' => []];
+        
+        if (trim($keyval) == '') {
+            return ['true', $refs];
+        }
+
+        $kv = new stack_cas_keyval($keyval);
+        $kv->errclass = 'stateful_cas_error';
+
+        if (!$kv->get_valid()) {
+            throw new stateful_exception(stateful_string(
+                    'validity_cas_invalid',
+                    ['section' => $exceptionref,
+                        'position' => null, 'statement' => $keyval,
+                        'error' => implode(', ', $kv->get_errors())]), 'validity_cas_invalid',
+                    ['section' => $exceptionref,
+                        'position' => null, 'statement' => $keyval,
+                        'error' => implode(', ', $kv->get_errors())]);
+        }
+
+        $comp = $kv->compile($errorref);
+        $code = [];
+        if ($comp['blockexternal'] !== null) {
+            $code[] = $comp['blockexternal'];
+        }
+        if ($comp['contextvariables'] !== null) {
+            $code[] = $comp['contextvariables'];
+        }
+        if ($comp['statement'] !== null) {
+            $code[] = $comp['statement'];
+        }
+        if (count($code) === 0) {
+            $code = 'true';
+        } else if (count($code) === 1) {
+            $code = $code[0];
+        } else {
+            $code = implode(',', $code);
+        }
+
+        // We'll probably reprase and process that $code again, but 
+        // for now the STACK version does what we want.
+
+
+        return [$code, $comp['references']];
+    }
+
+
+    /**
      * Takes unparsed keyval, will parse it for annotations and 
      * other things that STACK keyval does not.
      *
@@ -40,7 +92,7 @@ class stateful_compiler {
      * The code generated evaluates to 'true' and is just a group 
      * of statements.
      */
-    public static function compile_keyval(string $keyval, string $errorref, string $exceptionref, stack_cas_security $securitymodel): array {
+    public static function old_compile_keyval(string $keyval, string $errorref, string $exceptionref, stack_cas_security $securitymodel): array {
         $refs = ['read' => [], 'write' => [], 'calls' => []];
         
         if (trim($keyval) == '') {

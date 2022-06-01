@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Stateful.  If not, see <http://www.gnu.org/licenses/>.
 require_once __DIR__ . '/../../stacklib.php';
+require_once __DIR__ . '/../../locallib.php';
 require_once __DIR__ . '/../core/functionbuilder.class.php';
-require_once __DIR__ . '/../castext2/utils.php';
 require_once __DIR__ . '/../answertests/answertest.factory.php';
 require_once __DIR__ . '/../input2/input.controller.php';
 
@@ -368,21 +368,18 @@ class stateful_handling_validation {
 
         $question->compiledcache['random'] = false;
         $sec = new stack_cas_security();
-
+        $code = null;
+        $varref = null;
         try {
             // The question variables.
-            $question->compiledcache['qv'] = stateful_function_builder::
+            list($code, $varref) = stateful_function_builder::
                 question_variables($question);
-            $kv = new stack_cas_keyval($question->questionvariables);
-            foreach ($kv->get_session()->get_session() as $cs) {
-                $key = $cs->get_key();
-                if ($key !== '' && $key !== null) {
-                    $forbiddenkeys[$key] = true;
-                }
+            $question->compiledcache['qv'] = $code;
+            foreach ($varref['write'] as $key) {
+                $forbiddenkeys[$key] = true;
             }
-            $usage = $kv->get_variable_usage();
-            if (isset($usage['calls'])) {
-                foreach ($usage['calls'] as $key => $value) {
+            if (isset($varref['calls'])) {
+                foreach ($varref['calls'] as $key => $value) {
                     if ($sec->get_feature($key, 'random') === true) {
                         $question->compiledcache['random'] = true;
                     }
@@ -402,7 +399,6 @@ class stateful_handling_validation {
                     )];
             } else {
                 // TODO: make absolutely sure we never get here.
-                error_log($e->getMessage());
                 $result['result'] = false;
                 // No section or finer resolution data provided for exceptions of unknown type.
                 $result['errors'][] = ['message' => $e->getMessage(), 'path' =>
@@ -426,9 +422,10 @@ class stateful_handling_validation {
                 return $result;
             }
             try {
+                list($code, $varref) = stateful_function_builder::scene_variables($scene);
                 $question->compiledcache['scene-' . $scene->name . '-variables'
-                ] =
-                stateful_function_builder::scene_variables($scene);
+                ] = $code;
+                
             } catch (stateful_exception $e) {
                 if ($e->type === 'validity_overwrite_question_var') {
                     $result['result']   = false;
@@ -447,7 +444,6 @@ class stateful_handling_validation {
        => $e->position, 'path' => self::path_creator($scene, 'scenevariables')];
                 } else {
                     // TODO: make absolutely sure we never get here.
-                    error_log($e->getMessage());
                     $result['result'] = false;
                     // No section or finer resolution data provided for exceptions of unknown type.
                     $result['errors'][] = ['message' => $e->getMessage(),
@@ -458,7 +454,7 @@ class stateful_handling_validation {
                 // Should something new fail or maybe STACK exceptions...
                 $result['result'] = false;
                 // No section or finer resolution data provided for exceptions of unknown type.
-                $result['errors'][] = ['message' => $e->getMessage(), 'path' =>
+                $result['errors'][] = ['message' => $ee->getMessage(), 'path' =>
                     self::path_creator($scene, 'scenevariables')];
             }
 
@@ -466,7 +462,7 @@ class stateful_handling_validation {
             try {
                 $question->compiledcache['scene-' . $scene->name .
                     '-text'] =
-                castext2_parser_utils::compile($scene->scenetext);
+                castext2_parser_utils::compile($scene->scenetext, castext2_parser_utils::RAWFORMAT, ['context'=> self::path_creator($scene, 'scenetext'), 'errclass' => 'stateful_cas_error']);
             } catch (Exception $ee) {
                 $result['errors'][] = ['message' => $ee->getMessage(), 'path'
                                                                              =>
@@ -502,7 +498,6 @@ class stateful_handling_validation {
                                 path_creator($prt, 'generic')];
                     } else {
                         // TODO: make absolutely sure we never get here.
-                        error_log($e->getMessage());
                         $result['result'] = false;
                         // No section or finer resolution data provided for exceptions of unknown type.
                         $result['errors'][] = ['message' => $e->getMessage
@@ -530,17 +525,11 @@ class stateful_handling_validation {
             }
 
             // And keys for forbiddenkeys.
-            $kv = new stack_cas_keyval($scene->scenevariables, null, null, 't')
-            ;
-            foreach ($kv->get_session() as $cs) {
-                $key = $cs->get_key();
-                if ($key !== '' && $key !== null) {
-                    $forbiddenkeys[$key] = true;
-                }
+            foreach ($varref['write'] as $key) {    
+                $forbiddenkeys[$key] = true;
             }
-            $usage = $kv->get_variable_usage();
-            if (isset($usage['calls'])) {
-                foreach ($usage['calls'] as $key => $value) {
+            if (isset($varref['calls'])) {
+                foreach ($varref['calls'] as $key => $value) {
                     if ($sec->get_feature($key, 'random') === true) {
                         $question->compiledcache['random'] = true;
                     }
@@ -564,7 +553,7 @@ class stateful_handling_validation {
         if ($gf === null) {
             $gf = '';
         }
-        $question->compiledcache['modelsolution'] = castext2_parser_utils::compile($gf);
+        $question->compiledcache['modelsolution'] = castext2_parser_utils::compile($gf, castext2_parser_utils::RAWFORMAT, ['context'=> self::path_creator($question, 'modelsolution'), 'errclass' => 'stateful_cas_error']);
 
         return $result;
     }
@@ -706,15 +695,4 @@ class stateful_handling_validation {
         return implode($longseparator, $tokens);
     }
 
-/* TODO: DO WE NEED THIS ON THIS SIDE OF WORLD? THE OTHER WAY
-IS NEEDED FOR ADDRESSABLE ERROR MESSAGES BUT THIS?
-public static function get_path(
-stateful_question $question,
-string $path,
-string $separator = '|\\|'
-): any {
-
-return null;
-}
- */
 }

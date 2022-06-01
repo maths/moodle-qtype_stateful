@@ -149,7 +149,8 @@ switch ($apimode) {
 
         // Similar function for the note.
         $qnf = '_qn(RANDOM_SEED):=';
-        $qnf .= castext2_parser_utils::compile($qn);
+        $ct2options = ['errclass' => 'stateful_cas_error' , 'context' => 'TODO-qnote'];
+        $qnf .= castext2_parser_utils::compile($qn, null, $ct2options);
 
         $stmts = [];
         $stmts[] = new stack_secure_loader($qvf, 'question-variables');
@@ -191,6 +192,7 @@ switch ($apimode) {
 
         // New session.
         $ses = new stack_cas_session2($stmts);
+        $ses->errclass = 'stateful_cas_error';
         $ses->instantiate();
 
         // Extract results and render them.

@@ -151,10 +151,11 @@ class stateful_input_mcq_legacy extends stateful_input_mcq {
         // The construction of options is the main thing.
         $optgen = '%_mcqoptions:[]';
 
+        $ct2options = ['errclass' => 'stateful_cas_error', 'context' => 'TODO-legacy-mcq'];
         // Default label.
-        $label = castext2_parser_utils::compile('{@%_tmp@}');
+        $label = castext2_parser_utils::compile('{@%_tmp@}', null, $ct2options);
         if ($this->get_option('mcq-label-default-render') !== 'latex') {
-            $label = castext2_parser_utils::compile('{#%_tmp#}');
+            $label = castext2_parser_utils::compile('{#%_tmp#}', null, $ct2options);
         }
 
         // The unpack.

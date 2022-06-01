@@ -24,7 +24,7 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 require_once __DIR__ . '/../../locallib.php';
 require_once __DIR__ . '/input_interfaces.php';
 require_once __DIR__ . '/vboxes/basic_validation_box.class.php';
-require_once __DIR__ . '/../castext2/utils.php';
+require_once __DIR__ . '/../../stacklib.php';
 
 
 abstract class stateful_input_base_with_options implements stateful_input_options {

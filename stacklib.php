@@ -56,8 +56,28 @@ require_once __DIR__ . '/../stack/stack/cas/keyval.class.php';
 // Cassessions handle instantiations.
 require_once __DIR__ . '/../stack/stack/cas/cassession2.class.php';
 
+// There are errors we need to deal with.
+require_once __DIR__ . '/../stack/stack/cas/caserror.class.php';
+
 // We do reuse parts of the renderer.
 require_once __DIR__ . '/../stack/renderer.php';
 
 // Some cases like in inputs we use filter pipelines.
 require_once __DIR__ . '/../stack/stack/cas/parsingrules/parsingrule.factory.php';
+
+// CASText2 now comes from STACK.
+require_once __DIR__ . '/../stack/stack/cas/castext2/utils.php';
+require_once __DIR__ . '/../stack/stack/cas/castext2/castext2_evaluatable.class.php';
+require_once __DIR__ . '/../stack/stack/cas/castext2/castext2_static_replacer.class.php';
+require_once __DIR__ . '/../stack/stack/cas/castext2/block.factory.php';
+require_once __DIR__ . '/../stack/stack/cas/castext2/block.interface.php';
+/// But we do patch it a bit. Also note that we cannot use the default processor.
+require_once __DIR__ . '/stateful/castext2/blocks/commonstring.block.php';
+require_once __DIR__ . '/stateful/castext2/blocks/index.block.php';
+require_once __DIR__ . '/stateful/castext2/blocks/indexing.block.php';
+require_once __DIR__ . '/stateful/castext2/blocks/reveal.block.php';
+require_once __DIR__ . '/stateful/castext2/stateful.processor.php';
+castext2_block_factory::register('statefulcs', 'stateful_cas_castext2_commonstring');
+castext2_block_factory::register('index', 'stateful_cas_castext2_index');
+castext2_block_factory::register('indexing', 'stateful_cas_castext2_indexing');
+castext2_block_factory::register('reveal', 'stateful_cas_castext2_reveal');

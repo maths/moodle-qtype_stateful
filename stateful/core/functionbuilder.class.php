@@ -19,7 +19,6 @@ require_once __DIR__ . '/../../locallib.php';
 require_once __DIR__ . '/../utils.class.php';
 require_once __DIR__ . '/../../stacklib.php';
 require_once __DIR__ . '/../answertests/answertest.factory.php';
-require_once __DIR__ . '/../castext2/utils.php';
 require_once __DIR__ . '/../handling/validation.php';
 require_once __DIR__ . '/compiler.php';
 
@@ -53,14 +52,14 @@ class stateful_function_builder {
     // will update the _ERR list if errors are triggered.
     // CALL WITH simp:true!
     static function question_variables(qtype_stateful_question $question):
-    string {
+    array {
         if ($question->questionvariables === null || trim($question->
             questionvariables) === '') {
             // Add unit definitions if relevant.
             if ($question->has_units()) {
-                return '_question_variables(RANDOM_SEED):=(stack_randseed(RANDOM_SEED),stack_unit_si_declare(true),true)';
+                return ['_question_variables(RANDOM_SEED):=(stack_randseed(RANDOM_SEED),stack_unit_si_declare(true),true)', ['write' => [], 'read' => []]];
             }
-            return '_question_variables(RANDOM_SEED):=(stack_randseed(RANDOM_SEED),true)';
+            return ['_question_variables(RANDOM_SEED):=(stack_randseed(RANDOM_SEED),true)', ['write' => [], 'read' => []]];
         }
 
         list($compiled, $varref) = stateful_compiler::compile_keyval(
@@ -94,7 +93,7 @@ class stateful_function_builder {
 
         $r .= ',is(length(%ERR)=1))';
 
-        return $r;
+        return [$r,$varref];
     }
 
     // Result of this is a function that evaluates the variables of a scene,
@@ -103,14 +102,14 @@ class stateful_function_builder {
     // This function will return true if everything works and
     // will update the _ERR list if errors are triggered.
     // CALL WITH simp:true!
-    static function scene_variables(stateful_scene $scene): string{
+    static function scene_variables(stateful_scene $scene): array{
         $fname = '_scene_' . stateful_utils::string_to_varname($scene->name) .
             '_variables';
         if ($scene->scenevariables === null || trim($scene->scenevariables) ===
             '') {
-            return $fname .
+            return [$fname .
 
-         '(RANDOM_SEED):=(stack_randseed(RANDOM_SEED+5+length(SCENE_PATH)),true)';
+         '(RANDOM_SEED):=(stack_randseed(RANDOM_SEED+5+length(SCENE_PATH)),true)', ['write' => [], 'read' => []]];
          // Note the 5 there. If we did not have that the random seed for the first 
          // scene would be the same as for the question and that might result in 
          // surprising effects.
@@ -159,7 +158,7 @@ class stateful_function_builder {
 
         $r .= ',is(length(%ERR)=1))';
 
-        return $r;
+        return [$r, $varref2];
     }
 
 
@@ -183,6 +182,9 @@ class stateful_function_builder {
         
         $usage  = $prt->get_variable_usage();
         $inputs = $prt->scene->get_input_definition();
+
+        // Optiosn for castext.
+        $ct2options = ['bound-vars' => $varref['write'], 'errclass' => 'stateful_cas_error'];
 
         // What inputs are needed?
         $needs = [];
@@ -421,8 +423,9 @@ class stateful_function_builder {
             // and feedback is useless anyhow if we just changed scene...
             if ($node->truefeedback !== null && trim($node->truefeedback) !==
                 '') {
-                $code = castext2_parser_utils::compile($node->truefeedback);
                 $nn   = self::pc($node, 'truefeedback');
+                $ct2options['context'] = $nn;
+                $code = castext2_parser_utils::compile($node->truefeedback, castext2_parser_utils::RAWFORMAT, $ct2options);
                 $r .= ",_EC(errcatch(_FEEDBACK:castext_concat(_FEEDBACK,$code)),$nn)"
                 ;
             }
@@ -535,8 +538,9 @@ class stateful_function_builder {
             // and feedback is useless anyhow if we just changed scene...
             if ($node->falsefeedback !== null && trim($node->falsefeedback) !==
                 '') {
-                $code = castext2_parser_utils::compile($node->falsefeedback);
                 $nn   = self::pc($node, 'falsefeedback');
+                $ct2options['context'] = $nn;
+                $code = castext2_parser_utils::compile($node->falsefeedback, castext2_parser_utils::RAWFORMAT, $ct2options);
                 $r .= ",_EC(errcatch(_FEEDBACK:castext_concat(_FEEDBACK,$code)),$nn)"
                 ;
             }

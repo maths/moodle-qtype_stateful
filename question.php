@@ -23,7 +23,7 @@ require_once __DIR__ . '/stateful/input2/input.controller.php';
 require_once __DIR__ . '/stateful/handling/validation.php';
 require_once __DIR__ . '/../../behaviour/stateful/behaviour.php';
 require_once __DIR__ . '/stacklib.php';
-require_once __DIR__ . '/stateful/castext2/castext2_evaluatable.class.php';
+require_once __DIR__ . '/locallib.php';
 
 
 class qtype_stateful_question extends question_definition implements
@@ -45,9 +45,9 @@ question_stateful, stateful_model {
      */
     public $options;
     // Then the more specific ones.
-    // Store the scenes. Keyed by name ordered by defintion order.
+    // Store the scenes. Keyed by name ordered by definition order.
     public $scenes;
-    // And the full definitions for the state variables. Keyed by name ordered by defintion order.
+    // And the full definitions for the state variables. Keyed by name ordered by definition order.
     public $variables;
     // The name of the entry scene.
     public $entryscene;
@@ -99,11 +99,17 @@ question_stateful, stateful_model {
     public $prtsprocessed = false;
     public $inputvalidationrendered = false;
 
+    /**
+     * @var castext2_processor an accesspoint to the question attempt for
+     * the castext2 post-processing logic for pluginfile url-writing.
+     */
+    public $castextprocessor = null;
 
     public function make_behaviour(
         question_attempt $qa,
         $preferredbehaviour
     ) {
+        $this->castextprocessor = new stateful_castext2_default_processor($qa);
         return question_engine::make_behaviour('stateful', $qa,
             $preferredbehaviour);
     }
@@ -261,6 +267,7 @@ question_stateful, stateful_model {
 
         // And execute.
         $session = new stack_cas_session2($statements, $this->options, $this->seed);
+        $session->errclass = 'stateful_cas_error';
         $session->instantiate();
 
 
@@ -325,6 +332,7 @@ question_stateful, stateful_model {
             }
 
             $session = new stack_cas_session2($statements, $this->options, $this->seed);
+            $session->errclass = 'stateful_cas_error';
             $session->instantiate();
 
             // Check that error.
@@ -499,6 +507,7 @@ question_stateful, stateful_model {
 
             $session = new stack_cas_session2($statements, $this->options, $this
                 ->seed);
+            $session->errclass = 'stateful_cas_error';
             $session->instantiate();
 
             // Check that error.
@@ -812,6 +821,7 @@ question_stateful, stateful_model {
 
         $session = new stack_cas_session2($statements, $this->options, $this->
             seed);
+        $session->errclass = 'stateful_cas_error';
         $session->instantiate();
 
         // Check for error.
@@ -911,6 +921,7 @@ question_stateful, stateful_model {
         // Instantiate
         $session = new stack_cas_session2($statements, $this->options, $this
             ->seed);
+        $session->errclass = 'stateful_cas_error';
         $session->instantiate();
 
         // Check that error.
@@ -930,7 +941,7 @@ question_stateful, stateful_model {
         $this->lastsceneinited = $scene->name;
 
         // Take in the scene-text.
-        $this->scenetext = $scenetext->get_rendered();
+        $this->scenetext = $scenetext->get_rendered($this->castextprocessor);
         $this->modelsolution = $modelsolution;
     }
 
@@ -952,8 +963,7 @@ question_stateful, stateful_model {
             $errs = stateful_handling_validation::check_compile($this);
 
             if (!$errs['result']) {
-                error_log($errs);
-                throw stateful_exception(stateful_string('compilation_error'));
+                throw new stateful_exception(stateful_string('compilation_error'));
             }
 
             if (is_integer($this->id) || is_numeric($this->id)) {
@@ -980,7 +990,7 @@ question_stateful, stateful_model {
         // CASText
         if ((strpos($thing, 'scene-') === 0 && substr($thing, -strlen('-text'))
             === '-text') || $thing === 'modelsolution') {
-            return castext2_evaluatable::make_from_compiled($this->compiledcache[$thing], 'scenetext');
+            return castext2_evaluatable::make_from_compiled($this->compiledcache[$thing], 'scenetext', new castext2_static_replacer([]));
         }
 
 
@@ -1103,7 +1113,7 @@ question_stateful, stateful_model {
             }
             if ($this->modelsolution instanceof castext2_evaluatable) {
                 // No need to render twice if ever.
-                $this->modelsolution = $this->modelsolution->get_rendered();
+                $this->modelsolution = $this->modelsolution->get_rendered($this->castextprocessor);
             }
             return $this->modelsolution;
         }

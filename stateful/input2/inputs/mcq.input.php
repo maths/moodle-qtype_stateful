@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Stateful.  If not, see <http://www.gnu.org/licenses/>.
 require_once __DIR__ . '/../generic_input_bases.php';
-require_once __DIR__ . '/../../castext2/utils.php';
+require_once __DIR__ . '/../../../stacklib.php';
 require_once __DIR__ . '/algebraic.input.php';
 require_once __DIR__ . '/../../../../../../filter/mathjaxloader/filter.php';
 
@@ -559,6 +559,8 @@ class stateful_input_mcq extends stateful_input_algebraic {
         // The construction of options is the main thing.
         $optgen = '%_mcqoptions:[]';
 
+        $ct2options = ['errclass' => 'stateful_cas_error', 'context' => 'TODO-mcq'];
+
         // Keep the order if need be.
         $i = 1;
         foreach ($this->get_option('mcq-options') as $opt) {
@@ -579,11 +581,11 @@ class stateful_input_mcq extends stateful_input_algebraic {
             $label = null;
             // Label
             if (isset($opt['label']) && $opt['label'] !== null && trim($opt['label']) !== '') {
-                $label = castext2_parser_utils::compile($opt['label']);
+                $label = castext2_parser_utils::compile($opt['label'], null, $ct2options);
             } else if ($this->get_option('mcq-label-default-render') !== 'latex' || $this->get_option('mcq-dropdown-vanilla') === true) {
-                $label = castext2_parser_utils::compile('{#' . $opt['value'] . '#}');
+                $label = castext2_parser_utils::compile('{#' . $opt['value'] . '#}', null, $ct2options);
             } else {
-                $label = castext2_parser_utils::compile('{@' . $opt['value'] . '@}');
+                $label = castext2_parser_utils::compile('{@' . $opt['value'] . '@}', null, $ct2options);
             }
             
             $append .= $label . ',';

@@ -15,8 +15,8 @@
 // along with Stateful.  If not, see <http://www.gnu.org/licenses/>.
 defined('MOODLE_INTERNAL') || die();
 
-require_once __DIR__ . '/../block.interface.php';
-require_once __DIR__ . '/../block.factory.php';
+require_once(__DIR__ . '/../../../stacklib.php');
+
 
 /**
  * This block is part of a pair of blocks the `indexing` and `index` blocks
@@ -30,12 +30,12 @@ require_once __DIR__ . '/../block.factory.php';
  * blank-string and the `index`-blocks refer to their default blank-string
  * which means the closest parent `indexing-block`.
  */
-class stateful_cas_castext2_indexing extends stateful_cas_castext2_block {
+class stateful_cas_castext2_indexing extends stack_cas_castext2_block {
 
     /* Has the JavaScript been loaded? */
     private static $loaded = false;
 
-    public function compile():  ? string{
+    public function compile($format, $options):  ? string{
         $r = '["indexing"';
 
         // We need to transfer the parameters forward.
@@ -114,7 +114,7 @@ class stateful_cas_castext2_indexing extends stateful_cas_castext2_block {
         return html_writer::tag('div', $content, $attributes);
     }
 
-    public function validate(&$errors = [], stateful_inputs $input_definitions = null, array $prts): bool {
+    public function validate(&$errors = [],  array $options): bool {
         $ok = true;
 
         foreach ($this->params as $key => $value) {

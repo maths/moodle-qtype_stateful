@@ -131,6 +131,7 @@ class stateful_handling_testing {
 
         // Instantiate.
         $session = new stack_cas_session2($statements, $scene->question->options, $seed);
+        $session->errclass = 'stateful_cas_error';
         $session->instantiate();
 
         // Extract the value.
@@ -256,6 +257,7 @@ class stateful_handling_testing {
         if ($cs < count($statements)) {
             // The input validation requires session evaluation.
             $session = new stack_cas_session2($statements, $question->options, $seed);
+            $session->errclass = 'stateful_cas_error';
             $session->instantiate();
         }
 
@@ -346,6 +348,7 @@ class stateful_handling_testing {
         if ($somethingtoeval) {
             // Now execute and then collect the data.
             $session = new stack_cas_session2($statements, $question->options, $seed);
+            $session->errclass = 'stateful_cas_error';
             $session->instantiate();
 
             // Merge this to the tests.

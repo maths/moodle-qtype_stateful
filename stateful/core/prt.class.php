@@ -16,7 +16,6 @@
 require_once __DIR__ . '/prt_node.class.php';
 require_once __DIR__ . '/../../stacklib.php';
 require_once __DIR__ . '/../answertests/answertest.factory.php';
-require_once __DIR__ . '/../castext2/utils.php';
 require_once __DIR__ . '/model.class.php';
 
 class stateful_prt implements stateful_model {
@@ -65,7 +64,6 @@ class stateful_prt implements stateful_model {
                 $nodedata);
         }
         if (!array_key_exists($data->firstnodename, $this->nodes)) {
-            error_log(var_export($data, true));
             throw new stateful_exception(stateful_string(
                 'instantiation_prt_bad_root_ref', $this->name));
         }

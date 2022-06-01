@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Stateful.  If not, see <http://www.gnu.org/licenses/>.
 require_once __DIR__ . '/../input_interfaces.php';
-require_once __DIR__ . '/../../castext2/utils.php';
+require_once __DIR__ . '/../../../stacklib.php';
 
 /** 
  * This is the traditional automated validation box that requires no 
@@ -83,8 +83,9 @@ class stateful_basic_validation_box implements stateful_input_validation_box {
         if ($this->units) {
             $validcastext .= '[[list_units:' . $name . ']]';
         }
+        $ct2options = ['errclass' => 'stateful_cas_error' , 'context' => 'TODO-customvalidation'];
 
-        $compiledvalid = castext2_parser_utils::compile($validcastext);
+        $compiledvalid = castext2_parser_utils::compile($validcastext, null, $ct2options);
 
         $this->cached = $compiledvalid;
         return $this->cached;
@@ -237,7 +238,7 @@ class stateful_basic_validation_box_for_checkboxes extends stateful_basic_valida
             $validcastext .= '[[list_units:' . $name . ']]';
         }
 
-        $compiledvalid = castext2_parser_utils::compile($validcastext);
+        $compiledvalid = castext2_parser_utils::compile($validcastext, null, ['errclass' => 'stateful_cas_error', 'context' => 'TODO-customvalidationbox']);
 
         $this->cached = $compiledvalid;
         return $this->cached;
@@ -249,7 +250,7 @@ class stateful_basic_validation_box_for_checkboxes extends stateful_basic_valida
 /**
  * Extended castext2 processor handling some additional io-blocks.
  */
-class stateful_validation_castext_processor implements castext2_processor {
+class stateful_validation_castext_processor extends stateful_castext2_default_processor {
 
     private $baseprocessor;
     private $errors;

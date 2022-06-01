@@ -2,6 +2,8 @@
 
 The CASText-subsystem has been re-implemented multiple times, this time we use a newer parser and aim to compile the CASText syntax into a single pass evaluatable CAS-statement. The blocks of the previous system remain but more blocks do appear and the behaviour of comments and escapes change slightly, more importantly, the values of attributes can now deal with certain key characters like `@` and `#`.
 
+**Note castext2 is now part of STACK 4.4, this is no longer special for Stateful.** We still have some special blocks like `reveal`, `indexing` and `index`, but otherwise you may use the same tricks in STACK.
+
 ### Primary operating logic ###
 
 Parsed CASText represented as an AST, will be processed node by node using a compiler that turns each node to a CAS-statement. Depending on whether the node represents a block-that needs post-processing that statement may either evaluate to a `"string"` or to a list. If it evaluates to a list then the lists first element is special, as it defines which postprocessing component handles the processing the other elements may be anything the component wants including other CASText.
@@ -63,3 +65,6 @@ NOTES: append(NOTES, [castext("The expression {@ans1@} was...")]);
 
 ``` 
  5. One just needs to know that the `[[castext/]]` block is used to inject evaluated CASText fragments and that the `castext()` function evaluated CASText. The latter is not an actual Maxima-function, it is instead a compiler-feature and requires that the parameter it is given is a static-string atom and not a reference to any function or varible.
+
+
+Since STACK 4.4 one has not necessarily needed to use `[[castext/]]` to inject the evaluated value, now the `{@...@}` injection also handles this task. The original `[[castext/]]` block may be removed at some point, but for now one can still use it and it is actually somewhat more efficient.

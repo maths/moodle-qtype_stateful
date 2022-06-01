@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Stateful.  If not, see <http://www.gnu.org/licenses/>.
 require_once __DIR__ . '/../generic_input_bases.php';
-require_once __DIR__ . '/../../castext2/utils.php';
+require_once __DIR__ . '/../../../stacklib.php';
 
 /**
  * This input is for arranging elements in a list or into a list
@@ -282,7 +282,7 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
             // its own condition, but if there is a template specifically
             // referencing that token then it must be present. Templates 
             // only matter if we are doing something else than in-place.
-            $castext = castext2_parser_utils::compile($element['label']);
+            $castext = castext2_parser_utils::compile($element['label'], null, ['errclass' => 'stateful_cas_error', 'context' => 'TODO-order']);
             $token = stack_utils::php_string_to_maxima_string($element['value']);
             if (!isset($element['inclusion']) || $element['inclusion'] === 'true') {
                 $cmd .= ',%_tokens:append(%_tokens,[' . $token . '])';
@@ -375,7 +375,7 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
                 break;
         }
 
-        $cmd .= ',' . castext2_parser_utils::compile($uiframe);
+        $cmd .= ',' . castext2_parser_utils::compile($uiframe, null, ['errclass' => 'stateful_cas_error', 'context' => 'TODO-order']);
         
         // 5. Validation-frame.
         $valframe = '';
@@ -391,7 +391,7 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
                 break;
         }
         
-        $cmd .= ',' . castext2_parser_utils::compile($valframe);
+        $cmd .= ',' . castext2_parser_utils::compile($valframe, null, ['errclass' => 'stateful_cas_error', 'context' => 'TODO-order']);
 
         // 6. The indent size.
         $cmd .= ',' . $this->get_option('order-indent');
@@ -1150,7 +1150,6 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
         // We already have the placeholder available, so we just need to fill in the elements.
         $r = '';
         $indent = $this->get_option('order-type') === 'fill-in vertical with indentation';
-        error_log(print_r($this->rawvalue,true));
         foreach ($this->rawvalue as $value) {
             $ind = 0;
             $term = $value;
