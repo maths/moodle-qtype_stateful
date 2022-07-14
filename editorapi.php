@@ -38,7 +38,6 @@ require_once __DIR__ . '/stateful/handling/json.php';
 require_once __DIR__ . '/stateful/handling/moodle.php';
 require_once __DIR__ . '/stateful/handling/validation.php';
 require_once __DIR__ . '/stateful/handling/testing.php';
-require_once __DIR__ . '/stateful/castext2/utils.php';
 require_once __DIR__ . '/renderer.php';
 
 

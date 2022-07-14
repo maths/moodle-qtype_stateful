@@ -1553,12 +1553,16 @@ class stateful_input_matrix extends stateful_input_algebraic {
         $init .= '])';
 
 
+        // Note that _EC logic is present in this from the error tracking of
+        // castext, we don't consider it as evil at this point.
+        $init = str_replace('_EC(', '__MAGIC(', $init);
+
         $validation = stack_ast_container::make_from_teacher_source($init, 'init for ' . $this->get_name());
         // Could throw some exceptions here?
         $validation->get_valid();
-        // As long as we do not throw a custom one above it gets 
-        // thrown here.
-        return $validation->get_evaluationform();
+        $code = $validation->get_evaluationform();
+
+        return str_replace('__MAGIC(', '_EC(', $code);
     }
 
     public function set_initialisation_value(MP_Node $value): void {

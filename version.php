@@ -17,9 +17,9 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->version      = 2022052000;
 $plugin->requires     = 2018051700;
 $plugin->component    = 'qtype_stateful';
-$plugin->maturity     = MATURITY_BETA;
-$plugin->release      = '1.1 for Moodle 3.9+, PHP 7.1+';
+$plugin->maturity     = MATURITY_STABLE;
+$plugin->release      = '1.1 for Moodle 3.9+, PHP 7.1+, STACK 4.4+';
 $plugin->dependencies = [
-    'qtype_stack' => 2022052100,
+    'qtype_stack' => 2022071300,
     'qbehaviour_stateful' => 2020040800
 ];

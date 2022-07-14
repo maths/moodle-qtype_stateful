@@ -635,10 +635,16 @@ class stateful_input_mcq extends stateful_input_algebraic {
         }
 
         $init = 'block([%_tmp,simp,%_mcqoptions],simp:false,' . $optgen . ',simp:false,[' . $this->rawteachersanswer . ',stack_dispvalue(' . $this->rawteachersanswer . '),%_mcqoptions])';
+        // Note that _EC logic is present in this from the error tracking of
+        // castext, we don't consider it as evil at this point.
+        $init = str_replace('_EC(', '__MAGIC(', $init);
+
         $validation = stack_ast_container::make_from_teacher_source($init, 'ta for ' . $this->get_name());
         // Could throw some exceptions here?
         $validation->get_valid();
-        return $validation->get_evaluationform();
+        $code = $validation->get_evaluationform();
+
+        return str_replace('__MAGIC(', '_EC(', $code);
     }
 
     public function set_initialisation_value(MP_Node $value): void {

@@ -121,14 +121,16 @@ class qtype_stateful_renderer extends qtype_renderer {
                                 unset($response[$key]);
                             }
                         }
-                        foreach ($opt['inputs'] as $key => $value) {
-                            $input = $question->get_current_scene()->inputs[$key];
-                            if ($input->get_type() !== 'button') {
-                                // Buttons are special.
-                                $ast = maxima_parser_utils::parse($value);
-                                $r = $input->value_to_response($ast);
-                                foreach ($r as $k => $v) {
-                                    $response[$k] = $v;
+                        if (isset($opt['inputs'])) {
+                            foreach ($opt['inputs'] as $key => $value) {
+                                $input = $question->get_current_scene()->inputs[$key];
+                                if ($input->get_type() !== 'button') {
+                                    // Buttons are special.
+                                    $ast = maxima_parser_utils::parse($value);
+                                    $r = $input->value_to_response($ast);
+                                    foreach ($r as $k => $v) {
+                                        $response[$k] = $v;
+                                    }
                                 }
                             }
                         }
