@@ -108,6 +108,9 @@ switch ($apimode) {
 
         if ($validationresult['result'] && ($apimode === 'save' || $apimode ===
             'savenew')) {
+            if ($apimode === 'save') {
+                question_require_capability_on($question, 'edit');
+            }
             $question = stateful_handling_moodle::save($question, $apimode ===
                 'save');
             header('Content-Type: application/json');
@@ -213,7 +216,7 @@ switch ($apimode) {
 
         break;
     case 'just-schema':
-        // Dumps out jsut the question schema.
+        // Dumps out just the question schema.
         header('Content-Type: application/json');
         echo json_encode(stateful_handling_json::schema());
         break;
@@ -365,6 +368,7 @@ switch ($apimode) {
 
         $data             = json_decode(file_get_contents('php://input'), true);
         $question         = stateful_handling_json::from_array($data);
+        question_require_capability_on($question, 'edit');
         $validationresult = stateful_handling_validation::validate($question);
         \core\session\manager::write_close();
         header('Content-Type: application/json');

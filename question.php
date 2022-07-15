@@ -1037,7 +1037,7 @@ question_stateful, stateful_model {
 
         // CASText
         if ((strpos($thing, 'scene-') === 0 && substr($thing, -strlen('-text'))
-            === '-text') || $thing === 'modelsolution') {
+            === '-text') || $thing === 'modelsolution' || strpos($thing, 'td-') === 0) {
             return castext2_evaluatable::make_from_compiled($this->compiledcache[$thing], 'scenetext', new castext2_static_replacer([]));
         }
 
@@ -1229,6 +1229,13 @@ question_stateful, stateful_model {
 
             // Nothing for wrong name/sequence.
             return '';
+        } else if (strpos($what, 'td-') === 0) {
+            $ct = $this->get_compiled($what);
+            $statements[] = $ct;
+            $session = new stack_cas_session2($statements, $this->options, $this->seed);
+            $session->errclass = 'stateful_cas_error';
+            $session->instantiate();
+            return $ct->get_rendered($this->castextprocessor);
         }
 
         return 'NO RENDER OUTPUT FOR ' . $what;
@@ -1372,4 +1379,21 @@ question_stateful, stateful_model {
         return $this->parlength;
     }
 
+    /**
+     * Moodle specific acessor for question capabilities.
+     */
+    public function has_cap(string $capname): bool {
+        return $this->has_question_capability($capname);
+    }
+
+    protected function has_question_capability($type) {
+        global $USER;
+        $context = $this->get_context();
+        return has_capability("moodle/question:{$type}all", $context) ||
+                ($USER->id == $this->createdby && has_capability("moodle/question:{$type}mine", $context));
+    }
+
+    public function get_context() {
+        return context::instance_by_id($this->contextid);
+    }
 }

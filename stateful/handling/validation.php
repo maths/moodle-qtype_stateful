@@ -366,6 +366,9 @@ class stateful_handling_validation {
         $question->compiledcache = [];
         $forbiddenkeys           = [];
 
+        // Some resets of counters.
+        stack_cas_castext2_textdownload::$countfiles = 1;
+
         $question->compiledcache['random'] = false;
         $sec = new stack_cas_security();
         $code = null;
@@ -462,10 +465,57 @@ class stateful_handling_validation {
 
             // Also the code scenetext.
             try {
+                
+                $ast = castext2_parser_utils::parse($scene->scenetext, castext2_parser_utils::RAWFORMAT);
+                $ast = castext2_parser_utils::position_remap($ast, $scene->scenetext);
+                $root = stack_cas_castext2_special_root::make($ast);
                 $question->compiledcache['scene-' . $scene->name .
-                    '-text'] =
-                castext2_parser_utils::compile($scene->scenetext, castext2_parser_utils::RAWFORMAT, ['context'=> self::path_creator($scene, 'scenetext'), 'errclass' => 'stateful_cas_error']);
+                    '-text'] = $root->compile(castext2_parser_utils::RAWFORMAT, ['context'=> self::path_creator($scene, 'scenetext'), 'errclass' => 'stateful_cas_error', 'in main content' => true, 'stateful' => true]);
+
+                $err = [];
+                $valid = true;
+                // Check for specials. After compile.
+                // Bring out errors from them.
+                $special = [];
+                $specialsearch = function ($node) use (&$special, &$err, &$valid, &$sec) {
+                    if ($node instanceof stack_cas_castext2_textdownload) {
+                        foreach ($node->params['text-download-content'] as $k => $v) {
+                            // Note that _EC logic is present in this from the error tracking of
+                            // castext, we don't consider it as evil at this point.
+                            $vec = str_replace('_EC(', 'MAGIC(', $v);
+                            $astc = stack_ast_container::make_from_teacher_source($vec, '/td/' . $k, $sec);
+                            if (!$astc->get_valid()) {
+                                $valid = false;
+                                $err = array_merge($err, $astc->get_errors('implode'));
+                            }
+                            if (!isset($special['text-download'])) {
+                                $special['text-download'] = [];
+                            }
+                            $special['text-download'][$k] = $v;
+                        }
+                    } else if ($node instanceof stack_cas_castext2_include) {
+                        if (!isset($special['castext-includes'])) {
+                            $special['castext-includes'] = [$node->params['src']];
+                        } else if (array_search($node->params['src'], $special['castext-includes']) === false) {
+                            $special['castext-includes'][] = $node->params['src'];
+                        }
+                    }
+                };
+                $root->callbackRecurse($specialsearch);
+                if (!$valid) {
+                    $result['result'] = false;    
+                    $result['errors'][] = ['message' => implode(', ', $err), 'path'
+                                                                             =>
+                    self::path_creator($scene, 'scenetext')];
+                }
+                if (isset($special['text-download'])) {
+                    foreach ($special['text-download'] as $k => $v) {
+                        $question->compiledcache['td-' . $k] = $v;
+                    }
+                }
+
             } catch (Exception $ee) {
+                $result['result'] = false;
                 $result['errors'][] = ['message' => $ee->getMessage(), 'path'
                                                                              =>
                     self::path_creator($scene, 'scenetext')];

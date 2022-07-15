@@ -20,6 +20,6 @@ $plugin->component    = 'qtype_stateful';
 $plugin->maturity     = MATURITY_STABLE;
 $plugin->release      = '1.1 for Moodle 3.9+, PHP 7.1+, STACK 4.4+';
 $plugin->dependencies = [
-    'qtype_stack' => 2022071300,
+    'qtype_stack' => 2022071400,
     'qbehaviour_stateful' => 2020040800
 ];
