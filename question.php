@@ -234,6 +234,15 @@ question_stateful, stateful_model {
             $statements[] = stack_ast_container_silent::make_from_teacher_source('RANDOM_SEED:' . $this->seed, 'validate_input', $sec);
         }
 
+        // If we are using localisation we should tell the CAS side logic about it.
+        // For castext rendering and other tasks.
+        if (count($this->get_compiled('langs')) > 0) {
+            $ml = new stack_multilang();
+            $selected = $ml->pick_lang($this->get_compiled('langs'));
+            $statements[] = new stack_secure_loader('%_STACK_LANG:' .
+                stack_utils::php_string_to_maxima_string($selected), 'language setting');
+        }
+
         // The question-variables.
         $statements[] = $this->get_compiled('qv');
         // Then call them.
@@ -291,6 +300,15 @@ question_stateful, stateful_model {
 
             $statements = [stack_ast_container_silent::make_from_teacher_source('RANDOM_SEED:' . $this
                     ->seed, 'render_validation', $sec)];
+            // If we are using localisation we should tell the CAS side logic about it.
+            // For castext rendering and other tasks.
+            if (count($this->get_compiled('langs')) > 0) {
+                $ml = new stack_multilang();
+                $selected = $ml->pick_lang($this->get_compiled('langs'));
+                $statements[] = new stack_secure_loader('%_STACK_LANG:' .
+                    stack_utils::php_string_to_maxima_string($selected), 'language setting');
+            }
+
             // 1. We need the question variables for this seed.
             $qvfunction   = $this->get_compiled('qv');
             $statements[] = $qvfunction;
@@ -418,6 +436,16 @@ question_stateful, stateful_model {
 
             $statements = [stack_ast_container_silent::make_from_teacher_source('RANDOM_SEED:' . $this
                     ->seed, 'process_input', $sec)];
+
+            // If we are using localisation we should tell the CAS side logic about it.
+            // For castext rendering and other tasks.
+            if (count($this->get_compiled('langs')) > 0) {
+                $ml = new stack_multilang();
+                $selected = $ml->pick_lang($this->get_compiled('langs'));
+                $statements[] = new stack_secure_loader('%_STACK_LANG:' .
+                    stack_utils::php_string_to_maxima_string($selected), 'language setting');
+            }
+
             // 1. We need the question variables for this seed.
             $qvfunction   = $this->get_compiled('qv');
             $statements[] = $qvfunction;
@@ -795,6 +823,15 @@ question_stateful, stateful_model {
             $statements[] = stack_ast_container_silent::make_from_teacher_source('RANDOM_SEED:' . $this->seed, 'init_state_vars', $this->security);
         }
 
+        // If we are using localisation we should tell the CAS side logic about it.
+        // For castext rendering and other tasks.
+        if (count($this->get_compiled('langs')) > 0) {
+            $ml = new stack_multilang();
+            $selected = $ml->pick_lang($this->get_compiled('langs'));
+            $statements[] = new stack_secure_loader('%_STACK_LANG:' .
+                stack_utils::php_string_to_maxima_string($selected), 'language setting');
+        }
+
         // First define the function that evaluates the question variables.
         // This comes from stateful_function_builder::question_variables.
         $statements[] = $this->get_compiled('qv');
@@ -867,6 +904,16 @@ question_stateful, stateful_model {
         } else {
             $statements[] = stack_ast_container_silent::make_from_teacher_source('RANDOM_SEED:' . $this->seed, 'init_from_state', $this->security);
         }
+
+        // If we are using localisation we should tell the CAS side logic about it.
+        // For castext rendering and other tasks.
+        if (count($this->get_compiled('langs')) > 0) {
+            $ml = new stack_multilang();
+            $selected = $ml->pick_lang($this->get_compiled('langs'));
+            $statements[] = new stack_secure_loader('%_STACK_LANG:' .
+                stack_utils::php_string_to_maxima_string($selected), 'language setting');
+        }
+
         // 1. We need the question variables for this seed.
         $statements[] = $this->get_compiled('qv');
         // Then call it.
@@ -983,7 +1030,8 @@ question_stateful, stateful_model {
         // Some non casstring cases.
         if ($thing === 'forbiddenkeys' || $thing === 'random' 
             || substr($thing, -strlen('|inputs')) === '|inputs' 
-            || substr($thing, -strlen('|io-cache')) === '|io-cache') {
+            || substr($thing, -strlen('|io-cache')) === '|io-cache'
+            || $thing === 'langs') {
             return $this->compiledcache[$thing];
         }
 
@@ -1125,6 +1173,15 @@ question_stateful, stateful_model {
         } else {
             $statements[] = stack_ast_container_silent::make_from_teacher_source('RANDOM_SEED:' . $this->seed, 'render ' . $what, $this->security);
         }
+        // If we are using localisation we should tell the CAS side logic about it.
+        // For castext rendering and other tasks.
+        if (count($this->get_compiled('langs')) > 0) {
+            $ml = new stack_multilang();
+            $selected = $ml->pick_lang($this->get_compiled('langs'));
+            $statements[] = new stack_secure_loader('%_STACK_LANG:' .
+                stack_utils::php_string_to_maxima_string($selected), 'language setting');
+        }
+
         // Note that even for feedback we use the state variables that we have
         // after processing as feedback is only displayed when no state transfer
         // has happened and thus we do not need to access the variables from

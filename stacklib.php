@@ -65,6 +65,10 @@ require_once __DIR__ . '/../stack/renderer.php';
 // Some cases like in inputs we use filter pipelines.
 require_once __DIR__ . '/../stack/stack/cas/parsingrules/parsingrule.factory.php';
 
+// We use the same logic as STACK does for languages.
+require_once __DIR__ . '/../stack/lang/multilang.php';
+
+
 // CASText2 now comes from STACK.
 require_once __DIR__ . '/../stack/stack/cas/castext2/utils.php';
 require_once __DIR__ . '/../stack/stack/cas/castext2/castext2_evaluatable.class.php';

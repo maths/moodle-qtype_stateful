@@ -413,6 +413,7 @@ class stateful_handling_validation {
         }
 
         // All scene variables.
+        $allscenetetext = '';
         foreach ($question->scenes as $scene) {
             if (trim($scene->name) === '') {
                 $result['result'] = false;
@@ -421,6 +422,7 @@ class stateful_handling_validation {
                 // No sense in continuing.
                 return $result;
             }
+            $allscenetetext .= $scene->scenetext;
             try {
                 list($code, $varref) = stateful_function_builder::scene_variables($scene);
                 $question->compiledcache['scene-' . $scene->name . '-variables'
@@ -545,6 +547,13 @@ class stateful_handling_validation {
 
             $question->compiledcache['scene-' . $scene->name . '|io-cache'] = $iocache;
         }
+
+        // Pick the languages in use from the scenetexts. We do not care which
+        // languages are present in which parts, that is for the editors to check
+        // and warn about.
+        $ml = new stack_multilang();
+        $question->compiledcache['langs'] = $ml->languages_used($allscenetetext);
+
 
         // The forbidden variablenames
         $question->compiledcache['forbiddenkeys'] = array_keys($forbiddenkeys);

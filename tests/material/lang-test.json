@@ -1,0 +1,42 @@
+{
+  "name": "TEST: Lang",
+  "description": "This question only tests the [[lang]]-block",
+  "modelsolution": "",
+  "questionnote": "",
+  "pointvalue": 1,
+  "penalty": 0.1,
+  "parlength": -1,
+  "questionvariables": "",
+  "statevariables": [],
+  "scenes": [
+    {
+      "name": "test \"1\"",
+      "description": "The test here is to check if the output is exactly \"1\" and nothing else.",
+      "scenevariables": "",
+      "scenetext": "[[lang code=\"en\"]]1[[/lang]][[lang code=\"fi\"]]1[[/lang]][[lang code=\"sv\"]]1[[/lang]]",
+      "inputs": [],
+      "vboxes": [],
+      "prts": []
+    }
+  ],
+  "entryscenename": "test \"1\"",
+  "options": {
+    "assumepositive": false,
+    "assumereal": false,
+    "complexno": "i",
+    "multiplicationsign": "dot",
+    "sqrtsign": true,
+    "inversetrig": "cos-1",
+    "matrixparens": "[",
+    "questionsimplify": true
+  },
+  "meta": {
+    "statevariablenumbers": []
+  },
+  "variants": {
+    "_set": "_free",
+    "A": [],
+    "B": [],
+    "C": []
+  }
+}

@@ -14,7 +14,7 @@ require_once __DIR__ . '/../stateful/handling/testing.php';
  * @group qtype_stateful
  * @group qtype_stateful_samples
  */
-class stateful_question_based_answer_tests extends qtype_stack_testcase {
+class question_based_answer_tests extends qtype_stack_testcase {
 
     public function load_question(): qtype_stateful_question {
         // No need to load multiple times, keep a copy at hand to
