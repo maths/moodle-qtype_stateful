@@ -1231,6 +1231,21 @@ question_stateful, stateful_model {
             return '';
         } else if (strpos($what, 'td-') === 0) {
             $ct = $this->get_compiled($what);
+            // Add some context.
+            // The question-variables.
+            $statements[] = $this->get_compiled('qv');
+            // Then call them.
+            $statements[] = new stack_secure_loader('_question_variables(RANDOM_SEED)', 'text_download');
+            // Then add scene variables.
+            $statements[] = new stack_secure_loader('_question_variables(RANDOM_SEED)', 'text_download');
+            // And the scene variables.
+            $svfunction = $this->get_compiled('scene-' . $scene->name .
+                '-variables');
+            $statements[] = $svfunction;
+            // And to call it we need its signature.
+            $statements[] = new stack_secure_loader(explode(':=', $svfunction->
+                get_evaluationform())[0], 'text_download');
+
             $statements[] = $ct;
             $session = new stack_cas_session2($statements, $this->options, $this->seed);
             $session->errclass = 'stateful_cas_error';
