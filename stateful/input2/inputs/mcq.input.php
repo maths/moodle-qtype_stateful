@@ -581,11 +581,11 @@ class stateful_input_mcq extends stateful_input_algebraic {
             $label = null;
             // Label
             if (isset($opt['label']) && $opt['label'] !== null && trim($opt['label']) !== '') {
-                $label = castext2_parser_utils::compile($opt['label'], null, $ct2options);
+                $label = castext2_parser_utils::compile($opt['label'], null, $ct2options)->toString();
             } else if ($this->get_option('mcq-label-default-render') !== 'latex' || $this->get_option('mcq-dropdown-vanilla') === true) {
-                $label = castext2_parser_utils::compile('{#' . $opt['value'] . '#}', null, $ct2options);
+                $label = castext2_parser_utils::compile('{#' . $opt['value'] . '#}', null, $ct2options)->toString();
             } else {
-                $label = castext2_parser_utils::compile('{@' . $opt['value'] . '@}', null, $ct2options);
+                $label = castext2_parser_utils::compile('{@' . $opt['value'] . '@}', null, $ct2options)->toString();
             }
             
             $append .= $label . ',';

@@ -53,7 +53,7 @@ class stateful_custom_validation_box implements stateful_input_validation_box {
 
     public function get_cached(): string {
         if ($this->cached === false) {
-            $this->cached = castext2_parser_utils::compile($this->castext, null, ['errclass' => 'stateful_cas_error', 'context' => 'TODO-customvalidationbox']);
+            $this->cached = castext2_parser_utils::compile($this->castext, null, ['errclass' => 'stateful_cas_error', 'context' => 'TODO-customvalidationbox'])->toString();
         }
 
         return $this->cached;
@@ -187,7 +187,7 @@ class stateful_custom_validation_box implements stateful_input_validation_box {
 
         // Build the processor. Which handles the special input blocks i.e.
         // [[list_errors:ans1,ans2]] and such.
-        $processor = new stateful_validation_castext_processor(new castext2_default_processor(), $errors, $variables, $units);
+        $processor = new stateful_validation_castext_processor(new stateful_castext2_default_processor(null), $errors, $variables, $units);
 
         // Process.
         return castext2_parser_utils::postprocess_mp_parsed($evaluatedcastext, $processor);

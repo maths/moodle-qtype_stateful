@@ -470,7 +470,7 @@ class stateful_handling_validation {
                 $ast = castext2_parser_utils::position_remap($ast, $scene->scenetext);
                 $root = stack_cas_castext2_special_root::make($ast);
                 $question->compiledcache['scene-' . $scene->name .
-                    '-text'] = $root->compile(castext2_parser_utils::RAWFORMAT, ['context'=> self::path_creator($scene, 'scenetext'), 'errclass' => 'stateful_cas_error', 'in main content' => true, 'stateful' => true]);
+                    '-text'] = $root->compile(castext2_parser_utils::RAWFORMAT, ['context'=> self::path_creator($scene, 'scenetext'), 'errclass' => 'stateful_cas_error', 'in main content' => true, 'stateful' => true])->toString();
 
                 $err = [];
                 $valid = true;
@@ -612,7 +612,7 @@ class stateful_handling_validation {
         if ($gf === null) {
             $gf = '';
         }
-        $question->compiledcache['modelsolution'] = castext2_parser_utils::compile($gf, castext2_parser_utils::RAWFORMAT, ['context'=> self::path_creator($question, 'modelsolution'), 'errclass' => 'stateful_cas_error']);
+        $question->compiledcache['modelsolution'] = castext2_parser_utils::compile($gf, castext2_parser_utils::RAWFORMAT, ['context'=> self::path_creator($question, 'modelsolution'), 'errclass' => 'stateful_cas_error'])->toString();
 
         return $result;
     }

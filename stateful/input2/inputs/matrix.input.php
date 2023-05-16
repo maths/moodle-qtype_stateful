@@ -1527,7 +1527,7 @@ class stateful_input_matrix extends stateful_input_algebraic {
         // numbers. And labels.
         if ($this->get_option('matrix-mode') === 'data') {
             foreach ($this->get_option('matrix-columns') as $coldata) {
-                $init .= ',' . castext2_parser_utils::compile($coldata['label'], null, ['errclass' => 'stateful_cas_error', 'context' => 'TODO-label']);
+                $init .= ',' . castext2_parser_utils::compile($coldata['label'], null, ['errclass' => 'stateful_cas_error', 'context' => 'TODO-label'])->toString();
                 if ($coldata['type'] !== 'algebraic') {
                     if (isset($coldata['dp-min']) && trim($coldata['dp-min']) !== '') {
                         $init .= ',ev(' . $coldata['dp-min'] . ',simp)';

@@ -163,7 +163,6 @@ class stateful_compiler {
                         return true;
                     }
                     $compiled = castext2_parser_utils::compile($node->arguments[0]->value);
-                    $compiled = maxima_parser_utils::parse($compiled);
                     if ($compiled instanceof MP_Root) {
                         $compiled = $compiled->items[0];
                     }

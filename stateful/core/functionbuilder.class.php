@@ -425,7 +425,7 @@ class stateful_function_builder {
                 '') {
                 $nn   = self::pc($node, 'truefeedback');
                 $ct2options['context'] = $nn;
-                $code = castext2_parser_utils::compile($node->truefeedback, castext2_parser_utils::RAWFORMAT, $ct2options);
+                $code = castext2_parser_utils::compile($node->truefeedback, castext2_parser_utils::RAWFORMAT, $ct2options)->toString();
                 $r .= ",_EC(errcatch(_FEEDBACK:castext_concat(_FEEDBACK,$code)),$nn)"
                 ;
             }
@@ -540,7 +540,7 @@ class stateful_function_builder {
                 '') {
                 $nn   = self::pc($node, 'falsefeedback');
                 $ct2options['context'] = $nn;
-                $code = castext2_parser_utils::compile($node->falsefeedback, castext2_parser_utils::RAWFORMAT, $ct2options);
+                $code = castext2_parser_utils::compile($node->falsefeedback, castext2_parser_utils::RAWFORMAT, $ct2options)->toString();
                 $r .= ",_EC(errcatch(_FEEDBACK:castext_concat(_FEEDBACK,$code)),$nn)"
                 ;
             }

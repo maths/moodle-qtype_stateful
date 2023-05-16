@@ -72,7 +72,7 @@ class stateful_basic_validation_box implements stateful_input_validation_box {
 
         $name = $this->input->get_name();
 
-        $validcastext = '<p>[[commonstring key="your_answer_interpreted_as"/]]</p>';
+        $validcastext = '<p>[[statefulcs key="your_answer_interpreted_as"/]]</p>';
         $validcastext .= '[[if test="stringp(' . $name . ')"]]<p style="text-align:center">{@' . $name . '@}</p>';
         $validcastext .= '[[else]]\[{@' . $name . '@}\][[/if]]';
 
@@ -85,7 +85,7 @@ class stateful_basic_validation_box implements stateful_input_validation_box {
         }
         $ct2options = ['errclass' => 'stateful_cas_error' , 'context' => 'TODO-customvalidation'];
 
-        $compiledvalid = castext2_parser_utils::compile($validcastext, null, $ct2options);
+        $compiledvalid = castext2_parser_utils::compile($validcastext, null, $ct2options)->toString();
 
         $this->cached = $compiledvalid;
         return $this->cached;
@@ -190,7 +190,7 @@ class stateful_basic_validation_box implements stateful_input_validation_box {
         $units = array($this->input->get_name() => stateful_utils::mp_to_php($rawunits));
 
         // Build the processor.
-        $processor = new stateful_validation_castext_processor(new castext2_default_processor(), $errors, $variables, $units);
+        $processor = new stateful_validation_castext_processor(new stateful_castext2_default_processor(null), $errors, $variables, $units);
 
         // Process.
         return castext2_parser_utils::postprocess_mp_parsed($evaluatedcastext, $processor);
@@ -219,7 +219,7 @@ class stateful_basic_validation_box_for_checkboxes extends stateful_basic_valida
         
         $name = $this->input->get_name();
 
-        $validcastext = '<p>[[commonstring key="your_answer_interpreted_as"/]]</p>';
+        $validcastext = '<p>[[statefulcs key="your_answer_interpreted_as"/]]</p>';
         $validcastext .= '[[if test="stringp(' . $name . ')"]]<p style="text-align:center">{@' . $name . '@}</p>';
         $validcastext .= '[[elif test="emptyp(' . $name. ')"]]';
         $validcastext .= '<p style="text-align:center"><i>[[commonstring key="none_of_the_options_selected_are_you_sure"/]]</i></p>';

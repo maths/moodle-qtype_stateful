@@ -76,12 +76,10 @@ require_once __DIR__ . '/../stack/stack/cas/castext2/castext2_static_replacer.cl
 require_once __DIR__ . '/../stack/stack/cas/castext2/block.factory.php';
 require_once __DIR__ . '/../stack/stack/cas/castext2/block.interface.php';
 /// But we do patch it a bit. Also note that we cannot use the default processor.
-require_once __DIR__ . '/stateful/castext2/blocks/commonstring.block.php';
+require_once __DIR__ . '/stateful/castext2/blocks/statefulcs.block.php';
 require_once __DIR__ . '/stateful/castext2/blocks/index.block.php';
 require_once __DIR__ . '/stateful/castext2/blocks/indexing.block.php';
-require_once __DIR__ . '/stateful/castext2/blocks/reveal.block.php';
 require_once __DIR__ . '/stateful/castext2/stateful.processor.php';
-castext2_block_factory::register('statefulcs', 'stateful_cas_castext2_commonstring');
+castext2_block_factory::register('statefulcs', 'stateful_cas_castext2_statefulcs');
 castext2_block_factory::register('index', 'stateful_cas_castext2_index');
 castext2_block_factory::register('indexing', 'stateful_cas_castext2_indexing');
-castext2_block_factory::register('reveal', 'stateful_cas_castext2_reveal');

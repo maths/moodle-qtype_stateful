@@ -171,7 +171,7 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
         ];
 
         $base['properties']['order-shufflebox-label'] = [
-            'default' => '[[commonstring key="input_order_shufflebox_label"/]]',
+            'default' => '[[statefulcs key="input_order_shufflebox_label"/]]',
             'type' => 'string', 
             'title' => stateful_string('input_option_order_shufflebox_label_label'),
             'description' => stateful_string('input_option_order_shufflebox_label_description')
@@ -206,7 +206,7 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
                                  ['value' => 'B','label' => 'No']];
 
         $base['order-list-label'] = '';
-        $base['order-shufflebox-label'] = '[[commonstring key="input_order_shufflebox_label"/]]';
+        $base['order-shufflebox-label'] = '[[statefulcs key="input_order_shufflebox_label"/]]';
 
         // No use for these.
         unset($base['syntax-hint-type']);
@@ -282,7 +282,7 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
             // its own condition, but if there is a template specifically
             // referencing that token then it must be present. Templates 
             // only matter if we are doing something else than in-place.
-            $castext = castext2_parser_utils::compile($element['label'], null, ['errclass' => 'stateful_cas_error', 'context' => 'TODO-order']);
+            $castext = castext2_parser_utils::compile($element['label'], null, ['errclass' => 'stateful_cas_error', 'context' => 'TODO-order'])->toString();
             $token = stack_utils::php_string_to_maxima_string($element['value']);
             if (!isset($element['inclusion']) || $element['inclusion'] === 'true') {
                 $cmd .= ',%_tokens:append(%_tokens,[' . $token . '])';
@@ -351,7 +351,7 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
                 $uiframe = '<div class="stateful-order-container-horizontal" data-template={#str_to_html(stackjson_stringify(%_template)),simp=true#}>';
                 $uiframe .= '[[indexing style="' . $this->get_option('order-indexing-type') . '" start="' . $this->get_option('order-indexing-offset') . '"]]<div class="stateful-order-list">' . $listlabel . '%%SORTAREA%%</div>[[/indexing]]';
                 $uiframe .= '[[indexing style=" "]]<div class="stateful-order-shufflebox">';
-                $uiframe .= '<span class="stateful-order-shufflebox-label">[[commonstring key="input_order_shufflebox_label"/]]</span>';
+                $uiframe .= '<span class="stateful-order-shufflebox-label">[[statefulcs key="input_order_shufflebox_label"/]]</span>';
                 $uiframe .= '%%SHUFFLEBOX%%</div>[[/indexing]]';
                 $uiframe .= '%%INPUTS%%</div>';
                 break;
@@ -359,7 +359,7 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
                 $uiframe = '<div class="stateful-order-container" data-template={#str_to_html(stackjson_stringify(%_template)),simp=true#}>';
                 $uiframe .= '[[indexing style="' . $this->get_option('order-indexing-type') . '" start="' . $this->get_option('order-indexing-offset') . '"]]<div class="stateful-order-list">' . $listlabel . '%%SORTAREA%%</div>[[/indexing]]';
                 $uiframe .= '[[indexing style=" "]]<div class="stateful-order-shufflebox">';
-                $uiframe .= '<span class="stateful-order-shufflebox-label">[[commonstring key="input_order_shufflebox_label"/]]</span>';
+                $uiframe .= '<span class="stateful-order-shufflebox-label">[[statefulcs key="input_order_shufflebox_label"/]]</span>';
                 $uiframe .= '%%SHUFFLEBOX%%</div>[[/indexing]]';
                 $uiframe .= '%%INPUTS%%</div>';
                 break;
@@ -369,13 +369,13 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
                 $uiframe .= ' data-maxindent="{#' . $this->get_option('order-max-indent'). ',simp=true#}">';
                 $uiframe .= '[[indexing style="' . $this->get_option('order-indexing-type') . '" start="' . $this->get_option('order-indexing-offset') . '"]]<div class="stateful-order-list">' . $listlabel . '%%SORTAREA%%</div>[[/indexing]]';
                 $uiframe .= '[[indexing style=" "]]<div class="stateful-order-shufflebox">';
-                $uiframe .= '<span class="stateful-order-shufflebox-label">[[commonstring key="input_order_shufflebox_label"/]]</span>';
+                $uiframe .= '<span class="stateful-order-shufflebox-label">[[statefulcs key="input_order_shufflebox_label"/]]</span>';
                 $uiframe .= '%%SHUFFLEBOX%%</div>[[/indexing]]';
                 $uiframe .= '%%INPUTS%%</div>';
                 break;
         }
 
-        $cmd .= ',' . castext2_parser_utils::compile($uiframe, null, ['errclass' => 'stateful_cas_error', 'context' => 'TODO-order']);
+        $cmd .= ',' . castext2_parser_utils::compile($uiframe, null, ['errclass' => 'stateful_cas_error', 'context' => 'TODO-order'])->toString();
         
         // 5. Validation-frame.
         $valframe = '';
@@ -391,7 +391,7 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
                 break;
         }
         
-        $cmd .= ',' . castext2_parser_utils::compile($valframe, null, ['errclass' => 'stateful_cas_error', 'context' => 'TODO-order']);
+        $cmd .= ',' . castext2_parser_utils::compile($valframe, null, ['errclass' => 'stateful_cas_error', 'context' => 'TODO-order'])->toString();
 
         // 6. The indent size.
         $cmd .= ',' . $this->get_option('order-indent');

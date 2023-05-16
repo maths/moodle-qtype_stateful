@@ -240,7 +240,7 @@ class stateful_input_button extends stateful_input_base_with_options implements 
 
 
     public function get_initialisation_commands(): string {
-        $label = castext2_parser_utils::compile($this->get_option('input-label'), null, ['errclass' => 'stateful_cas_error', 'context' => 'TODO-button']);
+        $label = castext2_parser_utils::compile($this->get_option('input-label'), null, ['errclass' => 'stateful_cas_error', 'context' => 'TODO-button'])->toString();
         $init = 'block([simp],simp:false,[' . $this->get_option('input-value') . ','. $label .'])';
         $validation = stack_ast_container::make_from_teacher_source($init, 'value and label for ' . $this->get_name());
         // Could throw some exceptions here?
