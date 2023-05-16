@@ -36,7 +36,7 @@ class stateful_castext2_default_processor extends castext2_default_processor {
 	        if ($override !== null) {
 	            $proc = $override;
 	        }
-            $block = new stateful_cas_castext2_commonstring([]);
+            $block = new stateful_cas_castext2_statefulcs([]);
         	return $block->postprocess($arguments, $proc);
         } else {
             return parent::process($blocktype, $arguments, $override);

@@ -32,14 +32,14 @@ require_once(__DIR__ . '/../../../stacklib.php');
 class stateful_cas_castext2_index extends stack_cas_castext2_block {
 	private static $count = 0;
 
-    public function compile($format, $options):  ? string{
-    	$r = '["index"';
+    public function compile($format, $options):  ? MP_Node{
+    	$r = new MP_List([new MP_String('index')]);
 
     	if (isset($this->params['name'])) {
-    		$r .= ',' . stack_utils::php_string_to_maxima_string($this->params['name']);
+    		$r->items[] = new MP_String($this->params['name']);
     	}
 
-    	return $r . ']';
+    	return $r;
 	}
 
     public function is_flat() : bool {
@@ -61,7 +61,7 @@ class stateful_cas_castext2_index extends stack_cas_castext2_block {
     	return html_writer::tag('span', '&nbsp;', $attributes);
     }
 
-    public function validate(&$errors = [], array $options): bool {
+    public function validate(&$errors = [], $options = []): bool {
     	$ok = true;
 
     	foreach ($this->params as $key => $value) {

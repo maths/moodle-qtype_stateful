@@ -35,8 +35,8 @@ class stateful_cas_castext2_indexing extends stack_cas_castext2_block {
     /* Has the JavaScript been loaded? */
     private static $loaded = false;
 
-    public function compile($format, $options):  ? string{
-        $r = '["indexing"';
+    public function compile($format, $options):  ? MP_Node{
+        $r = new MP_List([new MP_String('indexing')]);
 
         // We need to transfer the parameters forward.
         $p = [];
@@ -46,24 +46,22 @@ class stateful_cas_castext2_indexing extends stack_cas_castext2_block {
         if (array_key_exists('style', $this->params)) {
             $p['style'] = $this->params['style'];
         }
-        $r .= ',' . stack_utils::php_string_to_maxima_string(json_encode($p));
+        $r->items[] = new MP_String(json_encode($p));
 
         // The starting offset is the only current CAS-parameter.
         if (array_key_exists('start', $this->params)) {
             $ev = stack_ast_container::make_from_teacher_source('string(ev(' . $this->params['start'] . ',simp))');
-            $r .= ',' . $ev->get_evaluationform();
+            $r->items[] = $ev->get_commentles_primary_statement();
         } else {
-            $r .= ',"1"';
+            $r->items[] = new MP_String('1');
         }
 
         foreach ($this->children as $item) {
-            $c = $item->compile();
+            $c = $item->compile($format, $options);
             if ($c !== null) {
-                $r .= ',' . $c;
+                $r->items[] = $c;
             }
         }
-
-        $r .= ']';
 
         return $r;
     }
@@ -114,7 +112,7 @@ class stateful_cas_castext2_indexing extends stack_cas_castext2_block {
         return html_writer::tag('div', $content, $attributes);
     }
 
-    public function validate(&$errors = [],  array $options): bool {
+    public function validate(&$errors = [], $options = []): bool {
         $ok = true;
 
         foreach ($this->params as $key => $value) {
