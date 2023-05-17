@@ -51,7 +51,7 @@ class stateful_function_builder {
     // This function will return true if everything works and
     // will update the _ERR list if errors are triggered.
     // CALL WITH simp:true!
-    static function question_variables(qtype_stateful_question $question):
+    static function question_variables(qtype_stateful_question $question, castext2_static_replacer $statics):
     array {
         if ($question->questionvariables === null || trim($question->
             questionvariables) === '') {
@@ -66,7 +66,7 @@ class stateful_function_builder {
             $question->questionvariables, 
             self::pc($question, 'questionvariables', false),
             stateful_string('section_names_question_variables'),
-            new stack_cas_security($question->has_units()));
+            new stack_cas_security($question->has_units()), $statics);
 
         // Check that there are no STATE-VARIABLES here. Question variables cannot
         // depend on them nor can they be used to define them other than to initialise them
@@ -102,7 +102,7 @@ class stateful_function_builder {
     // This function will return true if everything works and
     // will update the _ERR list if errors are triggered.
     // CALL WITH simp:true!
-    static function scene_variables(stateful_scene $scene): array{
+    static function scene_variables(stateful_scene $scene,  castext2_static_replacer $statics): array{
         $fname = '_scene_' . stateful_utils::string_to_varname($scene->name) .
             '_variables';
         if ($scene->scenevariables === null || trim($scene->scenevariables) ===
@@ -120,14 +120,14 @@ class stateful_function_builder {
             $scene->question->questionvariables, 
             self::pc($scene->question, 'questionvariables', false),
             stateful_string('section_names_question_variables'),
-            new stack_cas_security($scene->question->has_units()));
+            new stack_cas_security($scene->question->has_units())/* No statics needed here. */);
 
         // SV-usage and code.
         list($svcompiled, $varref2) = stateful_compiler::compile_keyval(
             $scene->scenevariables, 
             self::pc($scene, 'scenevariables', false),
             stateful_string('section_names_scene_variables', $scene->name),
-            new stack_cas_security($scene->question->has_units()));
+            new stack_cas_security($scene->question->has_units()), $statics);
 
 
         $write = array();
@@ -171,20 +171,20 @@ class stateful_function_builder {
     // Due to the defense the signature of this function is not constant and you will
     // need to extract it from the return value (explode(':=',...)[0]).
     // CALL WITH simp:false! Critical to ensure input values are not simplified.
-    static function prt_logic(stateful_prt $prt): string{
+    static function prt_logic(stateful_prt $prt, castext2_static_replacer $statics): string{
         $sec = new stack_cas_security($prt->scene->question->has_units());
         list($fvcompiled, $varref) = stateful_compiler::compile_keyval(
             $prt->feedbackvariables, 
             self::pc($prt, 'feedbackvariables', false),
             stateful_string('section_names_feedback_variables', ['scene' =>
                 $prt->scene->name, 'prt' => $prt->name]),
-            $sec);
+            $sec, $statics);
         
         $usage  = $prt->get_variable_usage();
         $inputs = $prt->scene->get_input_definition();
 
         // Optiosn for castext.
-        $ct2options = ['bound-vars' => $varref['write'], 'errclass' => 'stateful_cas_error'];
+        $ct2options = ['bound-vars' => $varref['write'], 'errclass' => 'stateful_cas_error', 'static string extractor' => $statics];
 
         // What inputs are needed?
         $needs = [];

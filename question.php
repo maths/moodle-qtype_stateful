@@ -1038,7 +1038,15 @@ question_stateful, stateful_model {
         // CASText
         if ((strpos($thing, 'scene-') === 0 && substr($thing, -strlen('-text'))
             === '-text') || $thing === 'modelsolution' || strpos($thing, 'td-') === 0) {
-            return castext2_evaluatable::make_from_compiled($this->compiledcache[$thing], 'scenetext', new castext2_static_replacer([]));
+            return castext2_evaluatable::make_from_compiled($this->compiledcache[$thing], 'scenetext', $this->get_compiled('static-castext-strings'));
+        }
+
+        // Static string replacements.
+        if ($thing === 'static-castext-strings') {
+            if (is_array($this->compiledcache[$thing])) {
+                $this->compiledcache[$thing] = new castext2_static_replacer($this->compiledcache[$thing]);
+            } 
+            return $this->compiledcache[$thing];
         }
 
 

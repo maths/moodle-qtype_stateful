@@ -365,6 +365,7 @@ class stateful_handling_validation {
 
         $question->compiledcache = [];
         $forbiddenkeys           = [];
+        $statics                 = new castext2_static_replacer([]);
 
         // Some resets of counters.
         stack_cas_castext2_textdownload::$countfiles = 1;
@@ -376,7 +377,7 @@ class stateful_handling_validation {
         try {
             // The question variables.
             list($code, $varref) = stateful_function_builder::
-                question_variables($question);
+                question_variables($question, $statics);
             $question->compiledcache['qv'] = $code;
             foreach ($varref['write'] as $key) {
                 $forbiddenkeys[$key] = true;
@@ -427,7 +428,7 @@ class stateful_handling_validation {
             }
             $allscenetetext .= $scene->scenetext;
             try {
-                list($code, $varref) = stateful_function_builder::scene_variables($scene);
+                list($code, $varref) = stateful_function_builder::scene_variables($scene, $statics);
                 $question->compiledcache['scene-' . $scene->name . '-variables'
                 ] = $code;
                 
@@ -470,7 +471,7 @@ class stateful_handling_validation {
                 $ast = castext2_parser_utils::position_remap($ast, $scene->scenetext);
                 $root = stack_cas_castext2_special_root::make($ast);
                 $question->compiledcache['scene-' . $scene->name .
-                    '-text'] = $root->compile(castext2_parser_utils::RAWFORMAT, ['context'=> self::path_creator($scene, 'scenetext'), 'errclass' => 'stateful_cas_error', 'in main content' => true, 'stateful' => true])->toString();
+                    '-text'] = $root->compile(castext2_parser_utils::RAWFORMAT, ['context'=> self::path_creator($scene, 'scenetext'), 'errclass' => 'stateful_cas_error', 'in main content' => true, 'stateful' => true, 'static string extractor' => $statics])->toString();
 
                 $err = [];
                 $valid = true;
@@ -526,7 +527,7 @@ class stateful_handling_validation {
                 try {
                     $question->compiledcache['scene-' . $scene->name . '-prt-'
                         . $prt->name] =
-                    stateful_function_builder::prt_logic($prt);
+                    stateful_function_builder::prt_logic($prt, $statics);
                 } catch (stateful_exception $e) {
                     if ($e->type === 'validity_immutable_input') {
                         $result['result']   = false;
@@ -612,7 +613,10 @@ class stateful_handling_validation {
         if ($gf === null) {
             $gf = '';
         }
-        $question->compiledcache['modelsolution'] = castext2_parser_utils::compile($gf, castext2_parser_utils::RAWFORMAT, ['context'=> self::path_creator($question, 'modelsolution'), 'errclass' => 'stateful_cas_error'])->toString();
+        $question->compiledcache['modelsolution'] = castext2_parser_utils::compile($gf, castext2_parser_utils::RAWFORMAT, ['context'=> self::path_creator($question, 'modelsolution'), 'errclass' => 'stateful_cas_error', 'static string extractor' => $statics])->toString();
+
+        // Pick the static strings.
+        $question->compiledcache['static-castext-strings'] = $statics->get_map();
 
         return $result;
     }

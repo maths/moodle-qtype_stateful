@@ -32,7 +32,7 @@ class stateful_compiler {
      * Now using STACK side compile logic. Slightly different but better 
      * to be equal.
      */
-    public static function compile_keyval(string $keyval, string $errorref, string $exceptionref, stack_cas_security $securitymodel): array {
+    public static function compile_keyval(string $keyval, string $errorref, string $exceptionref, stack_cas_security $securitymodel, castext2_static_replacer $statics = null): array {
 
         $refs = ['read' => [], 'write' => [], 'calls' => []];
         
@@ -54,7 +54,7 @@ class stateful_compiler {
                         'error' => implode(', ', $kv->get_errors())]);
         }
 
-        $comp = $kv->compile($errorref);
+        $comp = $kv->compile($errorref, $statics);
         $code = [];
         if ($comp['blockexternal'] !== null) {
             $code[] = $comp['blockexternal'];
