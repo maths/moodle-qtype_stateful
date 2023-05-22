@@ -152,7 +152,7 @@ switch ($apimode) {
         // Similar function for the note.
         $qnf = '_qn(RANDOM_SEED):=';
         $ct2options = ['errclass' => 'stateful_cas_error' , 'context' => 'TODO-qnote'];
-        $qnf .= castext2_parser_utils::compile($qn, null, $ct2options);
+        $qnf .= castext2_parser_utils::compile($qn, null, $ct2options)->toString();
 
         $stmts = [];
         $stmts[] = new stack_secure_loader($qvf, 'question-variables');
@@ -249,7 +249,7 @@ switch ($apimode) {
         $data['urls']['savenew'] = (new moodle_url(
             '/question/type/stateful/editorapi.php', ['mode' => 'savenew']))->out(false);
 
-        $data['urls']['preview'] = (new moodle_url('/question/preview.php'))->out(false);
+        $data['urls']['preview'] = (new moodle_url('/question/bank/previewquestion/preview.php'))->out(false);
 
         $data['urls']['test'] = (new moodle_url(
             '/question/type/stateful/editorapi.php', ['mode' => 'test']))->out(false);

@@ -60,6 +60,9 @@ class stateful_handling_json {
         if (array_key_exists('category', $data)) {
             $r->category = $data['category'];
         }
+        if (array_key_exists('questionbankentryid', $data)) {
+            $r->questionbankentryid = $data['questionbankentryid'];
+        }
         if (array_key_exists('name', $data)) {
             $r->name = $data['name'];
         }
@@ -516,7 +519,7 @@ class stateful_handling_json {
         bool
          $with_attachments
     ): string{
-        // We need to do something about serialisation if we use numbers instead of strings for ceratin values.
+        // We need to do something about serialisation if we use numbers instead of strings for certain values.
         $current_ser_prec = ini_get('serialize_precision');
 
         ini_set('serialize_precision', '-1');
@@ -536,6 +539,8 @@ class stateful_handling_json {
         $r                = [];
         $r['id']          = (int) $question->id;
         $r['category']    = (int) $question->category;
+        $r['questionbankentryid'] = (int) $question->questionbankentryid;
+        $r['version']     = (int) $question->version;
         $r['name']        = $question->name;
         $r['description'] = $question->questiontext;
         $r['pointvalue']  = self::decimal_clear($question->defaultmark);

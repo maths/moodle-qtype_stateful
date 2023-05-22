@@ -75,6 +75,8 @@ class stateful_handling_moodle_formdata {
             }
         }
         $t['qtype'] = 'stateful';
+        $t['questionbankentryid'] = (int) $from->questionbankentryid;
+        $t['version'] = (int) $from->version;
         $t['questiontextformat'] = FORMAT_HTML;
         $t['generalfeedbackformat'] = FORMAT_HTML;
 
@@ -153,7 +155,7 @@ class stateful_handling_moodle_formdata {
 
         // Transfer some identity related stuff if present.
         foreach (['id', 'category', 'idnumber', 'version', 
-                  'stamp', 'parent'] as $key) {
+                  'stamp', 'parent', 'questionbankentryid'] as $key) {
             if (isset($from[$key])) {
                 $q->$key = $from[$key];
             }

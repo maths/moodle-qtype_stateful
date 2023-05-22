@@ -75,7 +75,7 @@ class stateful_handling_moodle {
         // First, save the basic question itself.
         $question->qtype   = 'stateful';
         $question->name    = trim($questiontosave->name);
-        $question->parent  = 0;
+        $question->parent  = isset($questiontosave->parent) ? $questiontosave->parent : 0;
         $question->length  = 1;
         $question->penalty = isset($questiontosave->penalty) ? $questiontosave
             ->penalty : 0;
@@ -86,20 +86,66 @@ class stateful_handling_moodle {
         $question->questiontextformat = $questiontosave->questiontextformat;
 
         $question->generalfeedback       = $questiontosave->generalfeedback;
-        $question->generalfeedbackformat = $questiontosave->
-        generalfeedbackformat;
+        $question->generalfeedbackformat = $questiontosave->generalfeedbackformat;
 
         if (isset($questiontosave->defaultmark)) {
             $question->defaultmark = $questiontosave->defaultmark;
         }
-        // If the question is new, create it.
-        if (empty($question->id)) {
-            // Set the unique code.
-            $question->stamp       = make_unique_id_code();
-            $question->createdby   = $USER->id;
-            $question->timecreated = time();
-            $question->id          = $DB->insert_record('question', $question);
+        $question->questionbankentryid = $questiontosave->questionbankentryid;
+
+        $questionbankentry = null;
+        if (isset($question->id)) {
+            $oldparent = $question->id;
+            if (!empty($question->id)) {
+                // Get the bank entry record where the question is referenced.
+                $questionbankentry = get_question_bank_entry($question->id);
+            }
         }
+
+        // No ID after this as this will be created as new.
+        unset($question->id);
+        unset($questiontosave->id);
+
+        // Set the unique code.
+        $question->stamp       = make_unique_id_code();
+        $question->createdby   = $USER->id;
+        $question->timecreated = time();
+        $question->id          = $DB->insert_record('question', $question);
+
+        // Update the entrys.
+        if (!$questionbankentry) {
+            // Create a record for question_bank_entries, question_versions and question_references.
+            $questionbankentry = new \stdClass();
+            $questionbankentry->questioncategoryid = $questiontosave->category;
+            $questionbankentry->idnumber = $questiontosave->idnumber;
+            $questionbankentry->ownerid = $question->createdby;
+            $questionbankentry->id = $DB->insert_record('question_bank_entries', $questionbankentry);
+        } else {
+            $questionbankentryold = new \stdClass();
+            $questionbankentryold->id = $questionbankentry->id;
+            $questionbankentryold->idnumber = $question->idnumber;
+            $DB->update_record('question_bank_entries', $questionbankentryold);
+        }
+
+        // Create question_versions records.
+        $questionversion = new \stdClass();
+        $questionversion->questionbankentryid = $questionbankentry->id;
+        $questionversion->questionid = $question->id;
+        // Get the version and status from the parent question if parent is set.
+        if (!$question->parent) {
+            // Get the status field. It comes from the form, but for testing we can.
+            $status = $form->status ?? $question->status ??
+                \core_question\local\bank\question_version_status::QUESTION_STATUS_READY;
+            $questionversion->version = get_next_version($questionbankentry->id);
+            $questionversion->status = $status;
+        } else {
+            $parentversion = get_question_version($question->parent);
+            $questionversion->version = $parentversion[array_key_first($parentversion)]->version;
+            $questionversion->status = $parentversion[array_key_first($parentversion)]->status;
+        }
+        $questionversion->id = $DB->insert_record('question_versions', $questionversion);
+
+
         // Now, whether we are updating a existing question, or creating a new
         // one, we have to do the files processing and update the record.
         // Question already exists, update.
@@ -775,10 +821,6 @@ class stateful_handling_moodle {
                 }
             }
         }
-
-        // Give the question a unique version stamp determined by question_hash().
-        $DB->set_field('question', 'version', question_hash($questiontosave),
-            ['id' => $question->id]);
 
         // Invalidate cache.
         cache_helper::invalidate_by_definition('core', 'questiondata', [], [
