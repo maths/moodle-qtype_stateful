@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Stateful.  If not, see <http://www.gnu.org/licenses/>.
 defined('MOODLE_INTERNAL') || die();
-$plugin->version      = 2022052000;
-$plugin->requires     = 2018051700;
+$plugin->version      = 2023052400;
+$plugin->requires     = 2022041900;
 $plugin->component    = 'qtype_stateful';
 $plugin->maturity     = MATURITY_STABLE;
-$plugin->release      = '1.1 for Moodle 3.9+, PHP 7.1+, STACK 4.4+';
+$plugin->release      = '1.2 for Moodle 4.0+, PHP 7.1+, STACK 4.4.3+';
 $plugin->dependencies = [
-    'qtype_stack' => 2022071400,
+    'qtype_stack' => 2023052400,
     'qbehaviour_stateful' => 2020040800
 ];

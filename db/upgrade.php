@@ -205,9 +205,8 @@ function xmldb_qtype_stateful_upgrade($oldversion) {
         }
     }
 
-    $latest = 2021083000;
+    $latest = 2023052400;
     if ($oldversion < $latest) {
-
         upgrade_plugin_savepoint(true, $latest, 'qtype', 'stateful');
         // For every update we clear the compile caches.
         $DB->execute('UPDATE {qtype_stateful_options} SET compiledcache = ?', ['']);
