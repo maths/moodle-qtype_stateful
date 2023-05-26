@@ -1211,6 +1211,8 @@ question_stateful, stateful_model {
             $prtid = 'prt-result-' . $this->get_scene_sequence_number($this->
                 state) . '-' . $name;
 
+            $ast = null;
+
             if (array_key_exists($prtid, $this->casparams)) {
                 if ($this->casparams[$prtid] === 'NOEVAL') {
                     // No eval case.
@@ -1220,8 +1222,13 @@ question_stateful, stateful_model {
                     $prtid]);
 
                 // We have stuff from the evaluation logic.
-                return castext2_parser_utils::postprocess_mp_parsed($ast->items
-                    [0]->statement->items[4]);
+                $ast = $ast->items[0]->statement->items[4];
+                $arform = maxima_parser_utils::mp_to_php($ast);
+                $arform = $this->get_compiled('static-castext-strings')->replace($arform);
+                if (is_string($arform)) {
+                    return $arform;
+                }
+                return castext2_parser_utils::postprocess_parsed($arform, $this->castextprocessor);
             } else {
                 // There is no data. Due to things happening in the wrong order or
                 // to a different instance of this question...
@@ -1232,7 +1239,7 @@ question_stateful, stateful_model {
                 }
 
                 return castext2_parser_utils::postprocess_mp_parsed($r[
-                    '_feedback'][$name]);
+                    '_feedback'][$name], $this->castextprocessor);
             }
 
             // Nothing for wrong name/sequence.
