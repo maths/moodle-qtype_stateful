@@ -21,7 +21,7 @@
  * @copyright  2019 Aalto University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(["jquery"], function($) {
+define([], function() {
     var aliasmap = {};
 
     var r = {
@@ -32,36 +32,51 @@ define(["jquery"], function($) {
                 aliasmap[fieldname] = alias;
             }
 
-            $('#' + $.escapeSelector(fieldname) + '__button').click(function() {
-                // Find the parent div.
-                var parent = $('#' + $.escapeSelector(fieldname) + '__button').closest('div.formulation');
-                // Then the submit button.
-                var submit = $('.im-controls > input[type=submit]', parent);
+            var button = document.querySelector('button[id$="' + CSS.escape(fieldname + '__button') + '"]');
 
-                // Before submit ensure that the value is placed.
-                var fieldstoset = {};
-                var i = fieldname;
-                while (i in fieldstoset == false) {
-                    fieldstoset[i] = true;
-                    if (aliasmap[i] != undefined) {
-                        i = aliasmap[i];
-                    } else {
-                        break;
-                    }
-                }
+            // Find the matching submit.
+            var iter = button;
+            while (iter && !iter.classList.contains('formulation')) {
+                iter = iter.parentElement;
+            }
+            var submit = false;
+            if (iter && iter.classList.contains('formulation')) {
+                // iter now represents the borders of the question containing
+                // this button.
+                // In Moodle inputs that are behaviour variables use `-` as a separator
+                // for the name and usage id.
+                submit = iter.querySelector('.im-controls *[id$="-submit"][type=submit]');
+            }
 
-                Object.keys(fieldstoset).forEach(function(field) {
-                    var f = $('#' + $.escapeSelector(field));
-                    if (f) {
-                        // Suppose the input is not present in the page...
-                        f.attr('value', value);
-                        f.trigger('change');
+            // Only do this if it is even possible.
+            if (submit) {
+                button.addEventListener('click', () => {
+                    // Before submit ensure that the value is placed.
+                    var fieldstoset = {};
+                    var i = fieldname;
+                    while (i in fieldstoset == false) {
+                        fieldstoset[i] = true;
+                        if (aliasmap[i] != undefined) {
+                            i = aliasmap[i];
+                        } else {
+                            break;
+                        }
                     }
+
+                    Object.keys(fieldstoset).forEach(function(field) {
+                        var f = document.getElementById(field);
+                        if (f) {
+                            f.value = value;
+                            f.dispatchEvent(new Event('change'));
+                        }
+                    });
+
+                    submit.click();
+                    return false;
                 });
-
-                submit.trigger('click');
-                return false;
-            });
+            } else {
+                console.log("Cannot have buttons tied to submit buttons if no submit buttons are present. Check question behaviour related settings.");
+            }
         }
     };
 
