@@ -6,9 +6,14 @@ namespace Composer\Autoload;
 
 class ComposerStaticInit9e430649bd492a173fc7d247c79467db
 {
+    public static $files = array (
+        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
+    );
+
     public static $prefixLengthsPsr4 = array (
         'S' => 
         array (
+            'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Swaggest\\JsonSchema\\' => 20,
             'Swaggest\\JsonDiff\\' => 18,
         ),
@@ -19,6 +24,10 @@ class ComposerStaticInit9e430649bd492a173fc7d247c79467db
     );
 
     public static $prefixDirsPsr4 = array (
+        'Symfony\\Polyfill\\Mbstring\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
+        ),
         'Swaggest\\JsonSchema\\' => 
         array (
             0 => __DIR__ . '/..' . '/swaggest/json-schema/src',
@@ -33,11 +42,16 @@ class ComposerStaticInit9e430649bd492a173fc7d247c79467db
         ),
     );
 
+    public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit9e430649bd492a173fc7d247c79467db::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit9e430649bd492a173fc7d247c79467db::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit9e430649bd492a173fc7d247c79467db::$classMap;
 
         }, null, ClassLoader::class);
     }

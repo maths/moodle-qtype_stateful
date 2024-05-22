@@ -6,15 +6,17 @@ A PHP implementation for finding unordered diff between two `JSON` documents.
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/swaggest/json-diff/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/swaggest/json-diff/?branch=master)
 [![Code Climate](https://codeclimate.com/github/swaggest/json-diff/badges/gpa.svg)](https://codeclimate.com/github/swaggest/json-diff)
 [![Code Coverage](https://scrutinizer-ci.com/g/swaggest/json-diff/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/swaggest/json-diff/code-structure/master/code-coverage)
+[![time tracker](https://wakatime.com/badge/github/swaggest/json-diff.svg)](https://wakatime.com/badge/github/swaggest/json-diff)
+
 
 ## Purpose
 
  * To simplify changes review between two `JSON` files you can use a standard `diff` tool on rearranged pretty-printed `JSON`.
  * To detect breaking changes by analyzing removals and changes from original `JSON`.
  * To keep original order of object sets (for example `swagger.json` [parameters](https://swagger.io/docs/specification/describing-parameters/) list).
- * To [make](#getpatch) and [apply](#jsonpatch) JSON Patches, specified in [RFC 6902](http://tools.ietf.org/html/rfc6902) from the IETF.
- * To [make](#getmergepatch) and [apply](#jsonmergepatch) JSON Merge Patches, specified in [RFC 7386](https://tools.ietf.org/html/rfc7386) from the IETF.
- * To retrieve and modify data by [JSON Pointer](http://tools.ietf.org/html/rfc6901).
+ * To [make](#getpatch) and [apply](#jsonpatch) JSON Patches, specified in [RFC 6902](https://datatracker.ietf.org/doc/html/rfc6902) from the IETF.
+ * To [make](#getmergepatch) and [apply](#jsonmergepatch) JSON Merge Patches, specified in [RFC 7386](https://datatracker.ietf.org/doc/html/rfc7386) from the IETF.
+ * To retrieve and modify data by [JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901).
  * To recursively replace by JSON value.
 
 ## Installation
@@ -57,7 +59,7 @@ $r = new JsonDiff(
 ```
 
 Available options:
- * `REARRANGE_ARRAYS` is an option to enable arrays rearrangement to minimize the difference.
+ * `REARRANGE_ARRAYS` is an option to enable [arrays rearrangement](#arrays-rearrangement) to minimize the difference.
  * `STOP_ON_DIFF` is an option to improve performance by stopping comparison when a difference is found.
  * `JSON_URI_FRAGMENT_ID` is an option to use URI Fragment Identifier Representation (example: "#/c%25d"). If not set default JSON String Representation (example: "/c%d").
  * `SKIP_JSON_PATCH` is an option to improve performance by not building JsonPatch for this diff.
@@ -67,8 +69,6 @@ Available options:
 
 Options can be combined, e.g. `JsonDiff::REARRANGE_ARRAYS + JsonDiff::STOP_ON_DIFF`.
 
-On created object you have several handy methods.
-
 #### `getDiffCnt`
 Returns total number of differences
 
@@ -76,7 +76,7 @@ Returns total number of differences
 Returns [`JsonPatch`](#jsonpatch) of difference
 
 #### `getMergePatch`
-Returns [JSON Merge Patch](https://tools.ietf.org/html/rfc7386) value of difference
+Returns [JSON Merge Patch](https://datatracker.ietf.org/doc/html/rfc7386) value of difference
 
 #### `getRearranged`
 Returns new value, rearranged with original order.
@@ -247,6 +247,40 @@ $this->assertEquals($diff->getRearranged(), $original);
 Due to magical methods and other restrictions PHP classes can not be reliably mapped to/from JSON objects.
 There is support for objects of PHP classes in `JsonPointer` with limitations:
 * `null` is equal to non-existent
+
+## Arrays Rearrangement
+
+When `JsonDiff::REARRANGE_ARRAYS` option is enabled, array items are ordered to match the original array.
+
+If arrays contain homogenous objects, and those objects have a common property with unique values, array is
+ordered to match placement of items with same value of such property in the original array.
+
+Example:
+original
+```json
+[{"name": "Alex", "height": 180},{"name": "Joe", "height": 179},{"name": "Jane", "height": 165}]
+```
+vs new
+```json
+[{"name": "Joe", "height": 179},{"name": "Jane", "height": 168},{"name": "Alex", "height": 180}]
+```
+would produce a patch:
+```json
+[{"value":165,"op":"test","path":"/2/height"},{"value":168,"op":"replace","path":"/2/height"}]
+```
+
+If qualifying indexing property is not found, rearrangement is done based on items equality.
+
+Example:
+original
+```json
+{"data": [{"A": 1, "C": [1, 2, 3]}, {"B": 2}]}
+```
+vs new
+```json
+{"data": [{"B": 2}, {"A": 1, "C": [3, 2, 1]}]}
+```
+would produce no difference.
 
 ## CLI tool
 
