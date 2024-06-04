@@ -47,8 +47,11 @@ class JsonDiff
 
 
     private $options = 0;
-    private $original;
-    private $new;
+
+    /**
+     * @var array Skip included paths
+     */
+    private $skipPaths = [];
 
     /**
      * @var mixed Merge patch container
@@ -80,27 +83,31 @@ class JsonDiff
     /** @var JsonPatch */
     private $jsonPatch;
 
+    /** @var JsonHash */
+    private $jsonHash;
+
     /**
      * @param mixed $original
      * @param mixed $new
      * @param int $options
+     * @param array $skipPaths
      * @throws Exception
      */
-    public function __construct($original, $new, $options = 0)
+    public function __construct($original, $new, $options = 0, $skipPaths = [])
     {
         if (!($options & self::SKIP_JSON_PATCH)) {
             $this->jsonPatch = new JsonPatch();
         }
 
-        $this->original = $original;
-        $this->new = $new;
         $this->options = $options;
+
+        $this->skipPaths = $skipPaths;
 
         if ($options & self::JSON_URI_FRAGMENT_ID) {
             $this->path = '#';
         }
 
-        $this->rearranged = $this->rearrange();
+        $this->rearranged = $this->process($original, $new);
         if (($new !== null) && $this->merge === null) {
             $this->merge = new \stdClass();
         }
@@ -241,14 +248,6 @@ class JsonDiff
 
     }
 
-    /**
-     * @return array|null|object|\stdClass
-     * @throws Exception
-     */
-    private function rearrange()
-    {
-        return $this->process($this->original, $this->new);
-    }
 
     /**
      * @param mixed $original
@@ -274,7 +273,7 @@ class JsonDiff
             (!$original instanceof \stdClass && !is_array($original))
             || (!$new instanceof \stdClass && !is_array($new))
         ) {
-            if ($original !== $new) {
+            if ($original !== $new && !in_array($this->path, $this->skipPaths)) {
                 $this->modifiedCnt++;
                 if ($this->options & self::STOP_ON_DIFF) {
                     return null;
@@ -406,7 +405,7 @@ class JsonDiff
     {
         $first = reset($original);
         if (!$first instanceof \stdClass) {
-            return $new;
+            return $this->rearrangeEqualItems($original, $new);
         }
 
         $uniqueKey = false;
@@ -416,7 +415,7 @@ class JsonDiff
         /** @var mixed[string]  $f */
         $f = get_object_vars($first);
         foreach ($f as $key => $value) {
-            if (is_array($value) || $value instanceof \stdClass) {
+            if (is_array($value)) {
                 continue;
             }
 
@@ -431,9 +430,17 @@ class JsonDiff
                     break;
                 }
                 $value = $item->$key;
-                if ($value instanceof \stdClass || is_array($value)) {
+                if (is_array($value)) {
                     $keyIsUnique = false;
                     break;
+                }
+
+                if ($value instanceof \stdClass) {
+                    if ($this->jsonHash === null) {
+                        $this->jsonHash = new JsonHash($this->options);
+                    }
+
+                    $value = $this->jsonHash->xorHash($value);
                 }
 
                 if (isset($uniqueIdx[$value])) {
@@ -450,7 +457,7 @@ class JsonDiff
         }
 
         if (!$uniqueKey) {
-            return $new;
+            return $this->rearrangeEqualItems($original, $new);
         }
 
         $newRearranged = [];
@@ -467,8 +474,16 @@ class JsonDiff
 
             $value = $item->$uniqueKey;
 
-            if ($value instanceof \stdClass || is_array($value)) {
+            if (is_array($value)) {
                 return $new;
+            }
+
+            if ($value instanceof \stdClass) {
+                if ($this->jsonHash === null) {
+                    $this->jsonHash = new JsonHash($this->options);
+                }
+
+                $value = $this->jsonHash->xorHash($value);
             }
 
 
@@ -496,7 +511,50 @@ class JsonDiff
         }
 
         ksort($newRearranged);
-        $newRearranged = array_values($newRearranged);
+        return $newRearranged;
+    }
+
+    private function rearrangeEqualItems(array $original, array $new)
+    {
+        if ($this->jsonHash === null) {
+            $this->jsonHash = new JsonHash($this->options);
+        }
+
+        $origIdx = [];
+        foreach ($original as $i => $item) {
+            $hash = $this->jsonHash->xorHash($item);
+            $origIdx[$hash][] = $i;
+        }
+
+        $newIdx = [];
+        foreach ($new as $i => $item) {
+            $hash = $this->jsonHash->xorHash($item);
+            $newIdx[$i] = $hash;
+        }
+
+        $newRearranged = [];
+        $changedItems = [];
+        foreach ($newIdx as $i => $hash) {
+            if (!empty($origIdx[$hash])) {
+                $j = array_shift($origIdx[$hash]);
+
+                $newRearranged[$j] = $new[$i];
+            } else {
+                $changedItems []= $new[$i];
+            }
+
+        }
+
+        $idx = 0;
+        foreach ($changedItems as $item) {
+            while (array_key_exists($idx, $newRearranged)) {
+                $idx++;
+            }
+            $newRearranged[$idx] = $item;
+        }
+
+        ksort($newRearranged);
+
         return $newRearranged;
     }
 }
