@@ -2,6 +2,8 @@
 
 ### Changelog
 
+**1.2.1** Fixes button inputs on newer Moodles, also now in sync with STACK 4.6 which is now the required version.
+
 **1.2** Rest of the move of CASText2 to STACK now with all the `[[textdownload]]` and other features. Removes own `[[reveal]]` block as redundant. **Drops support from pre 4.0 Moodles and requires STACK 4.4.3.** Do note the changes to `[[commonstring]]`, it now targets STACK strings if you used it with STateful strings you need to rename that block to `[[statefulcs]]`.
 
 **1.1** (never released) Move CASText2 over to STACK. Use the new security system and various other things from STACK 4.4. Note! This release does a run-time patch of STACKs CASText2 so that we can keep using the `[[reveal]]`-block (`[[index]]` and `[[indexing]]` are in the same situation), this means that it becomes active on the STACK side as well but won't work there as STACK does not use the same input system. Also we now use a different `[[commonstring]]`-block, if you want to use ours use `[[statefulcs]]`, this unfortunately breaks things that have used the `[[commonstring]]` on our side, but you now get access to both question types localised strings.
