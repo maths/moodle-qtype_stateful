@@ -40,8 +40,9 @@ require_once __DIR__ . '/stateful/handling/validation.php';
 require_once __DIR__ . '/stateful/handling/testing.php';
 require_once __DIR__ . '/renderer.php';
 
-
 require_once __DIR__ . '/question.php';
+
+use qbank_previewquestion\question_preview_options;
 
 require_login();
 
@@ -208,7 +209,9 @@ switch ($apimode) {
             if (is_string($item[1])) {
                 $response['results'][$item[0]] = $item[1];
             } else {
-                $response['results'][$item[0]] = castext2_parser_utils::postprocess_parsed($item[1]);
+                $holder = new castext2_placeholder_holder();
+                $tmp = castext2_parser_utils::postprocess_parsed($item[1], null, $holder);
+                $response['results'][$item[0]] = $holder->replace($tmp);
             }
         }
         header('Content-Type: application/json');
@@ -418,8 +421,8 @@ switch ($apimode) {
                     for ($i = 0; $i < count($totest); $i++) {
                         set_time_limit(30);
                         $state = $totest[$i];
-                        ksort($state);
                         if (is_array($state)) {
+                            ksort($state);
                             $result = stateful_handling_testing::test($question, $state);
                             if ($first) {
                                 $first = false;
@@ -478,7 +481,10 @@ switch ($apimode) {
         $data             = json_decode(file_get_contents('php://input'), true);
         $question         = stateful_handling_json::from_array($data);
         $validationresult = stateful_handling_validation::validate($question);
-        \core\session\manager::write_close();
+
+        // Fake up some version numbers.
+        $question->version = 1;
+        $question->set_latest_version(1);
 
         header('Content-Type: text/html');
 
@@ -537,6 +543,9 @@ switch ($apimode) {
         $options = new question_preview_options($question);
         $options->load_user_defaults();
         $options->set_from_request();
+
+        \core\session\manager::write_close();
+
         $options->history = question_display_options::HIDDEN;
         $options->rightanswer = question_display_options::HIDDEN;
         $options->behaviour = 'stateful';

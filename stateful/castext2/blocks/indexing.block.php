@@ -71,7 +71,7 @@ class stateful_cas_castext2_indexing extends stack_cas_castext2_block {
     }
 
 
-    public function postprocess(array $params, castext2_processor $processor): string {
+    public function postprocess(array $params, castext2_processor $processor, castext2_placeholder_holder $holder): string {
         global $PAGE;
 
         // Unpack the procesed stuff.
@@ -88,7 +88,7 @@ class stateful_cas_castext2_indexing extends stack_cas_castext2_block {
         $content    = '';
         for ($i = 3; $i < count($params); $i++) {
             if (is_array($params[$i])) {
-                $content .= $processor->process($params[$i][0], $params[$i]);
+                $content .= $processor->process($params[$i][0], $params[$i], $holder);
             } else {
                 $content .= $params[$i];
             }
@@ -109,7 +109,9 @@ class stateful_cas_castext2_indexing extends stack_cas_castext2_block {
             $PAGE->requires->js_call_amd('qtype_stateful/ct2_indexing', 'init');
         }
 
-        return html_writer::tag('div', $content, $attributes);
+        // Use the holder to protect the data-attributes. But not the content.
+        $divstart = explode('>-<', html_writer::tag('div', "-", $attributes))[0] . '>';;
+        return $holder->add_to_map($divstart) . $content . '</div>';
     }
 
     public function validate(&$errors = [], $options = []): bool {

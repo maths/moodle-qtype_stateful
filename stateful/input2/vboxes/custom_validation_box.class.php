@@ -190,8 +190,9 @@ class stateful_custom_validation_box implements stateful_input_validation_box {
         $processor = new stateful_validation_castext_processor(new stateful_castext2_default_processor(null), $errors, $variables, $units);
 
         // Process.
-        return castext2_parser_utils::postprocess_mp_parsed($evaluatedcastext, $processor);
-
+        $holder = new castext2_placeholder_holder();
+        $tmp = castext2_parser_utils::postprocess_mp_parsed($evaluatedcastext, $processor, $holder);
+        return $holder->replace($tmp);
     }
 
     public function serialize(): array {

@@ -258,7 +258,9 @@ class stateful_input_button extends stateful_input_base_with_options implements 
             $list = $list->statement;
         }
         $this->value = $list->items[0]->toString();
-        $this->label = castext2_parser_utils::postprocess_mp_parsed($list->items[1]);
+        $holder = new castext2_placeholder_holder();
+        $this->label = castext2_parser_utils::postprocess_mp_parsed($list->items[1], null, $holder);
+        $this->label = $holder->replace($this->label);
     }
 
     public function value_to_response(MP_Node $value): array {

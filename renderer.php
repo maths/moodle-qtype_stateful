@@ -143,7 +143,8 @@ class qtype_stateful_renderer extends qtype_renderer {
             $testthings .= '<p><strong>Preview test inputs.</strong> Define these in the PRT-nodes, you can also run automated tests that ensure these trigger the matching nodes. <b>Or disable this for now for faster preview: <input type="checkbox" name="' . $qa->get_qt_field_name('testCaseDisable') . '" value="true" checked="checked"/></b></p>';
         }
 
-        $questiontext = $question->render('scenetext');
+        $questiontexth = $question->render('scenetext');
+        $questiontext = $questiontexth->rendered;
 
         // we need to process that response a bit in the case where a scene has changed
         // as we cannot display inputs as valid before the student has a chance to do
@@ -216,26 +217,6 @@ class qtype_stateful_renderer extends qtype_renderer {
             }
         }
 
-        // Replace PRTs.
-        foreach ($question->get_prts() as $name => $prt) {
-            // Note that we ignore the feedback option in Stateful questions you
-            // do not not display the feedback if it exists.
-            if (mb_strpos($questiontext, "[[feedback:$name]]") !==
-                false) {
-                $feedback = '';
-                // Only generate and render if required.
-                if (!$blockallfeedback && $prtdisplay[$name]) {
-                    $feedback = $question->render("prt-$name", $response);
-                }
-                if (trim($feedback) !== '') {
-                    $feedback = html_writer::nonempty_tag('div', $feedback,
-                        ['class' => 'statefulprtfeedback']);
-                }
-
-                $questiontext = str_replace("[[feedback:$name]]", $feedback,
-                    $questiontext);
-            }
-        }
 
         // Using the STACK display logic requires a qtype_stack_renderer,
         // luckilly it is not used for anything so we can just fake it.
@@ -247,6 +228,39 @@ class qtype_stateful_renderer extends qtype_renderer {
             ,
             FORMAT_HTML,
             $qa, 'question', 'questiontext', $question->id);
+
+
+        // Replace PRTs.
+        foreach ($question->get_prts() as $name => $prt) {
+            // Note that we ignore the feedback option in Stateful questions you
+            // do not not display the feedback if it exists.
+            if (mb_strpos($questiontext, "[[feedback:$name]]") !==
+                false) {
+                $feedback = '';
+                $feedbackh = null;
+                // Only generate and render if required.
+                if (!$blockallfeedback && $prtdisplay[$name]) {
+                    $feedbackh = $question->render("prt-$name", $response);
+                    $feedback = $feedbackh->rendered;
+                }
+                if (trim($feedback) !== '') {
+                    $feedback = html_writer::nonempty_tag('div', $feedback,
+                        ['class' => 'statefulprtfeedback']);
+                }
+
+                $feedback = $question->format_text(
+                    stack_maths::process_display_castext($feedback, $dummyrenderer)
+                    ,
+                    FORMAT_HTML,
+                    $qa, 'question', 'questiontext', $question->id);
+                if ($feedbackh !== null) {
+                    $feedback = $feedbackh->apply($feedback);
+                }
+
+                $questiontext = str_replace("[[feedback:$name]]", $feedback,
+                    $questiontext);
+            }
+        }
 
         // Load in scripts for inputs.
         $question->inputs->apply_scripts($prefix, $PAGE);
@@ -270,6 +284,7 @@ class qtype_stateful_renderer extends qtype_renderer {
             mb_internal_encoding($old);
         }
 
+        $questiontext = $questiontexth->apply($questiontext);
 
         return $questiontext . $testthings . $details;
     }
@@ -292,7 +307,8 @@ class qtype_stateful_renderer extends qtype_renderer {
             return '';
         }
 
-        return $question->render('modelsolution');
+        $h = $question->render('modelsolution');
+        return $h->apply($h->rendered);
     }
 
 }
