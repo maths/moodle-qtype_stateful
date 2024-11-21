@@ -35,7 +35,7 @@ Stateful was created by [Matti Harjula](http://math.aalto.fi/en/people/matti.har
 
 Stateful requires **PHP 7.1+** and Moodle 4.0+. The PHP-extension `mbstring` is required, and `yaml` helps if one needs to use the minimal editor.
 
-Stateful also requires the Stateful question behaviour and STACK 4.4.3. Expect that Stateful will always require a recent STACK version and that upgrading STACK may mean that Stateful will also need to be upgraded and vice-versa.
+Stateful also requires the Stateful question behaviour and STACK 4.8. Expect that Stateful will always require a recent STACK version and that upgrading STACK may mean that Stateful will also need to be upgraded and vice-versa.
 
 
 ## Current state of development
