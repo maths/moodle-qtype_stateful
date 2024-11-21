@@ -46,7 +46,8 @@ class stateful_cas_castext2_index extends stack_cas_castext2_block {
         return false;
     }
 
-    public function postprocess(array $params, castext2_processor $processor): string {
+    public function postprocess(array $params, castext2_processor $processor,
+        castext2_placeholder_holder $holder): string {
     	// There is practically nothing to do as the logic happens client side.
     	$attributes = [
     		'class' => 'stack_ct2_index',
@@ -58,7 +59,9 @@ class stateful_cas_castext2_index extends stack_cas_castext2_block {
     	if (count($params) > 1) {
     		$attributes['name'] = stack_utils::maxima_string_to_php_string($params[1]);
     	}
-    	return html_writer::tag('span', '&nbsp;', $attributes);
+        
+        // Use the holder to protect the data-attribute.
+    	return $holder->add_to_map(html_writer::tag('span', '&nbsp;', $attributes));
     }
 
     public function validate(&$errors = [], $options = []): bool {

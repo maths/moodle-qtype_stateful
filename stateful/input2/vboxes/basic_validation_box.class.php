@@ -193,7 +193,9 @@ class stateful_basic_validation_box implements stateful_input_validation_box {
         $processor = new stateful_validation_castext_processor(new stateful_castext2_default_processor(null), $errors, $variables, $units);
 
         // Process.
-        return castext2_parser_utils::postprocess_mp_parsed($evaluatedcastext, $processor);
+        $holder = new castext2_placeholder_holder();
+        $tmp = castext2_parser_utils::postprocess_mp_parsed($evaluatedcastext, $processor, $holder);
+        return $holder->replace($tmp);
     }
 
 
@@ -267,7 +269,7 @@ class stateful_validation_castext_processor extends stateful_castext2_default_pr
         $this->units = $units;
     }
 
-    public function process(string $blocktype, array $arguments, castext2_processor $override = null): string {
+    public function process(string $blocktype, array $arguments, castext2_placeholder_holder $holder, castext2_processor $override = null): string {
 
 
         if ($blocktype === 'ioblock') {
@@ -324,7 +326,7 @@ class stateful_validation_castext_processor extends stateful_castext2_default_pr
             }
         }
 
-        return $this->baseprocessor->process($blocktype, $arguments, $this);
+        return $this->baseprocessor->process($blocktype, $arguments, $holder, $this);
     }
 
 }

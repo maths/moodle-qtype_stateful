@@ -1624,7 +1624,9 @@ class stateful_input_matrix extends stateful_input_algebraic {
             $this->colmin = $this->colmax;
             foreach ($this->get_option('matrix-columns') as $coldata) {
                 $this->cols[$c] = [];
-                $this->cols[$c]['label'] = castext2_parser_utils::postprocess_mp_parsed($list->items[$i]);
+                $holder = new castext2_placeholder_holder();
+                $this->cols[$c]['label'] = castext2_parser_utils::postprocess_mp_parsed($list->items[$i], null, $holder);
+                $this->cols[$c]['label'] = $holder->replace($this->cols[$c]['label']);
                 $i = $i + 1;
                 if ($coldata['type'] !== 'algebraic') {
                     if (isset($coldata['dp-min']) && trim($coldata['dp-min']) !== '') {

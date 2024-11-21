@@ -2,6 +2,8 @@
 
 ### Changelog
 
+**1.2.2** STACK 4.8, mainly changes to CASText2
+
 **1.2.1** Fixes button inputs on newer Moodles, also now in sync with STACK 4.6 which is now the required version.
 
 **1.2** Rest of the move of CASText2 to STACK now with all the `[[textdownload]]` and other features. Removes own `[[reveal]]` block as redundant. **Drops support from pre 4.0 Moodles and requires STACK 4.4.3.** Do note the changes to `[[commonstring]]`, it now targets STACK strings if you used it with STateful strings you need to rename that block to `[[statefulcs]]`.
@@ -33,7 +35,7 @@ Stateful was created by [Matti Harjula](http://math.aalto.fi/en/people/matti.har
 
 Stateful requires **PHP 7.1+** and Moodle 4.0+. The PHP-extension `mbstring` is required, and `yaml` helps if one needs to use the minimal editor.
 
-Stateful also requires the Stateful question behaviour and STACK 4.4.3. Expect that Stateful will always require a recent STACK version and that upgrading STACK may mean that Stateful will also need to be upgraded and vice-versa.
+Stateful also requires the Stateful question behaviour and STACK 4.8. Expect that Stateful will always require a recent STACK version and that upgrading STACK may mean that Stateful will also need to be upgraded and vice-versa.
 
 
 ## Current state of development

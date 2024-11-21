@@ -30,16 +30,16 @@ class stateful_castext2_default_processor extends castext2_default_processor {
         $this->qa = $qa;
     }
 
-    public function process(string $blocktype, array $arguments, castext2_processor $override = null): string {
+    public function process(string $blocktype, array $arguments, castext2_placeholder_holder $holder, castext2_processor $override = null): string {
         if ($blocktype === '%css') { // An alias for shorter content.
 	        $proc = $this;
 	        if ($override !== null) {
 	            $proc = $override;
 	        }
             $block = new stateful_cas_castext2_statefulcs([]);
-        	return $block->postprocess($arguments, $proc);
+        	return $block->postprocess($arguments, $proc, $holder);
         } else {
-            return parent::process($blocktype, $arguments, $override);
+            return parent::process($blocktype, $arguments, $holder, $override);
         }
     }
 }

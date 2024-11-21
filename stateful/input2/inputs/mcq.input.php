@@ -662,7 +662,9 @@ class stateful_input_mcq extends stateful_input_algebraic {
         $optlist = $list->items[2];
         $this->mcqoptions = [];
         foreach ($optlist->items as $opt) {
-            $this->mcqoptions[strval($opt->items[0]->value)] = castext2_parser_utils::postprocess_mp_parsed($opt->items[1]);
+            $holder = new castext2_placeholder_holder();
+            $this->mcqoptions[strval($opt->items[0]->value)] = castext2_parser_utils::postprocess_mp_parsed($opt->items[1], null, $holder);
+            $this->mcqoptions[strval($opt->items[0]->value)] = $holder->replace($this->mcqoptions[strval($opt->items[0]->value)]);
         }
     }
 

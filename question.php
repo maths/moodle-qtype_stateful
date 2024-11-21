@@ -229,7 +229,7 @@ question_stateful, stateful_model {
 
         $statements = [];
         if (is_numeric($this->seed) || is_integer($this->seed)) {
-            $statements[] = new stack_secure_loader('RANDOM_SEED:' . $this->seed, 'validate_input', $sec);
+            $statements[] = new stack_secure_loader('RANDOM_SEED:' . $this->seed, 'validate_input');
         } else {
             $statements[] = stack_ast_container_silent::make_from_teacher_source('RANDOM_SEED:' . $this->seed, 'validate_input', $sec);
         }
@@ -818,7 +818,7 @@ question_stateful, stateful_model {
         // 1. We need the question variables for this seed.
         $statements = [];
         if (is_numeric($this->seed) || is_integer($this->seed)) {
-            $statements[] = new stack_secure_loader('RANDOM_SEED:' . $this->seed, 'init_state_vars', $this->security);
+            $statements[] = new stack_secure_loader('RANDOM_SEED:' . $this->seed, 'init_state_vars');
         } else {
             $statements[] = stack_ast_container_silent::make_from_teacher_source('RANDOM_SEED:' . $this->seed, 'init_state_vars', $this->security);
         }
@@ -900,7 +900,7 @@ question_stateful, stateful_model {
 
         $statements = [];
         if (is_numeric($this->seed) || is_integer($this->seed)) {
-            $statements[] = new stack_secure_loader('RANDOM_SEED:' . $this->seed, 'init_from_state', $this->security);
+            $statements[] = new stack_secure_loader('RANDOM_SEED:' . $this->seed, 'init_from_state');
         } else {
             $statements[] = stack_ast_container_silent::make_from_teacher_source('RANDOM_SEED:' . $this->seed, 'init_from_state', $this->security);
         }
@@ -988,7 +988,7 @@ question_stateful, stateful_model {
         $this->lastsceneinited = $scene->name;
 
         // Take in the scene-text.
-        $this->scenetext = $scenetext->get_rendered($this->castextprocessor);
+        $this->scenetext = $scenetext;
         $this->modelsolution = $modelsolution;
     }
 
@@ -1154,30 +1154,26 @@ question_stateful, stateful_model {
     public function render(
         string $what,
         $params = null
-    ): string{
+    ): stateful_castext2_render {
         $scene = $this->get_current_scene();
 
         if ('scenetext' === $what) {
             if ($this->lastsceneinited !== $scene->name) {
                 $this->init_from_state();
             }
-            return $this->scenetext;
+            return new stateful_castext2_render($this->scenetext->get_rendered(), $this->scenetext);
         }
         if ('modelsolution' === $what) {
             if ($this->modelsolution === null) {
                 $this->init_from_state();   
             }
-            if ($this->modelsolution instanceof castext2_evaluatable) {
-                // No need to render twice if ever.
-                $this->modelsolution = $this->modelsolution->get_rendered($this->castextprocessor);
-            }
-            return $this->modelsolution;
+            return new stateful_castext2_render($this->modelsolution->get_rendered(), $this->modelsolution);
         }
 
         // Common statements.
         $statements = [];
         if (is_numeric($this->seed) || is_integer($this->seed)) {
-            $statements[] = new stack_secure_loader('RANDOM_SEED:' . $this->seed, 'render ' . $what, $this->security);
+            $statements[] = new stack_secure_loader('RANDOM_SEED:' . $this->seed, 'render ' . $what);
         } else {
             $statements[] = stack_ast_container_silent::make_from_teacher_source('RANDOM_SEED:' . $this->seed, 'render ' . $what, $this->security);
         }
@@ -1216,7 +1212,7 @@ question_stateful, stateful_model {
             if (array_key_exists($prtid, $this->casparams)) {
                 if ($this->casparams[$prtid] === 'NOEVAL') {
                     // No eval case.
-                    return '';
+                    return new stateful_castext2_render('', null);
                 }
                 $ast = maxima_parser_utils::parse($this->casparams[
                     $prtid]);
@@ -1226,20 +1222,24 @@ question_stateful, stateful_model {
                 $arform = maxima_parser_utils::mp_to_php($ast);
                 $arform = $this->get_compiled('static-castext-strings')->replace($arform);
                 if (is_string($arform)) {
-                    return $arform;
+                    return new stateful_castext2_render($arform, null);
                 }
-                return castext2_parser_utils::postprocess_parsed($arform, $this->castextprocessor);
+                $holder = new castext2_placeholder_holder();
+                $tmp = castext2_parser_utils::postprocess_parsed($arform, $this->castextprocessor, $holder);
+                return new stateful_castext2_render($tmp, $holder);
             } else {
                 // There is no data. Due to things happening in the wrong order or
                 // to a different instance of this question...
                 // Lets prime the caches. An try again.
                 $r = $this->process_input($params, true);
                 if (!array_key_exists($name, $r['_feedback'])) {
-                    return '';
+                    return new stateful_castext2_render('', null);
                 }
 
-                return castext2_parser_utils::postprocess_mp_parsed($r[
-                    '_feedback'][$name], $this->castextprocessor);
+                $holder = new castext2_placeholder_holder();
+                $tmp = castext2_parser_utils::postprocess_mp_parsed($r[
+                    '_feedback'][$name], $this->castextprocessor, $holder);
+                return new stateful_castext2_render($tmp, $holder);
             }
 
             // Nothing for wrong name/sequence.
@@ -1265,10 +1265,11 @@ question_stateful, stateful_model {
             $session = new stack_cas_session2($statements, $this->options, $this->seed);
             $session->errclass = 'stateful_cas_error';
             $session->instantiate();
-            return $ct->get_rendered($this->castextprocessor);
+            $tmp = $ct->get_rendered($this->castextprocessor);
+            return new stateful_castext2_render($tmp, $ct);
         }
 
-        return 'NO RENDER OUTPUT FOR ' . $what;
+        return new stateful_castext2_render('NO RENDER OUTPUT FOR ' . $what, null);
     }
 
     // Returns the evaluated teachers answer for a given input name.

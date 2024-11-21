@@ -445,10 +445,14 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
         }
 
         // 4. The UI-frame.
-        $this->frame = castext2_parser_utils::postprocess_mp_parsed($list[4]);
+        $holder = new castext2_placeholder_holder();
+        $this->frame = castext2_parser_utils::postprocess_mp_parsed($list[4], null, $holder);
+        $this->frame = $holder->replace($this->frame);
 
         // 5. The validation-frame.
-        $this->valframe = castext2_parser_utils::postprocess_mp_parsed($list[5]);
+        $holder = new castext2_placeholder_holder();
+        $this->valframe = castext2_parser_utils::postprocess_mp_parsed($list[5], null, $holder);
+        $this->valframe = $holder->replace($this->valframe);
 
         // 6. The indent size.
         $this->indent = $list[6]->value;
@@ -821,7 +825,9 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
                     'data-tokenid' => self::$idcount++,
                     'data-indent' => '0'
                 ];
-                $content =  castext2_parser_utils::postprocess_mp_parsed($this->elements[$term]);
+                $holder = new castext2_placeholder_holder();
+                $content =  castext2_parser_utils::postprocess_mp_parsed($this->elements[$term], null, $holder);
+                $content = $holder->replace($content);
                 $content = $this->indent_spans($content, 0);
                 $list .= html_writer::tag('div', $content, $attributes);
             }
@@ -866,7 +872,9 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
                                     } else {
                                         $reallist[] = $pattern[0];
                                     }
-                                    $content = castext2_parser_utils::postprocess_mp_parsed($this->elements[$pattern[0]]);
+                                    $holder = new castext2_placeholder_holder();
+                                    $content = castext2_parser_utils::postprocess_mp_parsed($this->elements[$pattern[0]], null, $holder);
+                                    $content = $holder->replace($content);
                                     $content = $this->indent_spans($content, $ind);
                                     $list .= html_writer::tag('div', $content, $attributes);
                                 }
@@ -891,7 +899,9 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
                                     } else {
                                         $reallist[] = $pattern[0];
                                     }
-                                    $content = castext2_parser_utils::postprocess_mp_parsed($this->elements[$pattern[0]]);
+                                    $holder = new castext2_placeholder_holder();
+                                    $content = castext2_parser_utils::postprocess_mp_parsed($this->elements[$pattern[0]], null, $holder);
+                                    $content = $holder->replace($content);
                                     $content = $this->indent_spans($content, $ind);
                                     $list .= html_writer::tag('div', $content, $attributes);
                                 }
@@ -911,7 +921,9 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
                                 } else {
                                     $reallist[] = $term;
                                 }
-                                $content = castext2_parser_utils::postprocess_mp_parsed($this->elements[$term]);
+                                $holder = new castext2_placeholder_holder();
+                                $content = castext2_parser_utils::postprocess_mp_parsed($this->elements[$term], null, $holder);
+                                $content = $holder->replace($content);
                                 $content = $this->indent_spans($content, $ind);
                                 $list .= html_writer::tag('div', $content, $attributes);
                             }
@@ -939,7 +951,9 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
                             'data-tokenid' => self::$idcount++,
                             'data-indent' => '' . $ind
                         ];
-                        $content = castext2_parser_utils::postprocess_mp_parsed($this->elements[$term]);
+                        $holder = new castext2_placeholder_holder();
+                        $content = castext2_parser_utils::postprocess_mp_parsed($this->elements[$term], null, $holder);
+                        $content = $holder->replace($content);
                         $content = $this->indent_spans($content, $ind);
                         $list .= html_writer::tag('div', $content, $attributes);
                     } else if ($value[0] === 'fixed') {
@@ -958,7 +972,9 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
                             'data-tokenid' => self::$idcount++,
                             'data-indent' => '' . $ind
                         ];
-                        $content = castext2_parser_utils::postprocess_mp_parsed($this->elements[$term]);
+                        $holder = new castext2_placeholder_holder();
+                        $content = castext2_parser_utils::postprocess_mp_parsed($this->elements[$term], null, $holder);
+                        $content = $holder->replace($content);
                         $content = $this->indent_spans($content, $ind);
                         $list .= html_writer::tag('div', $content, $attributes);
                     }
@@ -989,7 +1005,9 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
                             'data-tokenid' => self::$idcount++,
                             'data-indent' => '' . $ind
                         ];
-                        $content = castext2_parser_utils::postprocess_mp_parsed($this->elements[$term]);
+                        $holder = new castext2_placeholder_holder();
+                        $content = castext2_parser_utils::postprocess_mp_parsed($this->elements[$term], null, $holder);
+                        $content = $holder->replace($content);
                         $content = $this->indent_spans($content, $ind);
                         $shufflebox .= html_writer::tag('div', $content, $attributes);
                     }
@@ -1011,7 +1029,9 @@ class stateful_input_order extends stateful_input_base_with_options_and_validati
                         'data-tokenid' => self::$idcount++,
                         'data-indent' => '0'
                     ];
-                    $content = castext2_parser_utils::postprocess_mp_parsed($this->elements[$term]);
+                    $holder = new castext2_placeholder_holder();
+                    $content = castext2_parser_utils::postprocess_mp_parsed($this->elements[$term], null, $holder);
+                    $content = $holder->replace($content);
                     $content = $this->indent_spans($content, 0);
                     $shufflebox .= html_writer::tag('div', $content, $attributes);
                 }

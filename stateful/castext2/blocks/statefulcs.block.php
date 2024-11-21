@@ -141,7 +141,8 @@ class stateful_cas_castext2_statefulcs extends stack_cas_castext2_block {
 
     }
 
-    public function postprocess(array $params, castext2_processor $processor): string {
+    public function postprocess(array $params, castext2_processor $processor,
+        castext2_placeholder_holder $holder): string {
         if (count($params) === 2) {
             return stateful_string($params[1]);
         }
@@ -149,7 +150,7 @@ class stateful_cas_castext2_statefulcs extends stack_cas_castext2_block {
         for ($i = 2; $i < count($params); $i += 2) {
             $val = '';
             if (is_array($params[$i + 1])) {
-                $val = $processor->process($params[$i + 1][0], $params[$i + 1]);
+                $val = $processor->process($params[$i + 1][0], $params[$i + 1], $holder);
             } else {
                 $val = $params[$i + 1];
             }

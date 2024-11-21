@@ -15,6 +15,7 @@
 // along with Stateful.  If not, see <http://www.gnu.org/licenses/>.
 require_once __DIR__ . '/stacklib.php';
 require_once __DIR__ . '/stateful/core/stateful.caserror.class.php';
+require_once __DIR__ . '/stateful/castext2/render_holder.php';
 
 class stateful_exception extends moodle_exception {
     // Some exceptiosn have subtypes that we do not bother to create classes for.
