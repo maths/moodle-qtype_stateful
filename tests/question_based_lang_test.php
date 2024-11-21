@@ -42,6 +42,7 @@ class question_based_lang_test extends qtype_stack_walkthrough_test_base {
         $this->start_attempt_at_question($question, 'adaptive', 4);
 
         $scenetext = $question->render('scenetext');
+        $scenetext = $scenetext->apply($scenetext->rendered);
 
         // The render must be "1" if its is "" then the default 
         // language was not selected. If it is something more then
